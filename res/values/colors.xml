@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="white">#FFFFFF</color>
+    <color name="black">#FF000000</color>
+    <color name="black_lower">#FF333333</color>
+    <color name="red">#FFDE0000</color>
+    <color name="orange">#FFFF8823</color>
+    <color name="yellow">#FFfff04c</color>
+    <color name="blue">#FF0000FF</color>
+    <color name="calendarblue">#ff33b5e5</color>
+    <color name="deepgreen">#FF4C86A0</color>
+    <color name="gray">#FF888888</color>
+    <color name="dimgrey">#696969</color>
+    <color name="gray_half">#b2888888</color>
+    <color name="lucency">#00000000</color>
+    <color name="translucency">#33000000</color>
+    <color name="result_view">#b0000000</color>
+    <color name="grey">#808080</color>
+    <color name="result_image_border">#ffffffff</color>
+    <color name="result_points">#c000ff00</color>
+    <color name="result_minor_text">#ffc0c0c0</color>
+    <color name="result_text">#ffffffff</color>
+    <color name="status_text">#ffffffff</color>
+    <color name="floralwhite">#FFFAF0</color>
+    <color name="viewfinder_frame">#ff000000</color>
+    <color name="viewfinder_laser">#ffff0000</color>
+    <color name="viewfinder_mask">#60000000</color>
+    <color name="possible_result_points">#c0ffff00</color>
+    <color name="intro_enable">#F2F2F2</color>
+    <color name="intro_disenable">#CCCCCC</color>
+    <color name="bgColor">#fafafa</color>
+    <color name="color_umcall_txt">#4e79b5</color>
+    <color name="color_um800">#269cf8</color>
+    <color name="lower_gray">#bebebe</color>
+    <color name="addressbook_internet_text">#19395b</color>
+    <color name="blue_call_text">#ff3492ce</color>
+    <color name="bg_activate_foreign">#ff007bb6</color>
+    <color name="listview_item_bg">#D6D6D6</color>
+    <color name="green">#00cd00</color>
+    <color name="calendar_color">#4FC4F6</color>
+
+    <!-- 界面细节 -->
+    <color name="common_bgcolor">#f1f1f1</color>
+    <color name="list_item_bgcolor">#f8f8f8</color>
+    <color name="personal_infor_edit_list_key">#1d3c78</color>
+    <color name="goble_line">#bebebe</color>
+    <color name="personal_gray">#83827c</color>
+    <color name="time_color">#ffbec8cc</color>
+    <color name="bg_circle_icon">#00aa24</color>
+    <color name="tab_pressed_textcolor">#7f808080</color>
+    <color name="tab_textcolor">#ff808080</color>
+    <color name="key_text">#4c4c4c</color>
+    <!-- 亮天蓝色 -->
+    <color name="skyblue">#87CEEB</color>
+    <color name="lxbg">#f1f1f1</color>
+    <color name="caldroid_white">#FFFFFF</color>
+    <color name="caldroid_black">#000000</color>
+    <color name="caldroid_transparent">#00000000</color>
+    <!-- For settings framework -->
+    <color name="caldroid_lighter_gray">#ddd</color>
+    <color name="caldroid_gray">#CCC</color>
+    <color name="caldroid_darker_gray">#aaa</color>
+    <!-- A light Holo shade of blue -->
+    <color name="caldroid_holo_blue_light">#ff33b5e5</color>
+    <!-- A dark Holo shade of blue -->
+    <color name="caldroid_holo_blue_dark">#ff0099cc</color>
+    <!-- A really bright Holo shade of blue -->
+    <color name="caldroid_sky_blue">#FFA3E8F7</color>
+    <color name="caldroid_dis_color">#CBCCD1</color>
+    <color name="caldroid_date_color">#737F8C</color>
+    <color name="caldroid_odd_color">#FFFEFF</color>
+    <color name="caldroid_even_color">#F5F8FC</color>
+    <color name="caldroid_diveder_color">#EDEEEF</color>
+    <color name="lightblue">#ADD8E6</color>
+
+</resources>

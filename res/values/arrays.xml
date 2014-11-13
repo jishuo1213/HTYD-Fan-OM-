@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="tab_drawable_id">
+        <item>@drawable/tab_weixin_normal</item>
+        <item>@drawable/tab_find_frd_normal</item>
+        <item>@drawable/tab_address_normal</item>
+        <item>@drawable/tab_settings_normal</item>
+        <item>@drawable/tab_weixin_pressed</item>
+        <item>@drawable/tab_find_frd_pressed</item>
+        <item>@drawable/tab_address_pressed</item>
+        <item>@drawable/tab_settings_pressed</item>
+    </string-array>
+
+</resources>
