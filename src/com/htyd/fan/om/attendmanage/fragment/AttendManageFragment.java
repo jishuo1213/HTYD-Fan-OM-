@@ -1,7 +1,13 @@
 package com.htyd.fan.om.attendmanage.fragment;
 
+import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.search.geocode.GeoCodeResult;
 import com.baidu.mapapi.search.geocode.GeoCoder;
+import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
+import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
+import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult.AddressComponent;
 import com.htyd.fan.om.R;
+import com.htyd.fan.om.attendmanage.model.LocationBean;
 
 import android.app.Fragment;
 import android.location.Location;
@@ -14,6 +20,7 @@ import android.widget.TextView;
 public class AttendManageFragment extends Fragment{
 
 	private ViewPanel mPanel;
+	private LocationBean mBean;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -33,13 +40,25 @@ public class AttendManageFragment extends Fragment{
 		mPanel = new ViewPanel(v);
 	}
 
-	private void reverseGeoCode(Location loc){
+	private void reverseGeoCode(LatLng loc){
 		GeoCoder mCoder = GeoCoder.newInstance();
-		
+		mCoder.setOnGetGeoCodeResultListener(new OnGetGeoCoderResultListener(){
+
+			@Override
+			public void onGetGeoCodeResult(GeoCodeResult arg0) {
+			}
+
+			@Override
+			public void onGetReverseGeoCodeResult(ReverseGeoCodeResult arg0) {
+				ReverseGeoCodeResult.AddressComponent component = arg0.getAddressDetail();
+				
+			}
+		});
 	}
 	
 	public void updateUI(Location loc) {
 		
+		reverseGeoCode();
 	}
 private class ViewPanel {
 	private TextView locTextView,timeTextView;
