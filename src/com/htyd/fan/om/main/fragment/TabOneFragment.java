@@ -42,7 +42,6 @@ public class TabOneFragment extends Fragment {
 	
 	@Override
 	public void onDestroy() {
-		mLocationManager.stopLocationUpdates();
 		super.onDestroy();
 	}
 }

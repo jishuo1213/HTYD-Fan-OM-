@@ -1,17 +1,20 @@
 package com.htyd.fan.om.map;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
+import android.widget.LinearLayout;
 
 import com.baidu.mapapi.map.BaiduMap;
-import com.baidu.mapapi.map.BaiduMap.OnMapStatusChangeListener;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.MapStatus;
@@ -25,7 +28,6 @@ import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.utils.CoordinateConverter;
 import com.baidu.mapapi.utils.CoordinateConverter.CoordType;
 import com.htyd.fan.om.R;
-import com.htyd.fan.om.util.base.Preferences;
 import com.htyd.fan.om.util.ui.UItoolKit;
 
 public class BaiduMapFragment extends Fragment {
@@ -34,6 +36,10 @@ public class BaiduMapFragment extends Fragment {
 	public static final String LONGTITUDE = "longtitude";
 
 	private MapView mapView;
+	private OMLocationManager mLocationManager;
+	private LinearLayout progressLayout;
+	private ViewStub vs;
+	private LocationRecListener mListener;
 
 	/*
 	 * public static Fragment newInstance(double latitude, double longtitude) {
@@ -41,6 +47,22 @@ public class BaiduMapFragment extends Fragment {
 	 * arg.putDouble(LONGTITUDE, longtitude); Fragment fragment = new
 	 * BaiduMapFragment(); fragment.setArguments(arg); return fragment; }
 	 */
+
+	public interface LocationRecListener {
+		public void onLocationReceiveListener(Location loc);
+	}
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		mListener = (LocationRecListener) activity;
+	}
+
+	@Override
+	public void onDetach() {
+		mListener = null;
+		super.onDetach();
+	}
+	
 	@Override
 	public void onStart() {
 		super.onStart();
@@ -57,6 +79,7 @@ public class BaiduMapFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		mLocationManager = OMLocationManager.get(getActivity());
 	}
 
 	@Override
@@ -64,34 +87,41 @@ public class BaiduMapFragment extends Fragment {
 			Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.map_fragment_layout, container,
 				false);
-		initMapView(v);
+		initView(v);
 		return v;
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		mapView.onResume();
+		if (mapView != null)
+			mapView.onResume();
 	}
 
 	@Override
 	public void onPause() {
-		super.onPause();
+		if (mapView != null)
+			super.onPause();
 		mapView.onPause();
 	}
 
 	@Override
 	public void onDestroy() {
-		mapView.onDestroy();
+		if (mapView != null)
+			mapView.onDestroy();
+		mLocationManager.stopGPSLocationUpdates();
 		super.onDestroy();
 	}
 
-	private void initMapView(View v) {
-		mapView = (MapView) v.findViewById(R.id.map_baidu);
-		LatLng tempLatLng = Preferences.getLastLocation(getActivity());
+	private void initView(View v) {
+		vs = (ViewStub) v.findViewById(R.id.map_sub);
+		progressLayout = (LinearLayout) v.findViewById(R.id.line_progress);
+	}
 
-		double latitude = tempLatLng.latitude;
-		double longtitude = tempLatLng.longitude;
+	private void initMapView(Location loc) {
+
+		double latitude = loc.getLatitude();
+		double longtitude = loc.getLongitude();
 
 		BaiduMap bMap = mapView.getMap();
 		bMap.setMapType(BaiduMap.MAP_TYPE_NORMAL);
@@ -116,7 +146,6 @@ public class BaiduMapFragment extends Fragment {
 		OverlayOptions option = new MarkerOptions().position(point)
 				.icon(bitmap);
 		bMap.addOverlay(option);
-		bMap.setOnMapStatusChangeListener(mMapStatusCheangeListener);
 	}
 
 	private LatLng transCoordinate(LatLng temppoint) {
@@ -126,20 +155,10 @@ public class BaiduMapFragment extends Fragment {
 		return converter.convert();
 	}
 
-	private OnMapStatusChangeListener mMapStatusCheangeListener = new OnMapStatusChangeListener() {
-		
-		@Override
-		public void onMapStatusChangeStart(MapStatus arg0) {
-		}
-		
-		@Override
-		public void onMapStatusChangeFinish(MapStatus arg0) {
-		}
-		
-		@Override
-		public void onMapStatusChange(MapStatus arg0) {
-		}
-	};
+	public void setListener(LocationRecListener listener) {
+		mListener = listener;
+	}
+
 	private BroadcastReceiver mLocationReceiver = new LocationReceiver() {
 
 		@Override
@@ -147,13 +166,41 @@ public class BaiduMapFragment extends Fragment {
 		}
 
 		@Override
-		protected void onLocationReceived(Context context, Location loc) {
-			Preferences.setLastLocation(getActivity(), loc);
+		protected void onGPSLocationReceived(Context context, Location loc) {
+			Log.i("fanjishuo_____onGPSLocationReceived",
+					"loc.getLatitude()" + loc.getLatitude()
+							+ "loc.getLongitude()" + loc.getLongitude());
+			UItoolKit.showToastShort(getActivity(),
+					"loc.getLatitude()" + loc.getLatitude()
+							+ "loc.getLongitude()" + loc.getLongitude());
+			if (progressLayout.isShown()) {
+				progressLayout.setVisibility(View.GONE);
+			}
+			if (!vs.isShown()) {
+				mapView = (MapView) vs.inflate();
+			}
 			UItoolKit.showToastShort(
 					getActivity(),
 					"Latitude" + loc.getLatitude() + "Longitude"
 							+ loc.getLongitude());
-			
+			initMapView(loc);
+		}
+
+		@Override
+		protected void onNetWorkLocationReceived(Context context,
+				final Location loc) {
+			Log.i("fanjishuo_____onNetWorkLocationReceived",
+					"loc.getLatitude()" + loc.getLatitude()
+							+ "loc.getLongitude()" + loc.getLongitude());
+			if (progressLayout.isShown()) {
+				progressLayout.setVisibility(View.GONE);
+			}
+			if (!vs.isShown()) {
+				mapView = (MapView) vs.inflate();
+			}
+			initMapView(loc);
+			mListener.onLocationReceiveListener(loc);
+			mLocationManager.stopNetWorkLocationUpdates();
 		}
 	};
 }

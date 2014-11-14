@@ -73,5 +73,6 @@
     <color name="caldroid_even_color">#F5F8FC</color>
     <color name="caldroid_diveder_color">#EDEEEF</color>
     <color name="lightblue">#ADD8E6</color>
+    <color name="activity_bg_color">#fff5f5f5</color>
 
 </resources>

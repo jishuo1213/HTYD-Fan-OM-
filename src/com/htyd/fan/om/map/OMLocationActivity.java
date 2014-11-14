@@ -1,13 +1,12 @@
 package com.htyd.fan.om.map;
 
-import com.baidu.mapapi.SDKInitializer;
-import com.htyd.fan.om.R;
-import com.htyd.fan.om.util.base.SimpleFragmentActivity;
-
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.Window;
-import android.view.WindowManager;
+
+import com.baidu.mapapi.SDKInitializer;
+import com.htyd.fan.om.R;
+import com.htyd.fan.om.util.base.SimpleFragmentActivity;
 
 public class OMLocationActivity extends SimpleFragmentActivity {
 
@@ -15,7 +14,7 @@ public class OMLocationActivity extends SimpleFragmentActivity {
 	protected void onCreate(Bundle arg0) {
 		SDKInitializer.initialize(getApplicationContext());
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+	//	getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		super.onCreate(arg0);
 	}
 

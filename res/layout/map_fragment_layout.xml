@@ -1,14 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
-    <com.baidu.mapapi.map.MapView
+    android:background="@color/activity_bg_color"
+    android:orientation="vertical"
+    android:weightSum="1" >
+
+    <LinearLayout
+        android:id="@+id/line_progress"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="正在加载地图。。。"
+            tools:ignore="HardcodedText" />
+    </LinearLayout>
+
+    <ViewStub
+        android:id="@+id/map_sub"
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:inflatedId="@+id/map_baidu"
+        android:layout="@layout/map_view_layout" />
+
+</LinearLayout><!--
+        <com.baidu.mapapi.map.MapView
         android:id="@+id/map_baidu"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:clickable="true"
-        />
-
-</LinearLayout>
+-->
