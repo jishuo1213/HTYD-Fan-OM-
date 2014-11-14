@@ -1,5 +1,6 @@
 package com.htyd.fan.om.attendmanage.fragment;
 
+import com.baidu.mapapi.search.geocode.GeoCoder;
 import com.htyd.fan.om.R;
 
 import android.app.Fragment;
@@ -32,6 +33,11 @@ public class AttendManageFragment extends Fragment{
 		mPanel = new ViewPanel(v);
 	}
 
+	private void reverseGeoCode(Location loc){
+		GeoCoder mCoder = GeoCoder.newInstance();
+		
+	}
+	
 	public void updateUI(Location loc) {
 		
 	}
