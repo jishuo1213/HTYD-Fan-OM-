@@ -1,9 +1,9 @@
 package com.htyd.fan.om.attendmanage.model;
 
-import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult.AddressComponent;
-
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult.AddressComponent;
 
 public class LocationBean implements Parcelable {
 
@@ -14,17 +14,9 @@ public class LocationBean implements Parcelable {
 	public String streetNum;
 	public String time;
 
-	
-	
 	public LocationBean() {
 	}
-	public LocationBean(AddressComponent component) {
-		province = component.province;
-		city = component.city;
-		district = component.district;
-		street = component.street;
-		streetNum = component.streetNumber;
-	}
+
 	@Override
 	public int describeContents() {
 		return 0;
@@ -59,4 +51,18 @@ public class LocationBean implements Parcelable {
 			return mBean;
 		}
 	};
+
+	public void SetValueBean(AddressComponent component) {
+		this.province = component.province;
+		this.city = component.city;
+		this.district = component.district;
+		this.street = component.street;
+		this.streetNum = component.streetNumber;
+	}
+
+	public String getAddress() {
+		StringBuilder sb = new StringBuilder();
+		return sb.append(province).append(city).append(district).append(street)
+				.append(streetNum).toString();
+	}
 }

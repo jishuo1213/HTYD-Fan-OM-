@@ -50,7 +50,7 @@
                 <action android:name="com.htyd.fan.om.map.ACTION_LOCATION" />
             </intent-filter>
         </receiver>
-        <activity android:name="com.htyd.fan.om.map.OMLocationActivity"
+        <activity android:name="com.htyd.fan.om.attendmanage.AttentManagerActivity"
             android:screenOrientation="landscape"
             />
     </application>

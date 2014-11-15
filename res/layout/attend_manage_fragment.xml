@@ -9,7 +9,7 @@
         android:id="@+id/tv_nouse_loc"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="25dp"
+        android:layout_marginLeft="5dp"
         android:padding="5dp"
         android:text="位置:"
         android:textSize="20sp" />
@@ -21,7 +21,6 @@
         android:layout_alignTop="@id/tv_nouse_loc"
         android:layout_marginTop="5dp"
         android:layout_toRightOf="@id/tv_nouse_loc"
-        android:text="11111111111111111111111111111111111111111111111111111111111111111111111"
         android:textColor="@color/key_text"
         android:textSize="20sp" />
 
@@ -30,7 +29,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/tv_nouse_loc"
-        android:layout_marginLeft="25dp"
+        android:layout_marginLeft="5dp"
         android:layout_marginTop="5dp"
         android:padding="5dp"
         android:text="时间:"
@@ -43,16 +42,15 @@
         android:layout_alignTop="@id/tv_nouse_time"
         android:layout_marginTop="5dp"
         android:layout_toRightOf="@id/tv_nouse_time"
-        android:text="11111111111111111111111111111111111111111111111111111111111111111111111"
         android:textColor="@color/key_text"
         android:textSize="20sp" />
 
     <Button 
         android:id="@+id/btn_sign_in"
-        android:layout_marginRight="25dp"
-        android:layout_marginLeft="25dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="35dp"
         android:layout_below="@id/tv_nouse_time"
         android:layout_centerHorizontal="true"
         android:background="@drawable/x_bg_btn_green"

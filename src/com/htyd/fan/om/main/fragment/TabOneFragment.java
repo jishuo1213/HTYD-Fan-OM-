@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.htyd.fan.om.R;
-import com.htyd.fan.om.map.OMLocationActivity;
+import com.htyd.fan.om.attendmanage.AttentManagerActivity;
 import com.htyd.fan.om.map.OMLocationManager;
 
 public class TabOneFragment extends Fragment {
@@ -33,7 +33,7 @@ public class TabOneFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				mLocationManager.startLocationUpdates();
-				Intent i = new Intent(getActivity(), OMLocationActivity.class);
+				Intent i = new Intent(getActivity(), AttentManagerActivity.class);
 				startActivity(i);
 			}
 		});

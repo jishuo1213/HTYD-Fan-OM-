@@ -52,7 +52,7 @@ public class OMLocationManager {
 
 		Location lastKnown = mLocationManager.getLastKnownLocation(providerNet);
 		if (lastKnown != null) {
-			broadcastLocation(lastKnown);
+//			broadcastLocation(lastKnown);
 		}
 
 		PendingIntent piNet = getLocationPendingIntent(true, providerNet);
