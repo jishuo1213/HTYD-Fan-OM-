@@ -11,5 +11,25 @@
         <item>@drawable/tab_address_pressed</item>
         <item>@drawable/tab_settings_pressed</item>
     </string-array>
+    <string-array name="main_page_text">
+        <item>任务单</item>
+        <item>待办提醒</item>
+        <item>我的考勤</item>
+        <item>任务单</item>
+        <item>任务单</item>
+        <item>任务单</item>
+        <item>任务单</item>
+        <item>任务单</item>
+    </string-array>
+    <string-array name="main_page_item_color">
+        <item>@color/skyblue</item>
+        <item>@color/orange</item>
+        <item>@color/lucency</item>
+        <item>@color/yellow</item>
+        <item>@color/caldroid_odd_color</item>
+        <item>@color/skyblue</item>
+        <item>@color/skyblue</item>
+        <item>@color/skyblue</item>
+    </string-array>
 
 </resources>
