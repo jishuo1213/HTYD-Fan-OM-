@@ -20,7 +20,7 @@ import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
 import com.baidu.mapapi.utils.CoordinateConverter;
 import com.baidu.mapapi.utils.CoordinateConverter.CoordType;
 import com.htyd.fan.om.R;
-import com.htyd.fan.om.attendmanage.model.LocationBean;
+import com.htyd.fan.om.model.LocationBean;
 
 public class AttendManageFragment extends Fragment {
 

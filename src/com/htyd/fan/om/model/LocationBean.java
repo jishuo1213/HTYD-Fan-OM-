@@ -1,4 +1,4 @@
-package com.htyd.fan.om.attendmanage.model;
+package com.htyd.fan.om.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
