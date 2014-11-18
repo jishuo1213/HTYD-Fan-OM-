@@ -6,7 +6,7 @@ import android.os.Parcelable;
 public class CityBean implements Parcelable {
 
 	public int provinceID;
-	public int cityID;
+	public int Id;
 	public String cityCode;
 	public String cityName;
 
@@ -18,7 +18,7 @@ public class CityBean implements Parcelable {
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeInt(provinceID);
-		dest.writeInt(cityID);
+		dest.writeInt(Id);
 		dest.writeString(cityCode);
 		dest.writeString(cityName);
 	}
@@ -34,7 +34,7 @@ public class CityBean implements Parcelable {
 		public CityBean createFromParcel(Parcel source) {
 			CityBean mBean = new CityBean();
 			mBean.provinceID = source.readInt();
-			mBean.cityID = source.readInt();
+			mBean.Id = source.readInt();
 			mBean.cityCode = source.readString();
 			mBean.cityName = source.readString();
 			return mBean;

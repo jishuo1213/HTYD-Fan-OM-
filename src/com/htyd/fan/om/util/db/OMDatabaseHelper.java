@@ -1,14 +1,14 @@
 package com.htyd.fan.om.util.db;
 
-import com.htyd.fan.om.model.CityBean;
-import com.htyd.fan.om.model.DistrictBean;
-import com.htyd.fan.om.model.ProvinceBean;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.database.CursorWrapper;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import com.htyd.fan.om.model.CityBean;
+import com.htyd.fan.om.model.DistrictBean;
+import com.htyd.fan.om.model.ProvinceBean;
 
 public class OMDatabaseHelper extends SQLiteOpenHelper {
 
@@ -72,7 +72,7 @@ public class OMDatabaseHelper extends SQLiteOpenHelper {
 				return null;
 			CityBean mBean = new CityBean();
 			mBean.provinceID = (int) getLong(getColumnIndex(SQLSentence.COLUMN_CITY_PROVINCE_ID));
-			mBean.cityID = (int) getLong(getColumnIndex(SQLSentence.COLUMN_CITY_ID));
+			mBean.Id = (int) getLong(getColumnIndex(SQLSentence.COLUMN_CITY_ID));
 			mBean.cityCode = getString(getColumnIndex(SQLSentence.COLUMN_CITY_CODE));
 			mBean.cityName = getString(getColumnIndex(SQLSentence.COLUMN_CITY_NAME));
 			return mBean;

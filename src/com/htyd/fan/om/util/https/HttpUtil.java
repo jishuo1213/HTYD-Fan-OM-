@@ -6,13 +6,12 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import android.text.TextUtils;
+import android.util.Log;
+
 public class HttpUtil {
 	
-	public static void sendHttpRequest(final String address,
-			final HttpCallbackListener listener) {
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
+	public static String sendHttpRequest(final String address) {
 				HttpURLConnection connection = null;
 				try {
 					URL url = new URL(address);
@@ -27,22 +26,20 @@ public class HttpUtil {
 					while ((line = reader.readLine()) != null) {
 						response.append(line);
 					}
-					if (listener != null) {
-						// 回调onFinish()方法
-						listener.onFinish(response.toString());
+					if(TextUtils.isEmpty(response)){
+						Log.i("fanjishuo___sendHttpRequest", "isEmpty(response)");
+						return null;
+					}else{
+						return response.toString();
 					}
 				} catch (Exception e) {
-					if (listener != null) {
-						// 回调onError()方法
-						listener.onError(e);
-					}
+					Log.i("fanjishuo___sendHttpRequest", "catch e");
+					return null;
 				} finally {
 					if (connection != null) {
 						connection.disconnect();
 					}
 				}
 			}
-		}).start();
 	}
 
-}

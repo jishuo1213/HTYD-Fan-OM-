@@ -80,6 +80,7 @@ public class BaiduMapFragment extends Fragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mLocationManager = OMLocationManager.get(getActivity());
+		mLocationManager.startLocationUpdates();
 	}
 
 	@Override
@@ -101,8 +102,8 @@ public class BaiduMapFragment extends Fragment {
 	@Override
 	public void onPause() {
 		if (mapView != null)
-			super.onPause();
-		mapView.onPause();
+			mapView.onPause();
+		super.onPause();
 	}
 
 	@Override

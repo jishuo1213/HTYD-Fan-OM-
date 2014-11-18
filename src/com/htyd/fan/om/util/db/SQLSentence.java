@@ -17,7 +17,7 @@ public class SQLSentence {
 	public static final String COLUMN_CITY_PROVINCE_ID = "province_id";
 
 	public static final String CREATE_TABLE_CITY = "create table city ("
-			+ "_id integer primary key autocrement, city_name text, city_code text,province_id integer references province(_id))";
+			+ "_id integer primary key autoincrement, city_name text, city_code text,province_id integer references province(_id))";
 
 	public static final String TABLE_DISTRICT = "district";
 	public static final String COLUMN_DISTRICT_NAME = "district_name";

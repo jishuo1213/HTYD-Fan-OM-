@@ -62,11 +62,11 @@ public class OMLocationManager {
 		mLocationManager.requestLocationUpdates(providerGps, 0, 0, piGps);
 	}
 
-	private void broadcastLocation(Location lastKnown) {
+/*	private void broadcastLocation(Location lastKnown) {
 		Intent broadcast = new Intent(ACTION_LOCATION);
 		broadcast.putExtra(LocationManager.KEY_LOCATION_CHANGED, lastKnown);
 		mAppContext.sendBroadcast(broadcast);
-	}
+	}*/
 
 	public void stopNetWorkLocationUpdates() {
 		PendingIntent pi = getLocationPendingIntent(false,

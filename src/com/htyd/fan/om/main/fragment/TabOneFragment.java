@@ -1,6 +1,7 @@
 package com.htyd.fan.om.main.fragment;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.os.Bundle;
@@ -9,14 +10,18 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.TextView;
 
 import com.htyd.fan.om.R;
+import com.htyd.fan.om.attendmanage.AttentManagerActivity;
 
 public class TabOneFragment extends Fragment {
 
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -39,8 +44,22 @@ public class TabOneFragment extends Fragment {
 	private void intiView(View v) {
 		GridView mGridView = (GridView) v.findViewById(R.id.grid_main_page);
 		mGridView.setAdapter(new MainPageGridAdapter());
+		mGridView.setOnItemClickListener(new GridItemClickListener());
 	}
 
+	private class GridItemClickListener implements OnItemClickListener{
+
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position,
+				long id) {
+			switch(position){
+			case 0:
+				Intent i = new Intent(getActivity(),AttentManagerActivity.class);
+				startActivity(i);
+			}
+		}
+	}
+	
 	private class MainPageGridAdapter extends BaseAdapter {
 		private String[] itemArray;
 		private int[] colorIdArray;
