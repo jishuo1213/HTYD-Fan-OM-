@@ -96,29 +96,35 @@
         android:layout_toLeftOf="@id/ldepart_ine"
         android:text="签到" />
 
-    <GridView 
+    <GridView
         android:id="@+id/grid_week_chinese"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/tv_month"
-        android:layout_margin="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:layout_toRightOf="@id/ldepart_ine"
-        android:horizontalSpacing="1dp"
         android:numColumns="7"
-        android:verticalSpacing="1dp" 
-        android:background="@color/key_text"
         />
-    
+    <View style="@style/h_line"
+        android:layout_below="@id/tv_month"
+        android:layout_toRightOf="@id/ldepart_ine"
+        android:layout_height="1px"
+        android:background="@color/key_text"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        />
+
     <GridView
         android:id="@+id/grid_attend_calendar"
-        android:background="@color/key_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/grid_week_chinese"
-        android:layout_margin="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp"
         android:layout_toRightOf="@id/ldepart_ine"
-        android:horizontalSpacing="1dp"
         android:numColumns="7"
-        android:verticalSpacing="1dp" />
+        />
 
 </RelativeLayout>
