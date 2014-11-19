@@ -3,6 +3,7 @@ package com.htyd.fan.om.main;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.ActionBar;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
@@ -13,16 +14,19 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.view.ActionProvider;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
 
 import com.htyd.fan.om.R;
+import com.htyd.fan.om.attendmanage.fragment.AttendCalendarFragment;
 import com.htyd.fan.om.main.fragment.TabFourFragment;
-import com.htyd.fan.om.main.fragment.TabOneFragment;
 import com.htyd.fan.om.main.fragment.TabThreeFragment;
 import com.htyd.fan.om.main.fragment.TabTwoFragment;
+import com.htyd.fan.om.util.ui.CustomMoreActionProvider;
 
 public class MainActivity extends FragmentActivity {
 
@@ -36,11 +40,12 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_main);
 		loadData();
 		init();
+		initActionBar();
 	}
+
 
 	@Override
 	protected void onDestroy() {
@@ -49,11 +54,28 @@ public class MainActivity extends FragmentActivity {
 		super.onDestroy();
 	}
 
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.menu_popup, menu);
+		MenuItem menuItem = menu.findItem(R.id.more_menu);
+		ActionProvider provider = new CustomMoreActionProvider(this);
+		menuItem.setActionProvider(provider);
+		menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+		return true;
+	}
+	
+	private void initActionBar() {
+		ActionBar actionBar = getActionBar();
+		actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_top_navigation_bar));
+		actionBar.setTitle("终端运维系统");
+		actionBar.setDisplayShowHomeEnabled(false);
+	}
+	
 	private void loadData() {
 		Resources r = getResources();
 		tabDrawable = new Drawable[8];
 		TypedArray imgs = r.obtainTypedArray(R.array.tab_drawable_id);
-		TabOneFragment tab1 = new TabOneFragment();
+		AttendCalendarFragment tab1 = new AttendCalendarFragment();
 		TabTwoFragment tab2 = new TabTwoFragment();
 		TabThreeFragment tab3 = new TabThreeFragment();
 		TabFourFragment tab4 = new TabFourFragment();

@@ -1,19 +1,124 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" 
-    android:orientation="vertical"
+    android:layout_height="match_parent"
     android:background="@color/activity_bg_color"
-    >
-    <GridView 
-        android:id="@+id/grid_main_page"
+    tools:ignore="HardcodedText" >
+
+    <View
+        android:id="@+id/ldepart_ine"
+        style="@style/v_line"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:id="@+id/tv_layout_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:columnWidth="80dp"
-        android:numColumns="3"
-        android:horizontalSpacing="5dp"
-        android:verticalSpacing="5dp"
-        />
-    </LinearLayout>
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="5dp"
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="签到时间："
+        android:textSize="15sp" />
 
+    <TextView
+        android:id="@+id/tv_attend_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_toLeftOf="@id/ldepart_ine"
+        android:layout_toRightOf="@id/tv_layout_time"
+        android:padding="5dp"
+        android:text="111111"
+        android:textSize="15sp" />
+
+    <TextView
+        android:id="@+id/tv_layout_address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/tv_layout_time"
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="签到地点："
+        android:textSize="15sp" />
+
+    <TextView
+        android:id="@+id/tv_attend_address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_attend_time"
+        android:layout_toRightOf="@id/tv_layout_address"
+        android:padding="5dp"
+        android:text="111111"
+        android:textSize="15sp" />
+
+    <TextView
+        android:id="@+id/tv_layout_state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/tv_layout_address"
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="状态："
+        android:textSize="15sp" />
+
+    <TextView
+        android:id="@+id/tv_attend_state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/tv_attend_address"
+        android:layout_below="@id/tv_attend_address"
+        android:layout_toRightOf="@id/tv_layout_state"
+        android:padding="5dp"
+        android:text="111111"
+        android:textSize="15sp" />
+
+    <TextView
+        android:id="@+id/tv_month"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_toRightOf="@id/ldepart_ine"
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="测试"
+        android:textSize="20sp" />
+
+    <Button
+        android:id="@+id/btn_add_attend"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_attend_state"
+        android:layout_margin="10dp"
+        android:layout_toLeftOf="@id/ldepart_ine"
+        android:text="签到" />
+
+    <GridView 
+        android:id="@+id/grid_week_chinese"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_month"
+        android:layout_margin="10dp"
+        android:layout_toRightOf="@id/ldepart_ine"
+        android:horizontalSpacing="1dp"
+        android:numColumns="7"
+        android:verticalSpacing="1dp" 
+        android:background="@color/key_text"
+        />
+    
+    <GridView
+        android:id="@+id/grid_attend_calendar"
+        android:background="@color/key_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/grid_week_chinese"
+        android:layout_margin="10dp"
+        android:layout_toRightOf="@id/ldepart_ine"
+        android:horizontalSpacing="1dp"
+        android:numColumns="7"
+        android:verticalSpacing="1dp" />
+
+</RelativeLayout>

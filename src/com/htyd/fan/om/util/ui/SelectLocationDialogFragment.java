@@ -100,6 +100,7 @@ public class SelectLocationDialogFragment extends DialogFragment {
 		provinceList.clear();
 		cityList.clear();
 		districtList.clear();
+		OMDatabaseManager.getInstance(getActivity()).closeDb();
 		super.onDestroy();
 	}
 

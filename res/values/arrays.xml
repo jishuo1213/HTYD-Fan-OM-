@@ -32,4 +32,15 @@
         <item>@color/skyblue</item>
     </string-array>
 
+    <string-array name="week_chinese">
+        <item>日</item>
+        <item>一</item>
+        <item>二</item>
+        <item>三</item>
+        <item>四</item>
+        <item>五 </item>
+        <item>六</item>
+        <item>七</item>
+    </string-array>
+    
 </resources>

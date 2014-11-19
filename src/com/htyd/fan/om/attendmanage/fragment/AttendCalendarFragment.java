@@ -1,12 +1,10 @@
-package com.htyd.fan.om.main.fragment;
+package com.htyd.fan.om.attendmanage.fragment;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +17,7 @@ import android.widget.TextView;
 import com.htyd.fan.om.R;
 import com.htyd.fan.om.attendmanage.AttentManagerActivity;
 
-public class TabOneFragment extends Fragment {
+public class AttendCalendarFragment extends Fragment {
 
 	
 	@Override
@@ -42,7 +40,7 @@ public class TabOneFragment extends Fragment {
 	}
 
 	private void intiView(View v) {
-		GridView mGridView = (GridView) v.findViewById(R.id.grid_main_page);
+		GridView mGridView = (GridView) v.findViewById(R.id.grid_week_chinese);
 		mGridView.setAdapter(new MainPageGridAdapter());
 		mGridView.setOnItemClickListener(new GridItemClickListener());
 	}
@@ -62,21 +60,11 @@ public class TabOneFragment extends Fragment {
 	
 	private class MainPageGridAdapter extends BaseAdapter {
 		private String[] itemArray;
-		private int[] colorIdArray;
 		private Resources r;
 
 		public MainPageGridAdapter() {
 			r = getActivity().getResources();
-			itemArray = r.getStringArray(R.array.main_page_text);
-			TypedArray colors = r
-					.obtainTypedArray(R.array.main_page_item_color);
-			colorIdArray = new int[colors.length()];
-			for (int i = 0; i < colors.length(); i++) {
-				colorIdArray[i] = r.getColor(colors.getResourceId(i, -1));
-				Log.i("fanjishuo____colorIdArray", "colorIdArray" + i
-						+ colorIdArray[i] + "");
-			}
-			colors.recycle();
+			itemArray = r.getStringArray(R.array.week_chinese);
 		}
 
 		@Override
@@ -100,18 +88,13 @@ public class TabOneFragment extends Fragment {
 			ViewHolder mHolder;
 			if (convertView == null) {
 				convertView = getActivity().getLayoutInflater().inflate(
-						R.layout.main_page_item_layout, null);
+						R.layout.week_item_layout, null);
 				mHolder = new ViewHolder(convertView);
 				convertView.setTag(mHolder);
 			} else {
 				mHolder = (ViewHolder) convertView.getTag();
 			}
-
 			mHolder.setText((String) getItem(position));
-
-			if (colorIdArray[position] != -1) {
-				mHolder.setBackground(colorIdArray[position]);
-			}
 			return convertView;
 		}
 	}
@@ -121,15 +104,11 @@ public class TabOneFragment extends Fragment {
 		private TextView itemTextView;
 
 		public ViewHolder(View v) {
-			itemTextView = (TextView) v.findViewById(R.id.tv_item_menu);
+			itemTextView = (TextView) v.findViewById(R.id.tv_item_weekday);
 		}
 
 		public void setText(String text) {
 			itemTextView.setText(text);
-		}
-
-		public void setBackground(int color) {
-			itemTextView.setBackgroundColor(color);
 		}
 	}
 }
