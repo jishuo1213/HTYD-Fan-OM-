@@ -56,20 +56,20 @@ public class CustomMoreActionProvider extends ActionProvider implements
 		list = new ArrayList<CustomChooser>();
 		CustomChooser customChooser = new CustomChooser();
 		customChooser.setIc_resource(R.drawable.ofm_add_icon);
-		customChooser.setTitle("我的任务");
+		customChooser.setTitle("考勤统计");
 		list.add(customChooser);
 		customChooser = new CustomChooser();
 		customChooser.setIc_resource(R.drawable.ofm_card_icon);
-		customChooser.setTitle("领取任务");
+		customChooser.setTitle("签到");
 		list.add(customChooser);
-		customChooser = new CustomChooser();
+/*		customChooser = new CustomChooser();
 		customChooser.setIc_resource(R.drawable.ofm_collect_icon);
 		customChooser.setTitle("已完成任务");
 		list.add(customChooser);
 		customChooser = new CustomChooser();
 		customChooser.setIc_resource(R.drawable.ofm_delete_icon);
 		customChooser.setTitle("设置");
-		list.add(customChooser);
+		list.add(customChooser);*/
 
 	}
 

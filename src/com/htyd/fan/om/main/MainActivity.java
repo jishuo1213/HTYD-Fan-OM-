@@ -24,9 +24,10 @@ import android.widget.TextView;
 import com.htyd.fan.om.R;
 import com.htyd.fan.om.attendmanage.fragment.AttendCalendarFragment;
 import com.htyd.fan.om.main.fragment.TabFourFragment;
-import com.htyd.fan.om.main.fragment.TabThreeFragment;
 import com.htyd.fan.om.main.fragment.TabTwoFragment;
-import com.htyd.fan.om.util.ui.CustomMoreActionProvider;
+import com.htyd.fan.om.taskmanage.fragment.TaskListFragment;
+import com.htyd.fan.om.util.ui.AttendOverflowMenu;
+import com.htyd.fan.om.util.ui.TaskOvewflowMenu;
 
 public class MainActivity extends FragmentActivity {
 
@@ -36,16 +37,19 @@ public class MainActivity extends FragmentActivity {
 	private FragmentPagerAdapter pageAdapter;
 	private TabPanel tabPanel;
 	private int currentPos;
+	private Menu menu;
+	private ActionProvider firstProvider,thirdProvider;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		firstProvider = new AttendOverflowMenu(this);
+		thirdProvider = new TaskOvewflowMenu(this);
 		loadData();
 		init();
 		initActionBar();
 	}
-
 
 	@Override
 	protected void onDestroy() {
@@ -56,29 +60,32 @@ public class MainActivity extends FragmentActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+		this.menu = menu;
 		getMenuInflater().inflate(R.menu.menu_popup, menu);
 		MenuItem menuItem = menu.findItem(R.id.more_menu);
-		ActionProvider provider = new CustomMoreActionProvider(this);
-		menuItem.setActionProvider(provider);
+		menuItem.setActionProvider(firstProvider);
 		menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 		return true;
 	}
-	
+
 	private void initActionBar() {
 		ActionBar actionBar = getActionBar();
-		actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_top_navigation_bar));
+		actionBar.setBackgroundDrawable(getResources().getDrawable(
+				R.drawable.bg_top_navigation_bar));
 		actionBar.setTitle("终端运维系统");
 		actionBar.setDisplayShowHomeEnabled(false);
 	}
-	
+
 	private void loadData() {
 		Resources r = getResources();
 		tabDrawable = new Drawable[8];
 		TypedArray imgs = r.obtainTypedArray(R.array.tab_drawable_id);
 		AttendCalendarFragment tab1 = new AttendCalendarFragment();
 		TabTwoFragment tab2 = new TabTwoFragment();
-		TabThreeFragment tab3 = new TabThreeFragment();
+		TaskListFragment tab3 = new TaskListFragment();
 		TabFourFragment tab4 = new TabFourFragment();
+		TaskOvewflowMenu temp = (TaskOvewflowMenu)thirdProvider;
+		temp.setListener(tab3);
 		fragmentList.add(tab1);
 		fragmentList.add(tab2);
 		fragmentList.add(tab3);
@@ -126,6 +133,7 @@ public class MainActivity extends FragmentActivity {
 		public void onPageSelected(int position) {
 			tabPanel.setImg(currentPos, false);
 			tabPanel.setImg(position, true);
+			setOvewflowMenu(position);
 			currentPos = position;
 		}
 	}
@@ -197,8 +205,31 @@ public class MainActivity extends FragmentActivity {
 
 		@Override
 		public void onClick(View v) {
-			int pos =  (Integer) v.getTag();
+			int pos = (Integer) v.getTag();
 			mainViewPager.setCurrentItem(pos, true);
+			setOvewflowMenu(pos);
+		}
+	}
+
+	private void setOvewflowMenu(int pos) {
+		MenuItem menuItem = menu.findItem(R.id.more_menu);
+		switch(pos){
+		case 0:
+			menuItem.setVisible(true);
+			menuItem.setActionProvider(firstProvider);
+			menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+			break;
+		case 1:
+			menuItem.setVisible(false);
+			break;
+		case 2:
+			menuItem.setVisible(true);
+			menuItem.setActionProvider(thirdProvider);
+			menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+			break;
+		case 3:
+			menuItem.setVisible(false);
+			break;
 		}
 	}
 }

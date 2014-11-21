@@ -14,6 +14,7 @@ public class Utility {
 	 */
 	public  static boolean handleProvincesResponse(
 			OMDatabaseManager mManager, String response) {
+		mManager.openDb(1);
 		if (!TextUtils.isEmpty(response)) {
 			String[] allProvinces = response.split(",");
 			if (allProvinces != null && allProvinces.length > 0) {
@@ -36,6 +37,7 @@ public class Utility {
 	 */
 	public static boolean handleCitiesResponse(OMDatabaseManager mManager,
 			String response, int provinceId) {
+		mManager.openDb(1);
 		if (!TextUtils.isEmpty(response)) {
 			String[] allCities = response.split(",");
 			if (allCities != null && allCities.length > 0) {
@@ -59,6 +61,7 @@ public class Utility {
 	 */
 	public static boolean handleCountiesResponse(OMDatabaseManager mManager,
 			String response, int cityId) {
+		mManager.openDb(1);
 		if (!TextUtils.isEmpty(response)) {
 			String[] allCounties = response.split(",");
 			if (allCounties != null && allCounties.length > 0) {

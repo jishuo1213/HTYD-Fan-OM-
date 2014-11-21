@@ -29,7 +29,6 @@ public class TextViewWithBorder extends TextView {
 
 	@Override
 	protected void onDraw(Canvas canvas) {
-		canvas.drawColor(r.getColor(R.color.activity_bg_color));
 		canvas.drawLine(0, getMeasuredHeight()-1, getMeasuredWidth(), getMeasuredHeight()-1, paint);
 		canvas.drawLine(getMeasuredWidth()-1, 0, getMeasuredWidth()-1,
 				getMeasuredHeight(), paint);

@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.htyd.fan.om.model.CityBean;
 import com.htyd.fan.om.model.DistrictBean;
@@ -24,7 +25,7 @@ public class OMDatabaseManager {
 
 	public synchronized static OMDatabaseManager getInstance(Context context) {
 		if (sManager == null) {
-			return new OMDatabaseManager(context);
+			return new OMDatabaseManager(context.getApplicationContext());
 		}
 		return sManager;
 	}
@@ -52,8 +53,8 @@ public class OMDatabaseManager {
 		return db.insert(SQLSentence.TABLE_DISTRICT, null, cv);
 	}
 
-	public Cursor queryCursor(int parentId,int type) {
-		switch(type){
+	public Cursor queryCursor(int parentId, int type) {
+		switch (type) {
 		case 0:
 			return mHelper.queryProvince();
 		case 1:
@@ -65,10 +66,23 @@ public class OMDatabaseManager {
 	}
 
 	public void closeDb() {
-		db.close();
+		if (db.isOpen()) {
+			db.close();
+			Log.v("fanjishuo____closedb", "close");
+		}
 	}
 
-	public void openDb() {
-		db = mHelper.getWritableDatabase();
+	public void openDb(int state) {
+		if (state == 1) {
+			if (db.isReadOnly() || !db.isOpen()) {
+				db = mHelper.getWritableDatabase();
+				Log.v("fanjishuo____opendb", "writeable");
+				return;
+			}
+		}
+		if (!db.isOpen()) {
+			Log.v("fanjishuo_____opendb", "readable");
+			db = mHelper.getReadableDatabase();
+		}
 	}
 }

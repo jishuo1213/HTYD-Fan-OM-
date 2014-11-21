@@ -6,7 +6,6 @@
     android:gravity="center"
     android:textSize="15sp"
     android:textColor="@color/key_text"
-    android:background="@color/activity_bg_color"
     />
     
 

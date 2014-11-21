@@ -4,7 +4,6 @@ import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +11,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.htyd.fan.om.R;
+import com.htyd.fan.om.attendmanage.fragment.AttendCalendarFragment;
 import com.htyd.fan.om.model.DateBean;
 
 public class AttendCalendarGridAdapter extends BaseAdapter {
@@ -50,21 +50,35 @@ public class AttendCalendarGridAdapter extends BaseAdapter {
 			LayoutInflater inflater = (LayoutInflater) context
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			convertView = inflater.inflate(R.layout.week_item_layout, null);
-			mHolder = new ViewHolder(convertView);
+			mHolder = new ViewHolder();
+			mHolder.mTextView = (TextView) convertView
+					.findViewById(R.id.tv_item_weekday);
 			convertView.setTag(mHolder);
 		} else {
 			mHolder = (ViewHolder) convertView.getTag();
 		}
+
 		mBean = (DateBean) getItem(position);
+		if (position == AttendCalendarFragment.currentSelect) {
+			parent.setTag(convertView);
+		}
 		if (mBean != null) {
 			mHolder.mTextView.setText(mBean.day + "");
 			if (mBean.state == 0) {
-				Log.i("fanjishuo____getView", mBean.state+""+mBean.day);
-/*				mHolder.mTextView.setBackgroundColor(context.getResources()
-						.getColor(R.color.red));*/
-				mHolder.mTextView.setTextColor(context.getResources().getColor(R.color.red));
-			}else{
-				mHolder.mTextView.setTextColor(context.getResources().getColor(R.color.green));
+				mHolder.mTextView.setTextColor(context.getResources().getColor(
+						R.color.gray_half));
+				convertView.setBackgroundColor(context.getResources().getColor(
+						R.color.activity_bg_color));
+			} else {
+				mHolder.mTextView.setTextColor(context.getResources().getColor(
+						R.color.key_text));
+				if (position != AttendCalendarFragment.currentSelect) {
+					convertView.setBackgroundColor(context.getResources()
+							.getColor(R.color.activity_bg_color));
+				} else {
+					convertView.setBackgroundColor(context.getResources()
+							.getColor(R.color.orange));
+				}
 			}
 		} else {
 			mHolder.mTextView.setText("");
@@ -73,12 +87,7 @@ public class AttendCalendarGridAdapter extends BaseAdapter {
 	}
 
 	private class ViewHolder {
-
-		private TextView mTextView;
-
-		public ViewHolder(View v) {
-			mTextView = (TextView) v.findViewById(R.id.tv_item_weekday);
-		}
+		public TextView mTextView;
 	}
 
 }

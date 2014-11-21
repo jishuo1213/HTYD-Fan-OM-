@@ -25,21 +25,20 @@ import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
 import com.baidu.mapapi.utils.CoordinateConverter;
 import com.baidu.mapapi.utils.CoordinateConverter.CoordType;
 import com.htyd.fan.om.R;
-import com.htyd.fan.om.model.LocationBean;
+import com.htyd.fan.om.model.AttendBean;
 import com.htyd.fan.om.util.ui.SelectLocationDialogFragment;
 import com.htyd.fan.om.util.ui.UItoolKit;
 
 public class AttendManageFragment extends Fragment {
 
-
 	private ViewPanel mPanel;
-	private LocationBean mBean;
+	private AttendBean mBean;
 	private GeoCoder mCoder;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		mBean = new LocationBean();
+		mBean = new AttendBean();
 	}
 
 	@Override
@@ -53,13 +52,14 @@ public class AttendManageFragment extends Fragment {
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if(resultCode == Activity.RESULT_OK){
-			if(requestCode == 0){
-				UItoolKit.showToastShort(getActivity(), data.getStringExtra(SelectLocationDialogFragment.LOCATION));
+		if (resultCode == Activity.RESULT_OK) {
+			if (requestCode == 0) {
+				UItoolKit.showToastShort(getActivity(), data
+						.getStringExtra(SelectLocationDialogFragment.LOCATION));
 			}
 		}
 	}
-	
+
 	private void intiView(View v) {
 		mPanel = new ViewPanel(v);
 	}
@@ -71,8 +71,9 @@ public class AttendManageFragment extends Fragment {
 
 	@SuppressLint("SimpleDateFormat")
 	public void updateUI(Location loc) {
-		mBean.time = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss").format(loc
-				.getTime());
+		mBean.time = loc.getTime();
+		mBean.latitude = loc.getLatitude();
+		mBean.longitude = loc.getLongitude();
 		LatLng point;
 		point = transCoordinate(new LatLng(loc.getLatitude(),
 				loc.getLongitude()));
@@ -88,7 +89,7 @@ public class AttendManageFragment extends Fragment {
 			locTextView = (TextView) v.findViewById(R.id.tv_loction);
 			timeTextView = (TextView) v.findViewById(R.id.tv_time);
 			mButton = (Button) v.findViewById(R.id.btn_sign_in);
-			mButton.setOnClickListener(new OnClickListener(){
+			mButton.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					FragmentManager fm = getActivity().getFragmentManager();
@@ -110,13 +111,15 @@ public class AttendManageFragment extends Fragment {
 
 	private OnGetGeoCoderResultListener mGeoCodeListener = new OnGetGeoCoderResultListener() {
 
+		@SuppressLint("SimpleDateFormat")
 		@Override
 		public void onGetReverseGeoCodeResult(ReverseGeoCodeResult arg0) {
 			ReverseGeoCodeResult.AddressComponent component = arg0
 					.getAddressDetail();
 			mBean.SetValueBean(component);
 			mPanel.setLocation(mBean.getAddress());
-			mPanel.setTime(mBean.time);
+			mPanel.setTime(new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss")
+					.format(mBean.time));
 		}
 
 		@Override

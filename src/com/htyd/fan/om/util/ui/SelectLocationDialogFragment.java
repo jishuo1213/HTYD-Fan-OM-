@@ -254,6 +254,7 @@ public class SelectLocationDialogFragment extends DialogFragment {
 
 		@Override
 		public Cursor loadCursor() {
+			mManger.openDb(0);
 			return mManger.queryCursor(parentId, type);
 		}
 
@@ -316,9 +317,9 @@ public class SelectLocationDialogFragment extends DialogFragment {
 					do {
 						provinceList.add(provinceCursor.getProvince());
 					} while (provinceCursor.moveToNext());
+					provinceSpinner.setAdapter(new SpinnerAdapter<ProvinceBean>(
+							provinceList, 0));
 				}
-				provinceSpinner.setAdapter(new SpinnerAdapter<ProvinceBean>(
-						provinceList, 0));
 				break;
 			case 1:
 				CityCursor cityCursor = (CityCursor) data;
@@ -327,9 +328,9 @@ public class SelectLocationDialogFragment extends DialogFragment {
 					do {
 						cityList.add(cityCursor.getCity());
 					} while (cityCursor.moveToNext());
+					citySpinner
+					.setAdapter(new SpinnerAdapter<CityBean>(cityList, 1));
 				}
-				citySpinner
-						.setAdapter(new SpinnerAdapter<CityBean>(cityList, 1));
 				break;
 			case 2:
 				DistrictCursor districtCursor = (DistrictCursor) data;
@@ -338,9 +339,9 @@ public class SelectLocationDialogFragment extends DialogFragment {
 					do {
 						districtList.add(districtCursor.getDistrict());
 					} while (districtCursor.moveToNext());
+					districtSpinner.setAdapter(new SpinnerAdapter<DistrictBean>(
+							districtList, 2));
 				}
-				districtSpinner.setAdapter(new SpinnerAdapter<DistrictBean>(
-						districtList, 2));
 				break;
 			}
 			Log.i("fanjishuo___onLoadFinished", loader.getId()
