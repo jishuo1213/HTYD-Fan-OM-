@@ -83,6 +83,11 @@ public class OMUserDatabaseManager {
 		}
 	}
 
+	/**
+	 * 打开数据库 0：read 1：write
+	 * @param state
+	 */
+	
 	public void openDb(int state) {
 		if (state == 1) {
 			if (db.isReadOnly() || !db.isOpen()) {

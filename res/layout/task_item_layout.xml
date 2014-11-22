@@ -1,24 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
-    
-    <ImageView 
-        android:id="@+id/task_state_icon"
+    android:layout_height="match_parent"
+    tools:ignore="HardcodedText" >
+
+    <ImageView
+        android:id="@+id/img_task_state_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
-        android:src="@drawable/img_task_complete"
-        android:contentDescription="@null"
+        android:layout_centerVertical="true"
         android:layout_margin="5dp"
+        android:contentDescription="@null"
         android:scaleType="center"
-        />
-    <TextView 
+        android:src="@drawable/img_task_complete" />
+
+    <TextView
         android:id="@+id/tv_task_descrption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:
-        />
+        android:layout_alignTop="@id/img_task_state_icon"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@id/img_task_state_icon"
+        android:text="111111111111111111111" />
 
+     <TextView
+        android:id="@+id/tv_task_createtime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/img_task_state_icon"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@id/img_task_state_icon"
+        android:text="111111111111111111111" />
+     
+     <TextView 
+         android:id="@+id/tv_task_state"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignParentRight="true"
+         android:layout_marginRight="10dp"
+         android:layout_alignBottom="@id/tv_task_createtime"
+         android:text="11111111111"
+          />
+    
 </RelativeLayout>

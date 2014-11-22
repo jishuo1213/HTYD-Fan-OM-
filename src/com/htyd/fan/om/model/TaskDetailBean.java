@@ -5,22 +5,22 @@ import android.os.Parcelable;
 
 public class TaskDetailBean implements Parcelable {
 
-	public String workProvince;
-	public String workCity;
-	public String workDistrict;
-	public String installLocation;
-	public String taskDescription;
-	public String taskContacts;
-	public String contactsPhone;
-	public String recipientsName;
-	public String recipientPhone;
-	public String taskAccessory;
-	public String equipment;
-	public String productType;
-	public long planStartTime;
-	public long planEndTime;
-	public int taskState;
-	public int taskType;
+	public String workProvince;//任务所在省份
+	public String workCity;//任务所在市
+	public String workDistrict;//任务所在县区
+	public String installLocation;//安装地点
+	public String taskDescription;//任务描述
+	public String taskContacts;//任务联系人
+	public String contactsPhone;//联系人手机
+	public String recipientsName;//任务领取人
+	public String recipientPhone;//领取人电话
+	public String taskAccessory;//任务附件
+	public String equipment;//设备
+	public String productType;//产品类别
+	public long planStartTime;//计划开始时间
+	public long planEndTime;//计划结束时间
+	public int taskState;//任务状态//0:在处理任务 1:待领取任务 2:已完成任务
+	public int taskType;//任务类别
 
 	@Override
 	public int describeContents() {

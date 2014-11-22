@@ -37,7 +37,7 @@ public class TaskOvewflowMenu extends BaseOverflowMenu {
 		mList.add(customChooser);
 		customChooser = new CustomChooser();
 		customChooser.setIc_resource(R.drawable.ofm_delete_icon);
-		customChooser.setTitle("全部任务");
+		customChooser.setTitle("新建任务");
 		mList.add(customChooser);
 		return mList;
 	}
