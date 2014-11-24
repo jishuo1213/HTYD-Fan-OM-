@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/activity_bg_color"
+    android:orientation="vertical"
+    tools:ignore="HardcodedText" >
+
+    <TextView
+        android:id="@+id/create_title"
+        style="?android:listSeparatorTextViewStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="任务标题"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/edit_task_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/create_title"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:hint="请输入任务标题"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/description"
+        style="?android:listSeparatorTextViewStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/edit_task_title"
+        android:text="任务描述"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/edit_task_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/description"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:hint="请输入任务描述"
+        android:lines="3"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/work_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/edit_task_description"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"
+        android:text="工作地点："
+        android:textColor="@color/key_text"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/install_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/work_location"
+        android:layout_centerHorizontal="true"
+        android:text="安装地点："
+        android:textColor="@color/key_text"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/edit_work_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/work_location"
+        android:layout_marginRight="10dp"
+        android:layout_toLeftOf="@id/install_location"
+        android:layout_toRightOf="@id/work_location"
+        android:hint="选择工作地点"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/edit_install_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/work_location"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="16dp"
+        android:layout_toRightOf="@id/install_location"
+        android:hint="输入安装地点"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/need_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/work_location"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:text="预计工作耗时："
+        android:textColor="@color/key_text"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/start_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/need_time"
+        android:layout_below="@id/work_location"
+        android:layout_marginLeft="10dp"
+        android:text="预计开始时间："
+        android:textColor="@color/key_text"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/edit_start_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/need_time"
+        android:layout_marginRight="10dp"
+        android:layout_toLeftOf="@id/need_time"
+        android:layout_toRightOf="@id/start_time"
+        android:hint="选择开始时间"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/edit_work_need_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/need_time"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="16dp"
+        android:layout_toRightOf="@id/need_time"
+        android:hint="选择工作需要时间"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/contacts_phone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/need_time"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:text="联系人电话："
+        android:textColor="@color/key_text"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/contacts"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/contacts_phone"
+        android:layout_marginLeft="10dp"
+        android:text="联系人："
+        android:textColor="@color/key_text"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/edit_contacts"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/contacts_phone"
+        android:layout_marginRight="10dp"
+        android:layout_toLeftOf="@id/contacts_phone"
+        android:layout_toRightOf="@id/contacts"
+        android:hint="输入联系人"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/edit_contacts_phone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/contacts_phone"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="16dp"
+        android:layout_toRightOf="@id/contacts_phone"
+        android:hint="输入联系人电话"
+        android:inputType="phone"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/task_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/contacts_phone"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:text="任务归类："
+        android:textColor="@color/key_text"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/equipment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/task_type"
+        android:layout_marginLeft="10dp"
+        android:text="相关设备："
+        android:textColor="@color/key_text"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/edit_task_equipment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/task_type"
+        android:layout_marginRight="10dp"
+        android:layout_toLeftOf="@id/task_type"
+        android:layout_toRightOf="@id/equipment"
+        android:hint="扫描设备条码"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/edit_task_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/task_type"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="16dp"
+        android:layout_toRightOf="@id/task_type"
+        android:hint="选择任务归类"
+        android:inputType="phone"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/tv_add_accessory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/task_type"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:drawablePadding="10dp"
+        android:drawableRight="@drawable/add"
+        android:gravity="bottom"
+        android:text="添加附件"
+        android:textColor="@color/key_text"
+        android:textSize="18sp" />
+
+</RelativeLayout>

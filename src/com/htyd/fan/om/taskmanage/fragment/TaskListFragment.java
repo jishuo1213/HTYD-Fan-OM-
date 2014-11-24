@@ -145,7 +145,7 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 			}
 			TaskDetailBean mBean = (TaskDetailBean) getItem(position);
 			mHolder.taskDescrption.setText(mBean.taskDescription);
-			mHolder.taskCreateTime.setText(mBean.getTime());
+			mHolder.taskCreateTime.setText(mBean.getStartTime());
 			mHolder.taskState.setText(mBean.taskState + "");
 			return convertView;
 		}

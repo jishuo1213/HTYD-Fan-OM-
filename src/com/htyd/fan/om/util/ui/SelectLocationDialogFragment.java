@@ -162,7 +162,9 @@ public class SelectLocationDialogFragment extends DialogFragment {
 		StringBuilder sb = new StringBuilder();
 		Intent i = new Intent();
 		sb.append(((ProvinceBean) provinceSpinner.getSelectedItem()).provinceName);
+		sb.append("|");
 		sb.append(((CityBean) citySpinner.getSelectedItem()).cityName);
+		sb.append("|");
 		sb.append(((DistrictBean) districtSpinner.getSelectedItem()).districtName);
 		i.putExtra(LOCATION, sb.toString());
 		getTargetFragment().onActivityResult(getTargetRequestCode(),

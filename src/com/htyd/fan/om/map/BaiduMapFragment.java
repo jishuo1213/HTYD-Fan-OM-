@@ -41,12 +41,6 @@ public class BaiduMapFragment extends Fragment {
 	private ViewStub vs;
 	private LocationRecListener mListener;
 
-	/*
-	 * public static Fragment newInstance(double latitude, double longtitude) {
-	 * Bundle arg = new Bundle(); arg.putDouble(LATITUDE, latitude);
-	 * arg.putDouble(LONGTITUDE, longtitude); Fragment fragment = new
-	 * BaiduMapFragment(); fragment.setArguments(arg); return fragment; }
-	 */
 
 	public interface LocationRecListener {
 		public void onLocationReceiveListener(Location loc);

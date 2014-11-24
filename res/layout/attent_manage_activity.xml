@@ -32,6 +32,4 @@
         android:layout_below="@id/title_bar"
         android:layout_toRightOf="@id/line"/>
 
-    <FrameLayout />
-    <LinearLayout />
 </RelativeLayout>

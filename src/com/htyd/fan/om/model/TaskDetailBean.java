@@ -12,7 +12,7 @@ public class TaskDetailBean implements Parcelable {
 	public String workCity;// 任务所在市
 	public String workDistrict;// 任务所在县区
 	public String installLocation;// 安装地点
-	public String taskTitle;//任务标题
+	public String taskTitle;// 任务标题
 	public String taskDescription;// 任务描述
 	public String taskContacts;// 任务联系人
 	public String contactsPhone;// 联系人手机
@@ -90,9 +90,22 @@ public class TaskDetailBean implements Parcelable {
 				.append(installLocation).toString();
 	}
 
+	public String getWorkLocation() {
+		StringBuilder sb = new StringBuilder();
+		return sb.append(workProvince).append(workCity).append(workDistrict)
+				.toString();
+	}
+
 	@SuppressLint("SimpleDateFormat")
-	public String getTime() {
+	public String getStartTime() {
 		return new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss")
 				.format(this.planStartTime);
 	}
+
+	@SuppressLint("SimpleDateFormat")
+	public String getEndTime() {
+		return new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss")
+				.format(this.planEndTime);
+	}
+
 }
