@@ -1,24 +1,38 @@
 package com.htyd.fan.om.taskmanage.fragment;
 
+import android.app.Activity;
 import android.app.Fragment;
+import android.app.FragmentManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.htyd.fan.om.R;
 import com.htyd.fan.om.model.TaskDetailBean;
+import com.htyd.fan.om.util.ui.SelectLocationDialogFragment;
+import com.htyd.fan.om.util.ui.UItoolKit;
 
 public class CreateTaskFragment extends Fragment {
 
 	private TaskViewPanel mPanel;
+	private TaskDetailBean mBean;
+	private SelectViewClickListener mListener;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setHasOptionsMenu(true);
+		mBean = new TaskDetailBean();
+		mListener = new SelectViewClickListener();
 	}
 
 	@Override
@@ -30,8 +44,37 @@ public class CreateTaskFragment extends Fragment {
 		return v;
 	}
 
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if(resultCode == Activity.RESULT_OK){
+			if(requestCode == 0){
+				String [] str = data.getStringExtra(SelectLocationDialogFragment.LOCATION).split("|");
+				mBean.workProvince = str[0];
+				mBean.workCity = str[1];
+				mBean.workDistrict = str[2];
+				mPanel.taskWorkLocation.setText(mBean.getWorkLocation());
+			}
+		}
+	}
+	
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		inflater.inflate(R.menu.create_task_menu,menu);
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if(!mPanel.canSave()){
+			UItoolKit.showToastShort(getActivity(), "标题、工作地点、安装地点、开始时间不能为空");
+			return false;
+		}
+		mPanel.getTaskDetailBean(mBean);
+		
+		return super.onOptionsItemSelected(item);
+	}
 	private void initView(View v) {
 		mPanel = new TaskViewPanel(v);
+		mPanel.setListener();
 	}
 
 	private class TaskViewPanel {
@@ -74,6 +117,29 @@ public class CreateTaskFragment extends Fragment {
 			mBean.contactsPhone = taskContactPhone.getText().toString();
 			mBean.equipment = taskEquipment.getText().toString();
 			mBean.taskContacts = taskDescription.getText().toString();
+		}
+		
+		public void setListener(){
+			taskWorkLocation.setOnClickListener(mListener);
+			taskStartTime.setOnClickListener(mListener);
+			taskNeedTime.setOnClickListener(mListener);
+			taskEquipment.setOnClickListener(mListener);
+			taskType.setOnClickListener(mListener);
+			addAccessory.setOnClickListener(mListener);
+		}
+	}
+	
+	private class SelectViewClickListener implements OnClickListener{
+		@Override
+		public void onClick(View v) {
+			switch(v.getId()){
+			case R.id.edit_work_location:
+				FragmentManager fm = getActivity().getFragmentManager();
+				SelectLocationDialogFragment dialog = new SelectLocationDialogFragment();
+				dialog.setTargetFragment(CreateTaskFragment.this, 0);
+				dialog.show(fm, null);
+				break;
+			}
 		}
 	}
 }
