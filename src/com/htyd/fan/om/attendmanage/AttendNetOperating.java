@@ -1,5 +1,7 @@
 package com.htyd.fan.om.attendmanage;
 
+import java.util.concurrent.ExecutionException;
+
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
@@ -14,7 +16,7 @@ import com.htyd.fan.om.util.https.Urls;
 public class AttendNetOperating {
 
 	public static boolean saveAttendToSever(Context context, AttendBean mBean)
-			throws JSONException {
+			throws JSONException, InterruptedException, ExecutionException {
 		JSONObject param = new JSONObject();
 		param.put("KQID", -1);
 		param.put("YHID", -1);
@@ -30,6 +32,7 @@ public class AttendNetOperating {
 				+ "Operate=saveKqxx", params);
 		if (result.equals("false") || result.length() == 0) {
 			return false;
+			
 		}
 		JSONObject resultJson = new JSONObject(result);
 		return resultJson.getBoolean("RESULT");

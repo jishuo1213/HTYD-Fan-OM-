@@ -1,8 +1,10 @@
 package com.htyd.fan.om.attendmanage;
 
+import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import com.baidu.mapapi.SDKInitializer;
@@ -20,6 +22,7 @@ public class AttentManagerActivity extends SimpleFragmentActivity implements
 	protected void onCreate(Bundle arg0) {
 		SDKInitializer.initialize(getApplicationContext());
 		super.onCreate(arg0);
+		initActionBar();
 	}
 
 	@Override
@@ -45,5 +48,13 @@ public class AttentManagerActivity extends SimpleFragmentActivity implements
 		AttendManageFragment mf = (AttendManageFragment) fm
 				.findFragmentById(R.id.attent_manage_fragment_container);
 		mf.updateUI(loc);
+	}
+	
+	private void initActionBar() {
+		ActionBar actionBar = getActionBar();
+		actionBar.setBackgroundDrawable(getResources().getDrawable(
+				R.drawable.bg_top_navigation_bar));
+		actionBar.setTitle("签到");
+		actionBar.setDisplayShowHomeEnabled(true);
 	}
 }

@@ -3,6 +3,7 @@ package com.htyd.fan.om.util.https;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
 import org.apache.http.HttpEntity;
@@ -42,8 +43,19 @@ public class HttpHelper {
 
 	}
 
+	/**
+	 * 
+	 * @param context
+	 * @param url
+	 * @param nameValuePairs
+	 * @return
+	 * @throws ExecutionException
+	 * @throws InterruptedException
+	 */
+
 	public static String GetResponse(final Context context, final String url,
-			final NameValuePair... nameValuePairs) {
+			final NameValuePair... nameValuePairs) throws InterruptedException,
+			ExecutionException {
 		String strResult;
 
 		strResult = "";
@@ -87,12 +99,7 @@ public class HttpHelper {
 					}
 				});
 		new Thread(task).start();
-		try {
-			strResult = task.get();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
+		strResult = task.get();
 		return strResult;
 	}
 

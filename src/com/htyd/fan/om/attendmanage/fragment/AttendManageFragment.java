@@ -1,13 +1,14 @@
 package com.htyd.fan.om.attendmanage.fragment;
 
 import java.text.SimpleDateFormat;
+import java.util.concurrent.ExecutionException;
+
+import org.json.JSONException;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentManager;
-import android.content.Intent;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,8 +26,9 @@ import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
 import com.baidu.mapapi.utils.CoordinateConverter;
 import com.baidu.mapapi.utils.CoordinateConverter.CoordType;
 import com.htyd.fan.om.R;
+import com.htyd.fan.om.attendmanage.AttendNetOperating;
 import com.htyd.fan.om.model.AttendBean;
-import com.htyd.fan.om.util.ui.SelectLocationDialogFragment;
+import com.htyd.fan.om.util.db.OMUserDatabaseManager;
 import com.htyd.fan.om.util.ui.UItoolKit;
 
 public class AttendManageFragment extends Fragment {
@@ -49,7 +51,6 @@ public class AttendManageFragment extends Fragment {
 		intiView(v);
 		return v;
 	}
-
 
 	private void intiView(View v) {
 		mPanel = new ViewPanel(v);
@@ -83,9 +84,10 @@ public class AttendManageFragment extends Fragment {
 			mButton.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					
+					startTask(mBean);
 				}
 			});
+			mButton.setEnabled(false);
 		}
 
 		public void setLocation(String loc) {
@@ -94,6 +96,10 @@ public class AttendManageFragment extends Fragment {
 
 		public void setTime(String time) {
 			timeTextView.setText(time);
+		}
+
+		public void setSignButtonEnable(boolean enable) {
+			mButton.setEnabled(enable);
 		}
 	}
 
@@ -108,6 +114,7 @@ public class AttendManageFragment extends Fragment {
 			mPanel.setLocation(mBean.getAddress());
 			mPanel.setTime(new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss")
 					.format(mBean.time));
+			mPanel.setSignButtonEnable(true);
 		}
 
 		@Override
@@ -121,5 +128,47 @@ public class AttendManageFragment extends Fragment {
 		converter.coord(temppoint);
 		return converter.convert();
 	}
-	
+
+	private class SaveAttendTask extends AsyncTask<AttendBean, Void, Boolean> {
+
+		@Override
+		protected Boolean doInBackground(AttendBean... params) {
+			AttendBean mBean = params[0];
+			boolean result;
+			try {
+				result = AttendNetOperating.saveAttendToSever(getActivity(),
+						mBean);
+			} catch (JSONException e) {
+				e.printStackTrace();
+				return false;
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+				return false;
+			} catch (ExecutionException e) {
+				e.printStackTrace();
+				return false;
+			}
+			return result;
+		}
+
+		@Override
+		protected void onPostExecute(Boolean result) {
+			if (result) {
+				OMUserDatabaseManager.getInstance(getActivity())
+						.insertAttendBean(mBean);
+			} else {
+				UItoolKit.showToastShort(getActivity(), "保存至网络不成功，检查网络设置");
+			}
+			stopTask(this);
+		}
+
+	}
+
+	private void startTask(AttendBean mBean) {
+		new SaveAttendTask().execute(mBean);
+	}
+
+	private  void stopTask( SaveAttendTask task) {
+		task.cancel(false);
+	}
 }
