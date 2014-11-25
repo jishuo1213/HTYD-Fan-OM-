@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.location.Location;
+import android.util.Log;
 
 import com.baidu.mapapi.model.LatLng;
 
@@ -42,6 +43,7 @@ public class Preferences {
 	
 	public static int getUserId(Context context){
 		sp = context.getSharedPreferences(PREFERENCENAME, Context.MODE_PRIVATE);
+		Log.i("fanjishuo____getUserId", sp.getInt(USERID, -1)+"");
 		return sp.getInt(USERID, -1);
 	}
 	

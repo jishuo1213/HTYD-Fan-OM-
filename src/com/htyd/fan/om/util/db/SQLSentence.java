@@ -27,7 +27,7 @@ public class SQLSentence {
 	public static final String CREATE_TABLE_DISTRICT = "create table district ("
 			+ "district_name text,district_code text,city_id integer references city(_id))";
 
-	public static final String TABLE_CHECK = "check_table";
+	public static final String TABLE_CHECK = "attend_check";
 	public static final String COLUMN_CHECK_ID = "_id";
 	public static final String COLUMN_TIME = "time";
 	public static final String COLUMN_LATITUDE = "latitude";
@@ -38,11 +38,15 @@ public class SQLSentence {
 	public static final String COLUMN_ADDRESS = "location";
 	public static final String COLUMN_MONTH = "month";
 
-	public static final String CREATE_TABLE_CHECK = "create table check ("
-			+ "_id integer primary key autoincrement, time integer ,latitude real ,longitude real "
-			+ ", addstate text, addsort text, name text ,location text ,month integer)";
-
-	public static final String TABLE_TASK = "task_table";
+/*	public static final String CREATE_TABLE_CHECK = "create table check ("
+			+ "_id integer primary key autoincrement, time integer ,latitude real ,longitude real ,"
+			+ "addstate text, addsort text, name text ,location text ,month integer)";*/
+	
+	public static final  String CREATE_TABLE_CHECK = "create table attend_check (" 
+			+ "_id integer primary key autoincrement, time integer ,latitude real ,"
+			+"longitude real ,addstate text ,addsort text ,name text, location text ,month integer)";
+	
+	public static final String TABLE_TASK = "task";
 	public static final String COLUMN_TASK_ID = "_id";
 	public static final String COLUMN_TASK_WORK_LOCATION = "worklocation";
 	public static final String COLUMN_TASK_INSTALL_LOCATION = "installlocation";

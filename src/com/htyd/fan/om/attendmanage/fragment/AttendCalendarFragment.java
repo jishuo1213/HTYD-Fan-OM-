@@ -10,6 +10,7 @@ import android.annotation.SuppressLint;
 import android.app.LoaderManager;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Context;
+import android.content.Intent;
 import android.content.Loader;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -18,14 +19,17 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.TextView;
 
 import com.htyd.fan.om.R;
+import com.htyd.fan.om.attendmanage.AttentManagerActivity;
 import com.htyd.fan.om.attendmanage.adapter.AttendCalendarGridAdapter;
 import com.htyd.fan.om.model.AttendBean;
 import com.htyd.fan.om.model.DateBean;
@@ -41,32 +45,33 @@ public class AttendCalendarFragment extends Fragment {
 
 	private List<DateBean> monthList;// 日历显示的内容
 	private LoaderManager mLoadManager;
-	private List<AttendBean> attendList;// 签到的list
+	List<AttendBean> attendList;// 签到的list
 	private AttendLoaderCallback mCallback;
 	private GridView monthGridView;
 	private TextView attendTime, attendLocation, attendState;
-	// private Button signButton;
-    public static int currentSelect;// 当前选中的天的位置
+	private Button signButton;
+	public static int currentSelect;// 当前选中的天的位置
 	private int firstDayPosition;// 这个月一号的位置
 	private boolean isFinish;// 数据是否加载完成
-
-	// private View v;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		Log.i("fanjishuo____onCreate", "onCreate");
 		isFinish = false;
 		attendList = new ArrayList<AttendBean>();
 		monthList = getMonth(Calendar.getInstance());
 		mLoadManager = getActivity().getLoaderManager();
+		mCallback = new AttendLoaderCallback();
 		Bundle args = new Bundle();
 		args.putInt(MONTHNUM, Calendar.getInstance().get(Calendar.MONTH) + 1);
-//		mLoadManager.initLoader(0, args, mCallback);
+		mLoadManager.initLoader(0, args, mCallback);
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+		Log.i("fanjishuo____onCreateView", "onCreateView");
 		View v = inflater
 				.inflate(R.layout.fragment_main_page, container, false);
 		intiView(v);
@@ -75,10 +80,30 @@ public class AttendCalendarFragment extends Fragment {
 
 	@Override
 	public void onDestroy() {
+		Log.i("fanjishuo____onDestroy", "onDestroy");
 		super.onDestroy();
 	}
 
+	@Override
+	public void onResume() {
+		Log.i("fanjishuo____onResume", "onResume");
+		super.onResume();
+	}
+
+	@Override
+	public void onStop() {
+		Log.i("fanjishuo____onStop", "onStop");
+		super.onStop();
+	}
+
+	@Override
+	public void onPause() {
+		Log.i("fanjishuo____onPause", "onPause");
+		super.onPause();
+	}
+
 	private void intiView(View v) {
+		SigninClickListener mListener = new SigninClickListener();
 		GridView mGridView = (GridView) v.findViewById(R.id.grid_week_chinese);
 		monthGridView = (GridView) v.findViewById(R.id.grid_attend_calendar);
 		mGridView.setAdapter(new MainPageGridAdapter());
@@ -91,6 +116,19 @@ public class AttendCalendarFragment extends Fragment {
 		attendTime = (TextView) v.findViewById(R.id.tv_attend_time);
 		attendLocation = (TextView) v.findViewById(R.id.tv_attend_address);
 		attendState = (TextView) v.findViewById(R.id.tv_attend_state);
+		signButton = (Button) v.findViewById(R.id.btn_add_attend);
+		signButton.setOnClickListener(mListener);
+	}
+
+	private class SigninClickListener implements OnClickListener {
+		@Override
+		public void onClick(View v) {
+			switch (v.getId()) {
+			case R.id.btn_add_attend:
+				Intent i = new Intent(getActivity(),AttentManagerActivity.class);
+				startActivity(i);
+			}
+		}
 	}
 
 	private class MainPageGridAdapter extends BaseAdapter {
@@ -201,12 +239,14 @@ public class AttendCalendarFragment extends Fragment {
 				UItoolKit.showToastShort(getActivity(), "穿越失败。");
 				return;
 			}
-			
-			if(parent.getTag() != null){
-				((View)parent.getTag()).setBackgroundColor(getActivity().getResources().getColor(R.color.activity_bg_color));
+
+			if (parent.getTag() != null) {
+				((View) parent.getTag()).setBackgroundColor(getActivity()
+						.getResources().getColor(R.color.activity_bg_color));
 			}
 			parent.setTag(view);
-			view.setBackgroundColor(getActivity().getResources().getColor(R.color.orange));
+			view.setBackgroundColor(getActivity().getResources().getColor(
+					R.color.orange));
 			// setDetailView(attendList.get(mBean.day - 1));
 			setDetailView(null);
 			currentSelect = position;
@@ -268,7 +308,8 @@ public class AttendCalendarFragment extends Fragment {
 				}
 				OMUserDatabaseManager.getInstance(getActivity()).closeDb();
 			} else {
-				UItoolKit.showToastShort(getActivity(), "数据加载失败");
+				setDetailView(null);
+				UItoolKit.showToastShort(getActivity(), "还没有可加载的数据");
 			}
 		}
 
@@ -278,12 +319,12 @@ public class AttendCalendarFragment extends Fragment {
 
 	}
 
-	private void setGridView(AttendBean attendBean, int position) {
+	void setGridView(AttendBean attendBean, int position) {
 		// v = monthGridView.getChildAt(firstDayPosition + position);
 	}
 
 	@SuppressLint("SimpleDateFormat")
-	private void setDetailView(AttendBean mBean) {
+	void setDetailView(AttendBean mBean) {
 		if (mBean == null) {
 			attendTime.setText("你今天还");
 			attendLocation.setText("没有");

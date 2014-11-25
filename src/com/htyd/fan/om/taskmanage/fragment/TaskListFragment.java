@@ -5,8 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 
 import android.annotation.SuppressLint;
+import android.app.LoaderManager;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Context;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -14,12 +16,15 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.htyd.fan.om.R;
 import com.htyd.fan.om.model.TaskDetailBean;
+import com.htyd.fan.om.taskmanage.TaskManageActivity;
 import com.htyd.fan.om.util.db.OMUserDatabaseHelper.TaskCursor;
 import com.htyd.fan.om.util.db.OMUserDatabaseManager;
 import com.htyd.fan.om.util.loaders.SQLiteCursorLoader;
@@ -27,23 +32,32 @@ import com.htyd.fan.om.util.ui.CustomChooserView.OnItemChooserListener;
 
 public class TaskListFragment extends Fragment implements OnItemChooserListener {
 
-	private static final String TASKSTATE = "taskstate";
-	private static final String INPROCESSINGTASK = "inprocessingtask";
-	private static final String BERECEIVE = "bereceive";
-	private static final String COMPLETED = "completed";
-	private HashMap<String, List<TaskDetailBean>> taskMap;
-	private ListView mListView;
-	private TaskAdapter allTaskAdapter, inProcessTaskAdapter, beReceiveAdapter,
+	public static final String TASKTYPE = "tasktype";
+	public static final String SELECTITEM = "selectitem";
+
+	static final String TASKSTATE = "taskstate";
+	static final String INPROCESSINGTASK = "inprocessingtask";
+	static final String BERECEIVE = "bereceive";
+	static final String COMPLETED = "completed";
+
+	HashMap<String, List<TaskDetailBean>> taskMap;
+	ListView mListView;
+	TaskAdapter allTaskAdapter, inProcessTaskAdapter, beReceiveAdapter,
 			completedAdapter;
+	private TaskCursorCallback mCallback;
+	private LoaderManager mLoadManager;
+	boolean isLoaderFinish;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		taskMap = new HashMap<String, List<TaskDetailBean>>();
-		allTaskAdapter = new TaskAdapter(-1);
-		inProcessTaskAdapter = new TaskAdapter(0);
-		beReceiveAdapter = new TaskAdapter(1);
-		completedAdapter = new TaskAdapter(2);
+		mCallback = new TaskCursorCallback();
+		mLoadManager = getActivity().getLoaderManager();
+		isLoaderFinish = false;
+		Bundle args = new Bundle();
+		args.putInt(TASKSTATE, -1);
+		mLoadManager.initLoader(0, args, mCallback);
 	}
 
 	@Override
@@ -57,6 +71,7 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 
 	private void initView(View v) {
 		mListView = (ListView) v.findViewById(R.id.list_my_task);
+		mListView.setOnItemClickListener(new TaskItemClickListener());
 	}
 
 	@Override
@@ -71,6 +86,25 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 		case 2:
 			mListView.setAdapter(completedAdapter);
 			break;
+		case 3:
+			Intent i = new Intent(getActivity(), TaskManageActivity.class);
+			i.putExtra(TASKTYPE, -1);
+			startActivity(i);
+			break;
+		}
+	}
+
+	private class TaskItemClickListener implements OnItemClickListener {
+
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position,
+				long id) {
+			TaskDetailBean mBean = (TaskDetailBean) parent.getAdapter()
+					.getItem(position);
+			Intent i = new Intent(getActivity(), TaskManageActivity.class);
+			i.putExtra(TASKTYPE, mBean.taskType);
+			i.putExtra(SELECTITEM, mBean);
+			startActivity(i);
 		}
 	}
 
@@ -201,24 +235,31 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 		public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 			List<TaskDetailBean> mList = new ArrayList<TaskDetailBean>();
 			if (data != null && data.moveToFirst()) {
+				isLoaderFinish = true;
 				TaskCursor taskCursor = (TaskCursor) data;
 				mList.add(taskCursor.getTask());
-			}
-			for (TaskDetailBean mBean : mList) {
-				switch (mBean.taskState) {
-				case 0:// 在处理任务
-					taskMap.get(INPROCESSINGTASK).add(mBean);
-					break;
-				case 1:// 待领取任务
-					taskMap.get(BERECEIVE).add(mBean);
-					break;
-				case 2:// 已完成任务
-					taskMap.get(COMPLETED).add(mBean);
-					break;
+				for (TaskDetailBean mBean : mList) {
+					switch (mBean.taskState) {
+					case 0:// 在处理任务
+						taskMap.get(INPROCESSINGTASK).add(mBean);
+						break;
+					case 1:// 待领取任务
+						taskMap.get(BERECEIVE).add(mBean);
+						break;
+					case 2:// 已完成任务
+						taskMap.get(COMPLETED).add(mBean);
+						break;
+					}
 				}
-			}
-			if (mListView != null) {
-				mListView.setAdapter(allTaskAdapter);
+				if (mListView != null) {
+					mListView.setAdapter(allTaskAdapter);
+				}
+				allTaskAdapter = new TaskAdapter(-1);
+				inProcessTaskAdapter = new TaskAdapter(0);
+				beReceiveAdapter = new TaskAdapter(1);
+				completedAdapter = new TaskAdapter(2);
+			} else {
+				isLoaderFinish = false;
 			}
 		}
 

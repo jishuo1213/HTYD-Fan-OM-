@@ -50,9 +50,13 @@
                 <action android:name="com.htyd.fan.om.map.ACTION_LOCATION" />
             </intent-filter>
         </receiver>
-        <activity android:name="com.htyd.fan.om.attendmanage.AttentManagerActivity"
-            android:screenOrientation="landscape"
-            />
+
+        <activity
+            android:name="com.htyd.fan.om.attendmanage.AttentManagerActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name="com.htyd.fan.om.taskmanage.TaskManageActivity"
+            android:screenOrientation="landscape" />
     </application>
 
 </manifest>

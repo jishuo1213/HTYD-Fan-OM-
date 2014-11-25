@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.htyd.fan.om.R;
 import com.htyd.fan.om.model.TaskDetailBean;
+import com.htyd.fan.om.util.db.OMUserDatabaseManager;
 import com.htyd.fan.om.util.ui.SelectLocationDialogFragment;
 import com.htyd.fan.om.util.ui.UItoolKit;
 
@@ -26,6 +27,7 @@ public class CreateTaskFragment extends Fragment {
 	private TaskViewPanel mPanel;
 	private TaskDetailBean mBean;
 	private SelectViewClickListener mListener;
+	private OMUserDatabaseManager mManager;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -33,6 +35,7 @@ public class CreateTaskFragment extends Fragment {
 		setHasOptionsMenu(true);
 		mBean = new TaskDetailBean();
 		mListener = new SelectViewClickListener();
+		mManager = OMUserDatabaseManager.getInstance(getActivity());
 	}
 
 	@Override
@@ -64,13 +67,22 @@ public class CreateTaskFragment extends Fragment {
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()){
+		case R.id.menu_create_task:
 		if(!mPanel.canSave()){
 			UItoolKit.showToastShort(getActivity(), "标题、工作地点、安装地点、开始时间不能为空");
-			return false;
+			return true;
 		}
 		mPanel.getTaskDetailBean(mBean);
-		
-		return super.onOptionsItemSelected(item);
+		mManager.openDb(1);
+		mManager.insertTaskBean(mBean);
+		/**
+		 * 上传到服务器
+		 */
+		return true;
+		default: 
+			return super.onOptionsItemSelected(item);
+		}
 	}
 	private void initView(View v) {
 		mPanel = new TaskViewPanel(v);
@@ -103,10 +115,10 @@ public class CreateTaskFragment extends Fragment {
 		}
 
 		public boolean canSave() {
-			return TextUtils.isEmpty(taskTitle.getText())
-					&& TextUtils.isEmpty(taskWorkLocation.getText())
-					&& TextUtils.isEmpty(taskInstallLocation.getText())
-					&& TextUtils.isEmpty(taskStartTime.getText());
+			return !TextUtils.isEmpty(taskTitle.getText())
+					&& !TextUtils.isEmpty(taskWorkLocation.getText())
+					&& !TextUtils.isEmpty(taskInstallLocation.getText())
+					&& !TextUtils.isEmpty(taskStartTime.getText());
 		}
 		
 		public void getTaskDetailBean(TaskDetailBean mBean){
@@ -117,6 +129,7 @@ public class CreateTaskFragment extends Fragment {
 			mBean.contactsPhone = taskContactPhone.getText().toString();
 			mBean.equipment = taskEquipment.getText().toString();
 			mBean.taskContacts = taskDescription.getText().toString();
+			mBean.taskType = 1;
 		}
 		
 		public void setListener(){

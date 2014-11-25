@@ -50,15 +50,6 @@ public class AttendManageFragment extends Fragment {
 		return v;
 	}
 
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (resultCode == Activity.RESULT_OK) {
-			if (requestCode == 0) {
-				UItoolKit.showToastShort(getActivity(), data
-						.getStringExtra(SelectLocationDialogFragment.LOCATION));
-			}
-		}
-	}
 
 	private void intiView(View v) {
 		mPanel = new ViewPanel(v);
@@ -92,10 +83,7 @@ public class AttendManageFragment extends Fragment {
 			mButton.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					FragmentManager fm = getActivity().getFragmentManager();
-					SelectLocationDialogFragment dialog = new SelectLocationDialogFragment();
-					dialog.setTargetFragment(AttendManageFragment.this, 0);
-					dialog.show(fm, null);
+					
 				}
 			});
 		}
@@ -133,4 +121,5 @@ public class AttendManageFragment extends Fragment {
 		converter.coord(temppoint);
 		return converter.convert();
 	}
+	
 }

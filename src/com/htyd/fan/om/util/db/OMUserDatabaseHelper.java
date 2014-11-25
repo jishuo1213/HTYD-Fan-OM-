@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.CursorWrapper;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.htyd.fan.om.model.AttendBean;
 import com.htyd.fan.om.model.TaskDetailBean;
@@ -21,6 +22,7 @@ public class OMUserDatabaseHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
+		Log.i("fanjishuo____onCreate", db.getPath());
 		db.execSQL(SQLSentence.CREATE_TABLE_CHECK);
 		db.execSQL(SQLSentence.CREATE_TABLE_TASK);
 	}
@@ -38,6 +40,11 @@ public class OMUserDatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	public TaskCursor queryTaskByState(int state) {
+		if (state == -1) {
+			Cursor wrapper = getReadableDatabase().query(
+					SQLSentence.TABLE_TASK, null, null, null, null, null, null);
+			return new TaskCursor(wrapper);
+		}
 		Cursor wrapper = getReadableDatabase().query(SQLSentence.TABLE_TASK,
 				new String[] { SQLSentence.COLUMN_TASK_STATE },
 				SQLSentence.COLUMN_TASK_STATE + "= ?",

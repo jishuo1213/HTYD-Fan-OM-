@@ -2,6 +2,7 @@ package com.htyd.fan.om.taskmanage.fragment;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,17 +18,14 @@ import com.htyd.fan.om.model.TaskDetailBean;
 public class ReceiveTaskFragment extends Fragment {
 
 	private static final String SELECTTASK = "selecttask";
-	// private static final String ISCREATETASK = "iscreatetask";
 
 	private TaskViewPanel mPanel;
 	private TaskDetailBean mBean;
 
-	// private boolean isCreateTask;
 
-	public static Fragment newInstance(TaskDetailBean mBean) {
+	public static Fragment newInstance(Parcelable mBean) {
 		Bundle args = new Bundle();
 		args.putParcelable(SELECTTASK, mBean);
-		// args.putBoolean(ISCREATETASK, false);
 		Fragment fragment = new ReceiveTaskFragment();
 		fragment.setArguments(args);
 		return fragment;
@@ -37,14 +35,6 @@ public class ReceiveTaskFragment extends Fragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mBean = (TaskDetailBean) getArguments().get(SELECTTASK);
-		/*
-		 * if(getArguments().containsKey(ISCREATETASK)){ isCreateTask =
-		 * getArguments().getBoolean(ISCREATETASK); }else{ isCreateTask = true;
-		 * }
-		 */
-		// mBean = new TaskDetailBean();
-		// isCreateTask = true;
-		setHasOptionsMenu(true);
 	}
 
 	@Override
@@ -61,71 +51,21 @@ public class ReceiveTaskFragment extends Fragment {
 		mPanel.setTaskShow(mBean);
 		mPanel.setViewEnable();
 		getActivity().getActionBar().setTitle("查看待领取任务");
-		// isCreateTask = false;
-		/*
-		 * if (isCreateTask) { mPanel.taskLocation.setOnClickListener(new
-		 * TaskViewClickListener()); mPanel.taskInstallLocation
-		 * .addTextChangedListener(new TaskEditTextChangeListener());
-		 * getActivity().getActionBar().setTitle("新建任务"); }
-		 */
 	}
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		super.onCreateOptionsMenu(menu, inflater);
 		inflater.inflate(R.menu.task_detail_menu, menu);
-		/*
-		 * if(!isCreateTask){ MenuItem menuItem =
-		 * menu.findItem(R.id.save_or_receive); menuItem.setTitle("领取任务"); }
-		 */
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		/*
-		 * if(isCreateTask){ mPanel.getTaskBean(mBean); }
-		 */
 		/**
 		 * 处理领取任务的逻辑
 		 */
 		return super.onOptionsItemSelected(item);
 	}
-
-	/*
-	 * private class TaskViewClickListener implements OnClickListener {
-	 * 
-	 * @Override public void onClick(View v) { switch (v.getId()) { case
-	 * R.id.tv_task_location: FragmentManager fm =
-	 * getActivity().getFragmentManager(); SelectLocationDialogFragment dialog =
-	 * new SelectLocationDialogFragment();
-	 * dialog.setTargetFragment(TaskDetailFragment.this, 0); dialog.show(fm,
-	 * null); break; } } }
-	 */
-
-	/*
-	 * private class TaskEditTextChangeListener implements TextWatcher {
-	 * 
-	 * @Override public void beforeTextChanged(CharSequence s, int start, int
-	 * count, int after) { }
-	 * 
-	 * @Override public void onTextChanged(CharSequence s, int start, int
-	 * before, int count) {
-	 * 
-	 * }
-	 * 
-	 * @Override public void afterTextChanged(Editable s) {
-	 * mPanel.taskInstallLocation.setText(s); mBean.installLocation =
-	 * s.toString(); mPanel.taskAddress.setText(mBean.getDetailAddress()); } }
-	 * 
-	 * @Override public void onActivityResult(int requestCode, int resultCode,
-	 * Intent data) { if (resultCode == Activity.RESULT_OK) { if (requestCode ==
-	 * 0) { String temp = data
-	 * .getStringExtra(SelectLocationDialogFragment.LOCATION); String[] str =
-	 * new String[3]; str = temp.split("|"); mBean.workProvince = str[0];
-	 * mBean.workCity = str[1]; mBean.workDistrict = str[2];
-	 * mPanel.taskLocation.setText(mBean.getWorkLocation());
-	 * mPanel.taskAddress.setText(mBean.getDetailAddress()); } } }
-	 */
 
 	private class TaskViewPanel {
 
