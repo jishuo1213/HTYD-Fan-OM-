@@ -91,27 +91,27 @@ public class CreateTaskFragment extends Fragment {
 
 	private class TaskViewPanel {
 
-		private TextView addAccessory;
-		private EditText taskTitle, taskDescription, taskWorkLocation,
-				taskInstallLocation, taskStartTime, taskNeedTime, taskContact,
-				taskContactPhone, taskEquipment, taskType;
+		private TextView addAccessory, taskWorkLocation, taskStartTime, taskNeedTime, taskEquipment, taskType;
+		private EditText taskTitle, taskDescription,
+				taskInstallLocation, taskContact,
+				taskContactPhone;
 
 		public TaskViewPanel(View v) {
 			addAccessory = (TextView) v.findViewById(R.id.tv_add_accessory);
 			taskTitle = (EditText) v.findViewById(R.id.edit_task_title);
 			taskDescription = (EditText) v
 					.findViewById(R.id.edit_task_description);
-			taskWorkLocation = (EditText) v
-					.findViewById(R.id.edit_work_location);
+			taskWorkLocation = (TextView) v
+					.findViewById(R.id.tv_work_location);
 			taskInstallLocation = (EditText) v
 					.findViewById(R.id.edit_install_location);
-			taskStartTime = (EditText) v.findViewById(R.id.edit_start_time);
-			taskNeedTime = (EditText) v.findViewById(R.id.edit_work_need_time);
+			taskStartTime = (TextView) v.findViewById(R.id.tv_start_time);
+			taskNeedTime = (TextView) v.findViewById(R.id.tv_work_need_time);
 			taskContact = (EditText) v.findViewById(R.id.edit_contacts);
 			taskContactPhone = (EditText) v
 					.findViewById(R.id.edit_contacts_phone);
-			taskEquipment = (EditText) v.findViewById(R.id.edit_task_equipment);
-			taskType = (EditText) v.findViewById(R.id.edit_task_type);
+			taskEquipment = (TextView) v.findViewById(R.id.tv_task_equipment);
+			taskType = (TextView) v.findViewById(R.id.tv_task_type);
 		}
 
 		public boolean canSave() {
@@ -146,7 +146,7 @@ public class CreateTaskFragment extends Fragment {
 		@Override
 		public void onClick(View v) {
 			switch(v.getId()){
-			case R.id.edit_work_location:
+			case R.id.tv_work_location:
 				FragmentManager fm = getActivity().getFragmentManager();
 				SelectLocationDialogFragment dialog = new SelectLocationDialogFragment();
 				dialog.setTargetFragment(CreateTaskFragment.this, 0);

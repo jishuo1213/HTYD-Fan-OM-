@@ -20,10 +20,10 @@ public class AttendNetOperating {
 		JSONObject param = new JSONObject();
 		param.put("KQID", -1);
 		param.put("YHID", -1);
-		param.put("QDRQ", mBean.getTime());
-		param.put("QDJD", mBean.longitude);
-		param.put("QDWD", mBean.latitude);
-		param.put("QDWZ", mBean.getAddress());
+		param.put("QDRQ","2014-11-26 12:12:12");
+		param.put("QDJD", 10);
+		param.put("QDWD", 10);
+		param.put("QDWZ", "jn");
 		param.put("TXR", "Fan");
 		NameValuePair params = new BasicNameValuePair("Params",
 				param.toString());

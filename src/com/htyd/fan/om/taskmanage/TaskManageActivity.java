@@ -3,6 +3,8 @@ package com.htyd.fan.om.taskmanage;
 import android.app.ActionBar;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
+import android.view.MenuItem;
 
 import com.htyd.fan.om.R;
 import com.htyd.fan.om.taskmanage.fragment.CreateTaskFragment;
@@ -43,6 +45,19 @@ public class TaskManageActivity extends SimpleFragmentActivity {
 		ActionBar actionBar = getActionBar();
 		actionBar.setBackgroundDrawable(getResources().getDrawable(
 				R.drawable.bg_top_navigation_bar));
-		actionBar.setDisplayShowHomeEnabled(true);
+		actionBar.setDisplayHomeAsUpEnabled(true);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			if (NavUtils.getParentActivityName(this) != null) {
+				NavUtils.navigateUpFromSameTask(this);
+			}
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
 	}
 }

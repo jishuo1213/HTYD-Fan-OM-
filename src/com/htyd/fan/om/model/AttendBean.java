@@ -6,8 +6,6 @@ import android.annotation.SuppressLint;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult.AddressComponent;
-
 public class AttendBean implements Parcelable {
 
 	public String province;
@@ -74,12 +72,12 @@ public class AttendBean implements Parcelable {
 		}
 	};
 
-	public void SetValueBean(AddressComponent component) {
+	public void SetValueBean(OMLocationBean component) {
 		this.province = component.province;
 		this.city = component.city;
 		this.district = component.district;
 		this.street = component.street;
-		this.streetNum = component.streetNumber;
+		this.streetNum = component.streetNum;
 	}
 
 	public String getAddress() {

@@ -36,11 +36,6 @@
             android:name="com.htyd.fan.om.main.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="landscape" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <receiver
@@ -53,10 +48,33 @@
 
         <activity
             android:name="com.htyd.fan.om.attendmanage.AttentManagerActivity"
-            android:screenOrientation="landscape" />
+            android:screenOrientation="landscape" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.htyd.fan.om.main.MainActivity" />
+        </activity>
         <activity
             android:name="com.htyd.fan.om.taskmanage.TaskManageActivity"
-            android:screenOrientation="landscape" />
+            android:screenOrientation="landscape" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.htyd.fan.om.main.MainActivity" />
+        </activity>
+        <activity
+            android:name="com.htyd.fan.om.login.LoginActivity"
+            android:screenOrientation="landscape" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <service
+            android:name="com.baidu.location.f"
+            android:enabled="true"
+            android:process=":remote" >
+        </service>
     </application>
 
 </manifest>

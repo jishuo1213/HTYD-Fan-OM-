@@ -7,9 +7,9 @@ import org.json.JSONException;
 
 import android.annotation.SuppressLint;
 import android.app.Fragment;
-import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -17,25 +17,16 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.baidu.mapapi.model.LatLng;
-import com.baidu.mapapi.search.geocode.GeoCodeResult;
-import com.baidu.mapapi.search.geocode.GeoCoder;
-import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
-import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
-import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
-import com.baidu.mapapi.utils.CoordinateConverter;
-import com.baidu.mapapi.utils.CoordinateConverter.CoordType;
 import com.htyd.fan.om.R;
 import com.htyd.fan.om.attendmanage.AttendNetOperating;
 import com.htyd.fan.om.model.AttendBean;
-import com.htyd.fan.om.util.db.OMUserDatabaseManager;
+import com.htyd.fan.om.model.OMLocationBean;
 import com.htyd.fan.om.util.ui.UItoolKit;
 
 public class AttendManageFragment extends Fragment {
 
 	private ViewPanel mPanel;
 	private AttendBean mBean;
-	private GeoCoder mCoder;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -56,21 +47,16 @@ public class AttendManageFragment extends Fragment {
 		mPanel = new ViewPanel(v);
 	}
 
-	private void initGeoCode() {
-		mCoder = GeoCoder.newInstance();
-		mCoder.setOnGetGeoCodeResultListener(mGeoCodeListener);
-	}
-
 	@SuppressLint("SimpleDateFormat")
-	public void updateUI(Location loc) {
-		mBean.time = loc.getTime();
-		mBean.latitude = loc.getLatitude();
-		mBean.longitude = loc.getLongitude();
-		LatLng point;
-		point = transCoordinate(new LatLng(loc.getLatitude(),
-				loc.getLongitude()));
-		initGeoCode();
-		mCoder.reverseGeoCode(new ReverseGeoCodeOption().location(point));
+	public void updateUI(OMLocationBean loc) {
+		mBean.time = loc.time;
+		mBean.latitude = loc.latitude;
+		mBean.longitude = loc.longitude;
+		mBean.SetValueBean(loc);
+		mPanel.setLocation(mBean.getAddress());
+		mPanel.setTime(new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss")
+				.format(mBean.time));
+		mPanel.setSignButtonEnable(true);
 	}
 
 	private class ViewPanel {
@@ -103,32 +89,6 @@ public class AttendManageFragment extends Fragment {
 		}
 	}
 
-	private OnGetGeoCoderResultListener mGeoCodeListener = new OnGetGeoCoderResultListener() {
-
-		@SuppressLint("SimpleDateFormat")
-		@Override
-		public void onGetReverseGeoCodeResult(ReverseGeoCodeResult arg0) {
-			ReverseGeoCodeResult.AddressComponent component = arg0
-					.getAddressDetail();
-			mBean.SetValueBean(component);
-			mPanel.setLocation(mBean.getAddress());
-			mPanel.setTime(new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss")
-					.format(mBean.time));
-			mPanel.setSignButtonEnable(true);
-		}
-
-		@Override
-		public void onGetGeoCodeResult(GeoCodeResult arg0) {
-		}
-	};
-
-	private LatLng transCoordinate(LatLng temppoint) {
-		CoordinateConverter converter = new CoordinateConverter();
-		converter.from(CoordType.GPS);
-		converter.coord(temppoint);
-		return converter.convert();
-	}
-
 	private class SaveAttendTask extends AsyncTask<AttendBean, Void, Boolean> {
 
 		@Override
@@ -138,6 +98,7 @@ public class AttendManageFragment extends Fragment {
 			try {
 				result = AttendNetOperating.saveAttendToSever(getActivity(),
 						mBean);
+				Log.i("fanjishuo_________doInBackground", result + "");
 			} catch (JSONException e) {
 				e.printStackTrace();
 				return false;
@@ -154,8 +115,10 @@ public class AttendManageFragment extends Fragment {
 		@Override
 		protected void onPostExecute(Boolean result) {
 			if (result) {
-				OMUserDatabaseManager.getInstance(getActivity())
-						.insertAttendBean(mBean);
+				/*
+				 * OMUserDatabaseManager.getInstance(getActivity())
+				 * .insertAttendBean(mBean);
+				 */
 			} else {
 				UItoolKit.showToastShort(getActivity(), "保存至网络不成功，检查网络设置");
 			}
@@ -168,7 +131,7 @@ public class AttendManageFragment extends Fragment {
 		new SaveAttendTask().execute(mBean);
 	}
 
-	private  void stopTask( SaveAttendTask task) {
+	private void stopTask(SaveAttendTask task) {
 		task.cancel(false);
 	}
 }

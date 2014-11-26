@@ -3,25 +3,28 @@ package com.htyd.fan.om.map;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.location.Location;
 import android.location.LocationManager;
 import android.util.Log;
+
+import com.baidu.location.BDLocation;
+import com.htyd.fan.om.model.OMLocationBean;
+import com.htyd.fan.om.util.ui.UItoolKit;
 
 public class LocationReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		Location loc = intent
+		OMLocationBean loc = intent
 				.getParcelableExtra(LocationManager.KEY_LOCATION_CHANGED);
-		Log.i("fanjishuo____onReceive", "onReceive");
 		if (loc != null) {
-			if (loc.getProvider().equals(LocationManager.GPS_PROVIDER)) {
+			if (loc.result == BDLocation.TypeGpsLocation) {
 				Log.i("fanjishuo____onReceive", "GPS_PROVIDER");
 				onGPSLocationReceived(context, loc);
-			} else if (loc.getProvider().equals(
-					LocationManager.NETWORK_PROVIDER)) {
+			} else if (loc.result == BDLocation.TypeNetWorkLocation) {
 				Log.i("fanjishuo____onReceive", "NETWORK_PROVIDER");
 				onNetWorkLocationReceived(context, loc);
+			} else {
+				UItoolKit.showToastShort(context, "定位失败");
 			}
 			return;
 		}
@@ -37,10 +40,10 @@ public class LocationReceiver extends BroadcastReceiver {
 	protected void onProviderEnabledChanged(boolean enabled) {
 	}
 
-	protected void onNetWorkLocationReceived(Context context, Location loc) {
+	protected void onNetWorkLocationReceived(Context context, OMLocationBean loc) {
 	}
 
-	protected void onGPSLocationReceived(Context context, Location loc) {
+	protected void onGPSLocationReceived(Context context, OMLocationBean loc) {
 
 	}
 }
