@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="HardcodedText" >
+
+    <item
+        android:id="@+id/menu_take_photo"
+        android:title="拍照"/>
+	
+    <item
+        android:id="@+id/menu_recoring"
+        android:title="录音"/>
+    <item
+        android:id="@+id/menu_select_file"
+        android:title="选择文件"/>
+</menu>

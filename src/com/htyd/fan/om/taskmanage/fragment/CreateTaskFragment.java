@@ -6,6 +6,8 @@ import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,16 +21,22 @@ import android.widget.TextView;
 import com.htyd.fan.om.R;
 import com.htyd.fan.om.model.TaskDetailBean;
 import com.htyd.fan.om.util.db.OMUserDatabaseManager;
-import com.htyd.fan.om.util.ui.SelectLocationDialogFragment;
+import com.htyd.fan.om.util.fragment.CameraActivity;
+import com.htyd.fan.om.util.fragment.CameraFragment;
+import com.htyd.fan.om.util.fragment.RecodingDialogFragment;
+import com.htyd.fan.om.util.fragment.SelectLocationDialogFragment;
 import com.htyd.fan.om.util.ui.UItoolKit;
 
 public class CreateTaskFragment extends Fragment {
+
+	private static final int REQUESTPHOTO = 1;//照片
+	private static final int REQUESTRECORDING = 2;//录音
 
 	private TaskViewPanel mPanel;
 	private TaskDetailBean mBean;
 	private SelectViewClickListener mListener;
 	private OMUserDatabaseManager mManager;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -49,41 +57,76 @@ public class CreateTaskFragment extends Fragment {
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if(resultCode == Activity.RESULT_OK){
-			if(requestCode == 0){
-				String [] str = data.getStringExtra(SelectLocationDialogFragment.LOCATION).split("|");
+		if (resultCode == Activity.RESULT_OK) {
+			if (requestCode == 0) {
+				String[] str = data.getStringExtra(
+						SelectLocationDialogFragment.LOCATION).split("\\|");
 				mBean.workProvince = str[0];
 				mBean.workCity = str[1];
 				mBean.workDistrict = str[2];
 				mPanel.taskWorkLocation.setText(mBean.getWorkLocation());
+			}else if(requestCode == REQUESTPHOTO){
+				UItoolKit.showToastShort(getActivity(), data.getStringExtra(CameraFragment.EXTRA_PHOTO_FILENAME));
+			}else if(requestCode == REQUESTRECORDING){
+				UItoolKit.showToastShort(getActivity(), data.getStringArrayExtra(RecodingDialogFragment.FILEPATHARRAY)[0]);
 			}
 		}
 	}
-	
+
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		inflater.inflate(R.menu.create_task_menu,menu);
+		inflater.inflate(R.menu.create_task_menu, menu);
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()){
+		switch (item.getItemId()) {
 		case R.id.menu_create_task:
-		if(!mPanel.canSave()){
-			UItoolKit.showToastShort(getActivity(), "标题、工作地点、安装地点、开始时间不能为空");
+			if (!mPanel.canSave()) {
+				UItoolKit
+						.showToastShort(getActivity(), "标题、工作地点、安装地点、开始时间不能为空");
+				return true;
+			}
+			mPanel.getTaskDetailBean(mBean);
+			mManager.openDb(1);
+			mManager.insertTaskBean(mBean);
+			/**
+			 * 上传到服务器
+			 */
 			return true;
-		}
-		mPanel.getTaskDetailBean(mBean);
-		mManager.openDb(1);
-		mManager.insertTaskBean(mBean);
-		/**
-		 * 上传到服务器
-		 */
-		return true;
-		default: 
+		default:
 			return super.onOptionsItemSelected(item);
 		}
 	}
+
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+		getActivity().getMenuInflater()
+				.inflate(R.menu.add_accessory_menu, menu);
+	}
+
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.menu_take_photo:
+			Intent i = new Intent(getActivity(), CameraActivity.class);
+			startActivityForResult(i, REQUESTPHOTO);
+			return true;
+		case R.id.menu_select_file:
+			return true;
+		case R.id.menu_recoring:
+			FragmentManager fm = getActivity().getFragmentManager();
+			RecodingDialogFragment dialog = new RecodingDialogFragment();
+			dialog.setTargetFragment(CreateTaskFragment.this, REQUESTRECORDING);
+			dialog.show(fm, null);
+			return true;
+		default:
+			return super.onContextItemSelected(item);
+		}
+	}
+
+	
 	private void initView(View v) {
 		mPanel = new TaskViewPanel(v);
 		mPanel.setListener();
@@ -91,18 +134,17 @@ public class CreateTaskFragment extends Fragment {
 
 	private class TaskViewPanel {
 
-		private TextView addAccessory, taskWorkLocation, taskStartTime, taskNeedTime, taskEquipment, taskType;
-		private EditText taskTitle, taskDescription,
-				taskInstallLocation, taskContact,
-				taskContactPhone;
+		private TextView addAccessory, taskWorkLocation, taskStartTime,
+				taskNeedTime, taskEquipment, taskType;
+		private EditText taskTitle, taskDescription, taskInstallLocation,
+				taskContact, taskContactPhone;
 
 		public TaskViewPanel(View v) {
 			addAccessory = (TextView) v.findViewById(R.id.tv_add_accessory);
 			taskTitle = (EditText) v.findViewById(R.id.edit_task_title);
 			taskDescription = (EditText) v
 					.findViewById(R.id.edit_task_description);
-			taskWorkLocation = (TextView) v
-					.findViewById(R.id.tv_work_location);
+			taskWorkLocation = (TextView) v.findViewById(R.id.tv_work_location);
 			taskInstallLocation = (EditText) v
 					.findViewById(R.id.edit_install_location);
 			taskStartTime = (TextView) v.findViewById(R.id.tv_start_time);
@@ -120,8 +162,8 @@ public class CreateTaskFragment extends Fragment {
 					&& !TextUtils.isEmpty(taskInstallLocation.getText())
 					&& !TextUtils.isEmpty(taskStartTime.getText());
 		}
-		
-		public void getTaskDetailBean(TaskDetailBean mBean){
+
+		public void getTaskDetailBean(TaskDetailBean mBean) {
 			mBean.taskDescription = taskDescription.getText().toString();
 			mBean.installLocation = taskInstallLocation.getText().toString();
 			mBean.taskTitle = taskTitle.getText().toString();
@@ -131,21 +173,22 @@ public class CreateTaskFragment extends Fragment {
 			mBean.taskContacts = taskDescription.getText().toString();
 			mBean.taskType = 1;
 		}
-		
-		public void setListener(){
+
+		public void setListener() {
 			taskWorkLocation.setOnClickListener(mListener);
 			taskStartTime.setOnClickListener(mListener);
 			taskNeedTime.setOnClickListener(mListener);
 			taskEquipment.setOnClickListener(mListener);
 			taskType.setOnClickListener(mListener);
 			addAccessory.setOnClickListener(mListener);
+			registerForContextMenu(addAccessory);
 		}
 	}
-	
-	private class SelectViewClickListener implements OnClickListener{
+
+	private class SelectViewClickListener implements OnClickListener {
 		@Override
 		public void onClick(View v) {
-			switch(v.getId()){
+			switch (v.getId()) {
 			case R.id.tv_work_location:
 				FragmentManager fm = getActivity().getFragmentManager();
 				SelectLocationDialogFragment dialog = new SelectLocationDialogFragment();

@@ -1,4 +1,4 @@
-package com.htyd.fan.om.util.ui;
+package com.htyd.fan.om.util.fragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -167,9 +167,9 @@ public class SelectLocationDialogFragment extends DialogFragment {
 		sb.append("|");
 		sb.append(((DistrictBean) districtSpinner.getSelectedItem()).districtName);
 		i.putExtra(LOCATION, sb.toString());
+		Log.i("fanjishuo____sendResult", sb.toString());
 		getTargetFragment().onActivityResult(getTargetRequestCode(),
 				reusltCode, i);
-		Log.i("fanjishuo____sendResult", sb.toString());
 	}
 
 	private class SpinnerAdapter<T extends Parcelable> extends BaseAdapter {

@@ -33,7 +33,7 @@ public class HttpUtil {
 						return response.toString();
 					}
 				} catch (Exception e) {
-					Log.i("fanjishuo___sendHttpRequest", "catch e");
+					Log.i("fanjishuo___sendHttpRequest", e.getLocalizedMessage());
 					return null;
 				} finally {
 					if (connection != null) {
