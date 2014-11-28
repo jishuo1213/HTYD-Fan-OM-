@@ -23,6 +23,7 @@ import com.htyd.fan.om.model.TaskDetailBean;
 import com.htyd.fan.om.util.db.OMUserDatabaseManager;
 import com.htyd.fan.om.util.fragment.CameraActivity;
 import com.htyd.fan.om.util.fragment.CameraFragment;
+import com.htyd.fan.om.util.fragment.DateTimePickerDialog;
 import com.htyd.fan.om.util.fragment.RecodingDialogFragment;
 import com.htyd.fan.om.util.fragment.SelectLocationDialogFragment;
 import com.htyd.fan.om.util.ui.UItoolKit;
@@ -31,6 +32,7 @@ public class CreateTaskFragment extends Fragment {
 
 	private static final int REQUESTPHOTO = 1;//照片
 	private static final int REQUESTRECORDING = 2;//录音
+	private static final int REQUESTSTARTDATE = 3;//开始时间
 
 	private TaskViewPanel mPanel;
 	private TaskDetailBean mBean;
@@ -69,6 +71,8 @@ public class CreateTaskFragment extends Fragment {
 				UItoolKit.showToastShort(getActivity(), data.getStringExtra(CameraFragment.EXTRA_PHOTO_FILENAME));
 			}else if(requestCode == REQUESTRECORDING){
 				UItoolKit.showToastShort(getActivity(), data.getStringArrayExtra(RecodingDialogFragment.FILEPATHARRAY)[0]);
+			}else if(requestCode == REQUESTSTARTDATE){
+				UItoolKit.showToastShort(getActivity(), data.getLongExtra(DateTimePickerDialog.EXTRATIME,0)+"");
 			}
 		}
 	}
@@ -188,12 +192,17 @@ public class CreateTaskFragment extends Fragment {
 	private class SelectViewClickListener implements OnClickListener {
 		@Override
 		public void onClick(View v) {
+			FragmentManager fm = getActivity().getFragmentManager();
 			switch (v.getId()) {
 			case R.id.tv_work_location:
-				FragmentManager fm = getActivity().getFragmentManager();
-				SelectLocationDialogFragment dialog = new SelectLocationDialogFragment();
-				dialog.setTargetFragment(CreateTaskFragment.this, 0);
-				dialog.show(fm, null);
+				SelectLocationDialogFragment locationDialog = new SelectLocationDialogFragment();
+				locationDialog.setTargetFragment(CreateTaskFragment.this, 0);
+				locationDialog.show(fm, null);
+				break;
+			case R.id.tv_start_time:
+				DateTimePickerDialog dateDialog = new DateTimePickerDialog();
+				dateDialog.setTargetFragment(CreateTaskFragment.this, REQUESTSTARTDATE);
+				dateDialog.show(fm, null);
 				break;
 			}
 		}

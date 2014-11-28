@@ -48,11 +48,11 @@ public class SelectLocationDialogFragment extends DialogFragment {
 	private static final String PARENTCODE = "parentcode";
 	public static final String LOCATION = "location";
 
-	private Spinner provinceSpinner, citySpinner, districtSpinner;
+	protected Spinner provinceSpinner, citySpinner, districtSpinner;
 	private LoaderManager mLoaderManager;
-	private List<ProvinceBean> provinceList;
-	private List<CityBean> cityList;
-	private List<DistrictBean> districtList;
+	protected List<ProvinceBean> provinceList;
+	protected List<CityBean> cityList;
+	protected List<DistrictBean> districtList;
 	private LocationLoaderCallBack mCallBack;
 
 	@Override

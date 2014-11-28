@@ -1,7 +1,110 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
-    
+    android:layout_height="match_parent"
+    tools:ignore="HardcodedText" >
+
+<!--     <View
+        android:id="@+id/depart"
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true" /> -->
+
+    <Spinner
+        android:id="@+id/spinner_day"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_centerHorizontal="true"
+       />
+
+    <Spinner
+        android:id="@+id/spinner_month"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_toLeftOf="@id/spinner_day"
+       />
+
+    <Spinner
+        android:id="@+id/spinner_year"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_toLeftOf="@id/spinner_month"
+        />
+
+    <Spinner
+        android:id="@+id/spinner_hour"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_toRightOf="@id/spinner_day"
+        />
+
+    <Spinner
+        android:id="@+id/spinner_minute"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_toRightOf="@id/spinner_hour"
+        android:calendarViewShown="false"
+       />
+
+ <!--    <TextView
+        android:id="@+id/tv_today"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/date_picker"
+        android:layout_below="@id/date_picker"
+        android:padding="5dp"
+        android:text="今天"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/tv_after_tomorrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@id/date_picker"
+        android:layout_below="@id/date_picker"
+        android:padding="5dp"
+        android:text="后天"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/tv_tomorrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/date_picker"
+        android:layout_toLeftOf="@id/tv_after_tomorrow"
+        android:layout_toRightOf="@id/tv_today"
+        android:gravity="center_horizontal"
+        android:padding="5dp"
+        android:text="明天"
+        android:textSize="20sp" />
+
+
+    <TextView
+        android:id="@+id/tv_pm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@id/time_picker"
+        android:layout_below="@id/time_picker"
+        android:padding="5dp"
+        android:text="下午"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/tv_am"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/time_picker"
+        android:layout_below="@id/time_picker"
+        android:layout_toLeftOf="@id/tv_pm"
+        android:gravity="center_horizontal"
+        android:padding="5dp"
+        android:text="上午"
+        android:textSize="20sp" /> -->
 
 </RelativeLayout>
