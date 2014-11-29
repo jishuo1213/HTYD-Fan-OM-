@@ -1,13 +1,15 @@
 package com.htyd.fan.om.model;
 
-import java.text.SimpleDateFormat;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import android.annotation.SuppressLint;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 public class TaskDetailBean implements Parcelable {
 
+	
+	public int taskId;//任务ID
 	public String workProvince;// 任务所在省份
 	public String workCity;// 任务所在市
 	public String workDistrict;// 任务所在县区
@@ -23,9 +25,30 @@ public class TaskDetailBean implements Parcelable {
 	public String productType;// 产品类别
 	public long planStartTime;// 计划开始时间
 	public long planEndTime;// 计划结束时间
+	public long saveTime;//填写保存时间
 	public int taskState;// 任务状态//0:在处理任务 1:待领取任务 2:已完成任务
 	public int taskType;// 任务类别
 
+	
+	
+	
+	public TaskDetailBean() {
+	}
+	
+	public void setFromJson(JSONObject json) throws JSONException {
+		taskId = json.getInt("RWID");
+		installLocation = json.getString("AZDD");
+		taskTitle = json.getString("RWBT");
+		taskDescription = json.getString("RWMS");
+		taskContacts = json.getString("LXR");
+		contactsPhone = json.getString("LXRDH");
+		recipientsName = json.getString("AZDD");
+		recipientPhone = json.getString("AZDD");
+		taskAccessory = json.getString("AZDD");
+		equipment = json.getString("AZDD");
+		productType = json.getString("AZDD");
+	}
+	
 	@Override
 	public int describeContents() {
 		return 0;
@@ -33,6 +56,7 @@ public class TaskDetailBean implements Parcelable {
 
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeInt(taskId);
 		dest.writeString(workProvince);
 		dest.writeString(workCity);
 		dest.writeString(workDistrict);
@@ -48,6 +72,7 @@ public class TaskDetailBean implements Parcelable {
 		dest.writeString(productType);
 		dest.writeLong(planStartTime);
 		dest.writeLong(planEndTime);
+		dest.writeLong(saveTime);
 		dest.writeInt(taskState);
 		dest.writeInt(taskType);
 	}
@@ -63,6 +88,7 @@ public class TaskDetailBean implements Parcelable {
 		@Override
 		public TaskDetailBean createFromParcel(Parcel source) {
 			TaskDetailBean mBean = new TaskDetailBean();
+			mBean.taskId = source.readInt();
 			mBean.workProvince = source.readString();
 			mBean.workCity = source.readString();
 			mBean.workDistrict = source.readString();
@@ -78,6 +104,7 @@ public class TaskDetailBean implements Parcelable {
 			mBean.productType = source.readString();
 			mBean.planStartTime = source.readLong();
 			mBean.planEndTime = source.readLong();
+			mBean.saveTime = source.readLong();
 			mBean.taskState = source.readInt();
 			mBean.taskType = source.readInt();
 			return mBean;
@@ -95,17 +122,4 @@ public class TaskDetailBean implements Parcelable {
 		return sb.append(workProvince).append(workCity).append(workDistrict)
 				.toString();
 	}
-
-	@SuppressLint("SimpleDateFormat")
-	public String getStartTime() {
-		return new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss")
-				.format(this.planStartTime);
-	}
-
-	@SuppressLint("SimpleDateFormat")
-	public String getEndTime() {
-		return new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss")
-				.format(this.planEndTime);
-	}
-
 }

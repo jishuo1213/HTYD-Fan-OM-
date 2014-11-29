@@ -3,6 +3,7 @@ package com.htyd.fan.om.taskmanage.fragment;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import android.annotation.SuppressLint;
 import android.app.LoaderManager;
@@ -25,8 +26,11 @@ import android.widget.TextView;
 import com.htyd.fan.om.R;
 import com.htyd.fan.om.model.TaskDetailBean;
 import com.htyd.fan.om.taskmanage.TaskManageActivity;
+import com.htyd.fan.om.util.base.Utils;
 import com.htyd.fan.om.util.db.OMUserDatabaseHelper.TaskCursor;
 import com.htyd.fan.om.util.db.OMUserDatabaseManager;
+import com.htyd.fan.om.util.https.NetOperating;
+import com.htyd.fan.om.util.https.Urls;
 import com.htyd.fan.om.util.loaders.SQLiteCursorLoader;
 import com.htyd.fan.om.util.ui.CustomChooserView.OnItemChooserListener;
 
@@ -179,7 +183,7 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 			}
 			TaskDetailBean mBean = (TaskDetailBean) getItem(position);
 			mHolder.taskDescrption.setText(mBean.taskDescription);
-			mHolder.taskCreateTime.setText(mBean.getStartTime());
+			mHolder.taskCreateTime.setText(Utils.formatTime(mBean.saveTime));
 			mHolder.taskState.setText(mBean.taskState + "");
 			return convertView;
 		}
@@ -220,6 +224,11 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 			/*
 			 * 从网上获取数据，插入数据库，还未完成
 			 */
+			try {
+				NetOperating.getResultFromNet(getContext(), null, Urls.TASKURL, "Operate=getAllRwxx");
+			} catch (InterruptedException | ExecutionException e) {
+				e.printStackTrace();
+			}
 			return loadCursor();
 		}
 	}

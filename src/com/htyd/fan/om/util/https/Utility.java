@@ -1,11 +1,17 @@
 package com.htyd.fan.om.util.https;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONTokener;
+
 import android.text.TextUtils;
 
 import com.htyd.fan.om.model.CityBean;
 import com.htyd.fan.om.model.DistrictBean;
 import com.htyd.fan.om.model.ProvinceBean;
+import com.htyd.fan.om.model.TaskDetailBean;
 import com.htyd.fan.om.util.db.OMDatabaseManager;
+import com.htyd.fan.om.util.db.OMUserDatabaseManager;
 
 public class Utility {
 
@@ -77,6 +83,21 @@ public class Utility {
 				return true;
 			}
 		}
+		return false;
+	}
+	
+	public static boolean handleTaskResponse(OMUserDatabaseManager mManager,
+			String response, int cityId) throws JSONException {
+		mManager.openDb(1);
+		if (!TextUtils.isEmpty(response)) {
+			TaskDetailBean mBean = new TaskDetailBean();
+			JSONArray array = (JSONArray) new JSONTokener(response).nextValue();
+			for(int i = 0;i<array.length();i++){
+				mBean.setFromJson(array.getJSONObject(i));
+				mManager.insertTaskBean(mBean);
+			}
+				return true;
+			}
 		return false;
 	}
 }

@@ -18,9 +18,9 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.htyd.fan.om.R;
-import com.htyd.fan.om.attendmanage.AttendNetOperating;
 import com.htyd.fan.om.model.AttendBean;
 import com.htyd.fan.om.model.OMLocationBean;
+import com.htyd.fan.om.util.https.NetOperating;
 import com.htyd.fan.om.util.ui.UItoolKit;
 
 public class AttendManageFragment extends Fragment {
@@ -96,7 +96,7 @@ public class AttendManageFragment extends Fragment {
 			AttendBean mBean = params[0];
 			boolean result;
 			try {
-				result = AttendNetOperating.saveAttendToSever(getActivity(),
+				result = NetOperating.saveAttendToSever(getActivity(),
 						mBean);
 				Log.i("fanjishuo_________doInBackground", result + "");
 			} catch (JSONException e) {

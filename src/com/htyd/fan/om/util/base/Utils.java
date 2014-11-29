@@ -13,4 +13,10 @@ public class Utils {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		return	sdf.parse(source).getTime();
 	}
+	
+	@SuppressLint("SimpleDateFormat")
+	public static String formatTime(long time){
+		return new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss")
+		.format(time);
+	}
 }

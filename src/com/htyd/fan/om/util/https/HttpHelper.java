@@ -87,7 +87,8 @@ public class HttpHelper {
 							int res = response.getStatusLine().getStatusCode();
 							if (res != HttpStatus.SC_OK) {
 								Log.i("fanjishuo____GetResponse", "res" + res);
-								throw new RuntimeException("请求失败");
+//								throw new RuntimeException("请求失败");
+								return "false";
 							}
 							HttpEntity resEntity = response.getEntity();
 

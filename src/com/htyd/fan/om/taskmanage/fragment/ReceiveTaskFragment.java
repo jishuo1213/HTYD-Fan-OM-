@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.htyd.fan.om.R;
 import com.htyd.fan.om.model.TaskDetailBean;
+import com.htyd.fan.om.util.base.Utils;
 
 public class ReceiveTaskFragment extends Fragment {
 
@@ -110,8 +111,8 @@ public class ReceiveTaskFragment extends Fragment {
 			taskDescription.setText(mBean.taskDescription);
 			taskContacts.setText(mBean.taskContacts);
 			taskContactsPhone.setText(mBean.contactsPhone);
-			taskPlanStartTime.setText(mBean.getStartTime());
-			taskPlanEndTime.setText(mBean.getEndTime());
+			taskPlanStartTime.setText(Utils.formatTime(mBean.planStartTime));
+			taskPlanEndTime.setText(Utils.formatTime(mBean.planEndTime));
 			taskEquipment.setText(mBean.equipment);
 			taskProductType.setText(mBean.productType);
 			taskState.setText(mBean.taskState + "");

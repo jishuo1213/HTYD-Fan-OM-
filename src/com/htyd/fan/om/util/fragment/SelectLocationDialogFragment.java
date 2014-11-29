@@ -264,10 +264,10 @@ public class SelectLocationDialogFragment extends DialogFragment {
 		protected Cursor loadFromNet() {
 			String address;
 			if (!TextUtils.isEmpty(parentCode)) {
-				address = Urls.locationUrl + parentCode + ".xml";
+				address = Urls.LOCATIONURL + parentCode + ".xml";
 				Log.i("fanjishuo____parentCode", "isempty");
 			} else {
-				address = Urls.locationUrl + ".xml";
+				address = Urls.LOCATIONURL + ".xml";
 			}
 			Log.i("fanjishuo____loadFromNet", "address" + address);
 			String response = HttpUtil.sendHttpRequest(address);

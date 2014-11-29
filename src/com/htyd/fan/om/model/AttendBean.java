@@ -1,8 +1,5 @@
 package com.htyd.fan.om.model;
 
-import java.text.SimpleDateFormat;
-
-import android.annotation.SuppressLint;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -84,11 +81,5 @@ public class AttendBean implements Parcelable {
 		StringBuilder sb = new StringBuilder();
 		return sb.append(province).append(city).append(district).append(street)
 				.append(streetNum).toString();
-	}
-	
-	@SuppressLint("SimpleDateFormat")
-	public String getTime(){
-		return new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss")
-		.format(this.time);
 	}
 }
