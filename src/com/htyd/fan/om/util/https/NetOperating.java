@@ -81,7 +81,7 @@ public class NetOperating {
 		}
 		Log.i("fanjishuo_____getResultFromNet", result);
 		if (result.equals("false") || result.length() == 0) {
-			return null;
+			throw new RuntimeException("请求数据失败");
 		}
 		return result;
 	}

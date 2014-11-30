@@ -87,7 +87,7 @@ public class Utility {
 	}
 	
 	public static boolean handleTaskResponse(OMUserDatabaseManager mManager,
-			String response, int cityId) throws JSONException {
+			String response) throws JSONException {
 		mManager.openDb(1);
 		if (!TextUtils.isEmpty(response)) {
 			TaskDetailBean mBean = new TaskDetailBean();

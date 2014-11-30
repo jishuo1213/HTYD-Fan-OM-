@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import org.json.JSONException;
+
 import android.annotation.SuppressLint;
 import android.app.LoaderManager;
 import android.app.LoaderManager.LoaderCallbacks;
@@ -31,7 +33,9 @@ import com.htyd.fan.om.util.db.OMUserDatabaseHelper.TaskCursor;
 import com.htyd.fan.om.util.db.OMUserDatabaseManager;
 import com.htyd.fan.om.util.https.NetOperating;
 import com.htyd.fan.om.util.https.Urls;
+import com.htyd.fan.om.util.https.Utility;
 import com.htyd.fan.om.util.loaders.SQLiteCursorLoader;
+import com.htyd.fan.om.util.ui.UItoolKit;
 import com.htyd.fan.om.util.ui.CustomChooserView.OnItemChooserListener;
 
 public class TaskListFragment extends Fragment implements OnItemChooserListener {
@@ -224,12 +228,25 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 			/*
 			 * 从网上获取数据，插入数据库，还未完成
 			 */
+			String result = "";
 			try {
-				NetOperating.getResultFromNet(getContext(), null, Urls.TASKURL, "Operate=getAllRwxx");
+				result = NetOperating.getResultFromNet(getContext(), null, Urls.TASKURL, "Operate=getAllRwxx");
 			} catch (InterruptedException | ExecutionException e) {
 				e.printStackTrace();
+			} catch (RuntimeException e){
+				UItoolKit.showToastShort(getContext(), e.getLocalizedMessage());
 			}
-			return loadCursor();
+			boolean success = false;
+			try {
+				success = Utility.handleTaskResponse(mManager, result);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			if(success){
+				return loadCursor();
+			}else{
+				return null;
+			}
 		}
 	}
 
