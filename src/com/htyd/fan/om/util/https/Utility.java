@@ -2,9 +2,11 @@ package com.htyd.fan.om.util.https;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.htyd.fan.om.model.CityBean;
 import com.htyd.fan.om.model.DistrictBean;
@@ -91,10 +93,12 @@ public class Utility {
 		mManager.openDb(1);
 		if (!TextUtils.isEmpty(response)) {
 			TaskDetailBean mBean = new TaskDetailBean();
-			JSONArray array = (JSONArray) new JSONTokener(response).nextValue();
+			JSONObject resultJson = new JSONObject(response);
+			JSONArray array = (JSONArray) new JSONTokener(resultJson.getString("Rows")).nextValue();
 			for(int i = 0;i<array.length();i++){
 				mBean.setFromJson(array.getJSONObject(i));
 				mManager.insertTaskBean(mBean);
+				Log.i("fanjishuo____handleTaskResponse", mBean.taskTitle);
 			}
 				return true;
 			}

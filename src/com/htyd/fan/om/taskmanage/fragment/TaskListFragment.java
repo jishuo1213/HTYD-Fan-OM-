@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.app.LoaderManager;
@@ -16,6 +17,7 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,12 +62,16 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		taskMap = new HashMap<String, List<TaskDetailBean>>();
+		taskMap.put(COMPLETED, new ArrayList<TaskDetailBean>());
+		taskMap.put(INPROCESSINGTASK, new ArrayList<TaskDetailBean>());
+		taskMap.put(BERECEIVE, new ArrayList<TaskDetailBean>());
 		mCallback = new TaskCursorCallback();
 		mLoadManager = getActivity().getLoaderManager();
 		isLoaderFinish = false;
 		Bundle args = new Bundle();
 		args.putInt(TASKSTATE, -1);
-		mLoadManager.initLoader(0, args, mCallback);
+		mLoadManager.initLoader(1, args, mCallback);
+		Log.i("fanjishuo____taskListOnCreate", "onCreate");
 	}
 
 	@Override
@@ -225,12 +231,24 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 
 		@Override
 		protected Cursor loadFromNet() {
-			/*
-			 * 从网上获取数据，插入数据库，还未完成
-			 */
+			
+			JSONObject params = new JSONObject();
+			try {
+				params.put("RWBT", "");
+				params.put("TXSJ", "");
+				params.put("RWID", "");
+				if(taskState == -1){
+					params.put("RWZT", "");
+				}else{
+					params.put("RWZT", taskState+"");
+				}
+			} catch (JSONException e1) {
+				e1.printStackTrace();
+			}
+			Log.i("fanjishuo____loadFromNet", "taskState"+taskState);
 			String result = "";
 			try {
-				result = NetOperating.getResultFromNet(getContext(), null, Urls.TASKURL, "Operate=getAllRwxx");
+				result = NetOperating.getResultFromNet(getContext(), params, Urls.TASKURL, "Operate=getAllRwxx");
 			} catch (InterruptedException | ExecutionException e) {
 				e.printStackTrace();
 			} catch (RuntimeException e){
@@ -263,7 +281,9 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 			if (data != null && data.moveToFirst()) {
 				isLoaderFinish = true;
 				TaskCursor taskCursor = (TaskCursor) data;
-				mList.add(taskCursor.getTask());
+				do{
+					mList.add(taskCursor.getTask());
+				}while(data.moveToNext());
 				for (TaskDetailBean mBean : mList) {
 					switch (mBean.taskState) {
 					case 0:// 在处理任务

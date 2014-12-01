@@ -107,6 +107,7 @@ public class OMUserDatabaseHelper extends SQLiteOpenHelper {
 			mBean.planEndTime = getLong(getColumnIndex(SQLSentence.COLUMN_TASK_PLAN_ENDTIME));
 			mBean.taskState = getInt(getColumnIndex(SQLSentence.COLUMN_TASK_STATE));
 			mBean.taskType = getInt(getColumnIndex(SQLSentence.COLUMN_TASK_TYPE));
+			Log.i("fanjishuo____getTask", mBean.taskType+"");
 			return mBean;
 		}
 	}

@@ -68,15 +68,14 @@ public class HttpHelper {
 						if (nameValuePairs != null) {
 							for (int i = 0; i < nameValuePairs.length; i++) {
 								params.add(nameValuePairs[i]);
-
-								System.out.println(nameValuePairs[i]);
+								Log.d("HttpHelper", nameValuePairs[i]+"");
 							}
 						}
 
 						UrlEncodedFormEntity urlEncoded = new UrlEncodedFormEntity(
 								params, CHARSET_UTF8);
 
-						System.out.println(url);
+						Log.d("HttpHelper", url);
 
 						HttpPost httpPost = new HttpPost(url);
 						httpPost.setEntity(urlEncoded);

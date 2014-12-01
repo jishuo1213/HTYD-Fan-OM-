@@ -65,7 +65,7 @@ public class OMUserDatabaseManager {
 		cv.put(SQLSentence.COLUMN_TASK_PLAN_ENDTIME, mBean.planEndTime);
 		cv.put(SQLSentence.COLUMN_TASK_STATE, mBean.taskState);
 		cv.put(SQLSentence.COLUMN_TASK_TYPE, mBean.taskType);
-		return db.insert(SQLSentence.TABLE_CHECK, null, cv);
+		return db.insert(SQLSentence.TABLE_TASK, null, cv);
 	}
 
 	public Cursor queryAttendCursor(int monthNum) {

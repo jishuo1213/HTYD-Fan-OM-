@@ -191,19 +191,25 @@ public class AttendCalendarFragment extends Fragment {
 		int currentMonth = c.get(Calendar.MONTH);
 		int weeks = c.get(Calendar.WEEK_OF_MONTH);
 		int currentDate = c.get(Calendar.DATE);
+		int currentYear = c.get(Calendar.YEAR);
 		c.add(Calendar.DATE, -currentDate);
 		firstDayPosition = c.get(Calendar.DAY_OF_WEEK);
 		currentSelect = firstDayPosition + currentDate - 1;
 		c.add(Calendar.DATE, currentDate);
+		Log.i("fanjishuo___getMonth", c.get(Calendar.DATE)+"");
 		int week = 0;
 		c.add(Calendar.DATE, -(c.get(Calendar.DAY_OF_WEEK) - 1));
 		c.add(Calendar.DATE, -(weeks - 1) * 7);
-		while (c.get(Calendar.MONTH) <= currentMonth) {
+		Log.i("fanjishuo___getMonth", "c.get(Calendar.DATE)"+c.get(Calendar.DATE)+"c.get(Calendar.MONTH)"+c.get(Calendar.MONTH)+"currentMonth"+currentMonth);
+		while (c.get(Calendar.MONTH) <= currentMonth && c.get(Calendar.YEAR) == currentYear) {
 			c.add(Calendar.DATE, 7);
 			week++;
+			Log.i("fanjishuo____c.date", c.get(Calendar.DATE)+"");
 		}
 		c.add(Calendar.DATE, -week * 7);
 		int size = week * 7;
+		Log.i("fanjishuo___getmonth", size+"");
+		Log.i("fanjishuo____getmonth", c.get(Calendar.DATE)+"");
 		monthList = new ArrayList<DateBean>(size);
 		for (int i = 0; i < size; i++) {
 			DateBean mBean = new DateBean();

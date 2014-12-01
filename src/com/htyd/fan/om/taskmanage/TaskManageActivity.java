@@ -37,7 +37,6 @@ public class TaskManageActivity extends SimpleFragmentActivity {
 
 	@Override
 	protected int[] getAllFragmentId() {
-
 		return new int[] { R.id.fragmentContainer };
 	}
 

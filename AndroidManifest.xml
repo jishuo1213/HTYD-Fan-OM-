@@ -69,6 +69,13 @@
         </activity>
         <activity
             android:name="com.htyd.fan.om.login.LoginActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name="com.htyd.fan.om.util.fragment.CameraActivity"
+            android:screenOrientation="landscape" />
+        
+        <activity
+            android:name="com.htyd.fan.om.login.WelcomeActivity"
             android:screenOrientation="landscape" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -76,9 +83,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="com.htyd.fan.om.util.fragment.CameraActivity"
-            android:screenOrientation="landscape" />
 
         <service
             android:name="com.baidu.location.f"

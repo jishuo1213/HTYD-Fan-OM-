@@ -14,6 +14,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.util.Log;
 import android.view.ActionProvider;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -49,6 +50,7 @@ public class MainActivity extends FragmentActivity {
 		loadData();
 		init();
 		initActionBar();
+		Log.i("fanjishuo_____onCreate", "mainOnCreate");
 	}
 
 	@Override

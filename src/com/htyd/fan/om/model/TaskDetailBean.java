@@ -5,6 +5,7 @@ import org.json.JSONObject;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 public class TaskDetailBean implements Parcelable {
 
@@ -47,6 +48,8 @@ public class TaskDetailBean implements Parcelable {
 		taskAccessory = json.getString("AZDD");
 		equipment = json.getString("AZDD");
 		productType = json.getString("AZDD");
+		taskState = Integer.parseInt(json.getString("RWZT"));
+		Log.i("fanjishuo____setFromJson", taskState+"taskState");
 	}
 	
 	@Override

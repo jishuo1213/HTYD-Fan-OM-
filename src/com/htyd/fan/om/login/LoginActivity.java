@@ -20,18 +20,20 @@ import android.widget.EditText;
 
 import com.htyd.fan.om.R;
 import com.htyd.fan.om.main.MainActivity;
+import com.htyd.fan.om.util.base.DES;
 import com.htyd.fan.om.util.base.Preferences;
 import com.htyd.fan.om.util.https.NetOperating;
 import com.htyd.fan.om.util.https.Urls;
 import com.htyd.fan.om.util.ui.UItoolKit;
 
 public class LoginActivity extends Activity {
-	
-	protected EditText userNameEditText,passwordEditText;
+
+	protected EditText userNameEditText, passwordEditText;
 	private CheckBox checkBox;
-	private Button loginButton;
-     Context context;
-	
+	protected Button loginButton;
+	Context context;
+	protected String passWord;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -49,20 +51,23 @@ public class LoginActivity extends Activity {
 		loginButton.setOnClickListener(LoginListener);
 	}
 
-	private OnClickListener LoginListener  = new OnClickListener() {
+	private OnClickListener LoginListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			if(!checkCanLogin()){
+			if (!checkCanLogin()) {
 				return;
 			}
-			startTask(userNameEditText.getText().toString(), passwordEditText.getText().toString());
+			startTask(userNameEditText.getText().toString(), passwordEditText
+					.getText().toString());
 			loginButton.setEnabled(false);
-/*			Intent i = new Intent(getBaseContext(),MainActivity.class);
-			startActivity(i);
-			finish();*/
+			passWord = passwordEditText.getText().toString();
+			/*
+			 * Intent i = new Intent(getBaseContext(),MainActivity.class);
+			 * startActivity(i); finish();
+			 */
 		}
 	};
-	
+
 	private void initActionBar() {
 		ActionBar actionBar = getActionBar();
 		actionBar.setBackgroundDrawable(getResources().getDrawable(
@@ -70,20 +75,21 @@ public class LoginActivity extends Activity {
 		actionBar.setTitle("登录");
 		actionBar.setDisplayShowHomeEnabled(false);
 	}
-	
-	protected boolean checkCanLogin(){
-		if(TextUtils.isEmpty(userNameEditText.getText()) || TextUtils.isEmpty(passwordEditText.getText())){
+
+	protected boolean checkCanLogin() {
+		if (TextUtils.isEmpty(userNameEditText.getText())
+				|| TextUtils.isEmpty(passwordEditText.getText())) {
 			UItoolKit.showToastShort(getBaseContext(), "用户名或密码不能为空");
 			return false;
 		}
 		return true;
 	}
-	
-	private class LoginTask extends AsyncTask<String, Void, String>{
+
+	private class LoginTask extends AsyncTask<String, Void, String> {
 
 		@Override
 		protected void onPostExecute(String result) {
-			if(result == null){
+			if (result == null) {
 				UItoolKit.showToastShort(getBaseContext(), "登录失败，请检查网络");
 				stopTask(this);
 				loginButton.setEnabled(true);
@@ -91,13 +97,14 @@ public class LoginActivity extends Activity {
 			}
 			JSONObject resultJson = null;
 			try {
-			 resultJson = new JSONObject(result);
+				resultJson = new JSONObject(result);
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
-			if(resultJson.has("MESSAGE")){
+			if (resultJson.has("MESSAGE")) {
 				try {
-					UItoolKit.showToastShort(getBaseContext(), resultJson.getString("MESSAGE"));
+					UItoolKit.showToastShort(getBaseContext(),
+							resultJson.getString("MESSAGE"));
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
@@ -106,15 +113,24 @@ public class LoginActivity extends Activity {
 				return;
 			}
 			try {
-				Preferences.setUserId(getBaseContext(),Integer.parseInt(resultJson.getString("YHID")));
-				Preferences.setUserName(getBaseContext(),resultJson.getString("YHMC"));
-			} catch (NumberFormatException e) {
-				e.printStackTrace();
+				Preferences.setUserId(getBaseContext(),
+						resultJson.getString("YHID"));
+				Preferences.setUserName(getBaseContext(),
+						resultJson.getString("YHMC"));
+				Preferences.setLastLoginAccount(getBaseContext(),
+						resultJson.getString("DLZH"));
+				Preferences.setLastLoginPassword(getBaseContext(),
+						DES.encryptDES(passWord,"19911213"));
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
+			if (checkBox.isChecked()) {
+				Preferences.setAutoLogin(getBaseContext(), true);
+			} else {
+				Preferences.setAutoLogin(getBaseContext(), false);
+			}
 			loginButton.setEnabled(true);
-			Intent i = new Intent(getBaseContext(),MainActivity.class);
+			Intent i = new Intent(getBaseContext(), MainActivity.class);
 			startActivity(i);
 			finish();
 			stopTask(this);
@@ -122,12 +138,13 @@ public class LoginActivity extends Activity {
 
 		@Override
 		protected String doInBackground(String... params) {
-			
+
 			JSONObject param = new JSONObject();
 			try {
 				param.put("DLZH", params[0]);
 				param.put("DLMM", params[1]);
-				return NetOperating.getResultFromNet(getBaseContext(), param, Urls.LOGINURL, "Operate=login");
+				return NetOperating.getResultFromNet(getBaseContext(), param,
+						Urls.LOGINURL, "Operate=login");
 			} catch (JSONException e1) {
 				e1.printStackTrace();
 				return null;
@@ -140,12 +157,12 @@ public class LoginActivity extends Activity {
 			}
 		}
 	}
-	
-	protected void startTask(String userName,String password){
-		new LoginTask().execute(userName,password);
+
+	protected void startTask(String userName, String password) {
+		new LoginTask().execute(userName, password);
 	}
-	
-	protected void stopTask(LoginTask task){
+
+	protected void stopTask(LoginTask task) {
 		task.cancel(false);
 	}
 }

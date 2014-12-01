@@ -1,246 +1,251 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="wrap_content" 
     android:layout_margin="10dp"
-    android:background="@drawable/bg_frame"
-    android:scrollbars="vertical" >
+    >
 
-    <TableRow>
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_frame"
+        android:scrollbars="vertical" >
 
-        <TextView
-            style="@style/style_task_detail_textview"
-            android:text="@string/task_work_location" />
+        <TableRow>
 
-        <View style="@style/v_line" />
+            <TextView
+                style="@style/style_task_detail_textview"
+                android:text="@string/task_work_location" />
 
-        <TextView
-            android:id="@+id/tv_task_location"
-            style="@style/style_task_detail_textview"
-            android:layout_weight="1" />
+            <View style="@style/v_line" />
 
-        <View style="@style/v_line" />
+            <TextView
+                android:id="@+id/tv_task_location"
+                style="@style/style_task_detail_textview"
+                android:layout_weight="1" />
 
-        <TextView
-            style="@style/style_task_detail_textview"
-            android:text="@string/task_install_location" />
+            <View style="@style/v_line" />
 
-        <View style="@style/v_line" />
+            <TextView
+                style="@style/style_task_detail_textview"
+                android:text="@string/task_install_location" />
 
-        <EditText
-            android:id="@+id/edit_task_install_location"
-            style="@style/style_task_detail_edittext"
-            android:layout_weight="1" />
-    </TableRow>
+            <View style="@style/v_line" />
 
-    <View style="@style/h_line" />
+            <EditText
+                android:id="@+id/edit_task_install_location"
+                style="@style/style_task_detail_edittext"
+                android:layout_weight="1" />
+        </TableRow>
 
-    <TableRow>
+        <View style="@style/h_line" />
 
-        <TextView
-            style="@style/style_task_detail_textview"
-            android:text="@string/task_address" />
+        <TableRow>
 
-        <View style="@style/v_line" />
+            <TextView
+                style="@style/style_task_detail_textview"
+                android:text="@string/task_address" />
 
-        <TextView
-            android:id="@+id/tv_task_address"
-            style="@style/style_task_detail_textview" />
-    </TableRow>
+            <View style="@style/v_line" />
 
-    <View style="@style/h_line" />
+            <TextView
+                android:id="@+id/tv_task_address"
+                style="@style/style_task_detail_textview" />
+        </TableRow>
 
-    <TableRow>
+        <View style="@style/h_line" />
 
-        <TextView
-            style="@style/style_task_detail_textview"
-            android:text="@string/task_title" />
+        <TableRow>
 
-        <View style="@style/v_line" />
+            <TextView
+                style="@style/style_task_detail_textview"
+                android:text="@string/task_title" />
 
-        <EditText
-            android:id="@+id/edit_task_title"
-            android:layout_weight="1"
-            style="@style/style_task_detail_edittext" />
-    </TableRow>
+            <View style="@style/v_line" />
 
-    <View style="@style/h_line" />
+            <EditText
+                android:id="@+id/edit_task_title"
+                style="@style/style_task_detail_edittext"
+                android:layout_weight="1" />
+        </TableRow>
 
-    <TableRow>
+        <View style="@style/h_line" />
 
-        <TextView
-            style="@style/style_task_detail_textview"
-            android:text="@string/task_description" />
+        <TableRow>
 
-        <View style="@style/v_line" />
+            <TextView
+                style="@style/style_task_detail_textview"
+                android:text="@string/task_description" />
 
-        <EditText
-            android:id="@+id/edit_task_description"
-            style="@style/style_task_detail_edittext"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:lines="4"
-             />
-    </TableRow>
+            <View style="@style/v_line" />
 
-    <View style="@style/h_line" />
+            <EditText
+                android:id="@+id/edit_task_description"
+                style="@style/style_task_detail_edittext"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:lines="4" />
+        </TableRow>
 
-    <TableRow>
+        <View style="@style/h_line" />
 
-        <TextView
-            style="@style/style_task_detail_textview"
-            android:text="@string/task_contacts" />
+        <TableRow>
 
-        <View style="@style/v_line" />
+            <TextView
+                style="@style/style_task_detail_textview"
+                android:text="@string/task_contacts" />
 
-        <EditText
-            android:id="@+id/edit_task_contacts"
-            style="@style/style_task_detail_edittext"
-            android:layout_weight="1" />
+            <View style="@style/v_line" />
 
-        <View style="@style/v_line" />
+            <EditText
+                android:id="@+id/edit_task_contacts"
+                style="@style/style_task_detail_edittext"
+                android:layout_weight="1" />
 
-        <TextView
-            style="@style/style_task_detail_textview"
-            android:text="@string/task_contacts_phone" />
+            <View style="@style/v_line" />
 
-        <View style="@style/v_line" />
+            <TextView
+                style="@style/style_task_detail_textview"
+                android:text="@string/task_contacts_phone" />
 
-        <EditText
-            android:id="@+id/edit_task_contacts_phone"
-            style="@style/style_task_detail_edittext"
-            android:layout_weight="1" />
-    </TableRow>
+            <View style="@style/v_line" />
 
-    <View style="@style/h_line" />
+            <EditText
+                android:id="@+id/edit_task_contacts_phone"
+                style="@style/style_task_detail_edittext"
+                android:layout_weight="1" />
+        </TableRow>
 
-    <TableRow>
+        <View style="@style/h_line" />
 
-        <TextView
-            style="@style/style_task_detail_textview"
-            android:text="@string/task_plan_starttime" />
+        <TableRow>
 
-        <View style="@style/v_line" />
+            <TextView
+                style="@style/style_task_detail_textview"
+                android:text="@string/task_plan_starttime" />
 
-        <EditText
-            android:id="@+id/edit_task_plan_starttime"
-            style="@style/style_task_detail_edittext"
-            android:layout_weight="1" />
+            <View style="@style/v_line" />
 
-        <View style="@style/v_line" />
+            <EditText
+                android:id="@+id/edit_task_plan_starttime"
+                style="@style/style_task_detail_edittext"
+                android:layout_weight="1" />
 
-        <TextView
-            style="@style/style_task_detail_textview"
-            android:text="@string/task_plan_endtime" />
+            <View style="@style/v_line" />
 
-        <View style="@style/v_line" />
+            <TextView
+                style="@style/style_task_detail_textview"
+                android:text="@string/task_plan_endtime" />
 
-        <EditText
-            android:id="@+id/edit_task_plan_endtime"
-            style="@style/style_task_detail_edittext"
-            android:layout_weight="1" />
-    </TableRow>
+            <View style="@style/v_line" />
 
-    <View style="@style/h_line" />
+            <EditText
+                android:id="@+id/edit_task_plan_endtime"
+                style="@style/style_task_detail_edittext"
+                android:layout_weight="1" />
+        </TableRow>
 
-    <TableRow>
+        <View style="@style/h_line" />
 
-        <TextView
-            style="@style/style_task_detail_textview"
-            android:text="@string/task_equipment" />
+        <TableRow>
 
-        <View style="@style/v_line" />
+            <TextView
+                style="@style/style_task_detail_textview"
+                android:text="@string/task_equipment" />
 
-        <EditText
-            android:id="@+id/edit_task_equipment"
-            style="@style/style_task_detail_edittext"
-            android:layout_weight="1" />
+            <View style="@style/v_line" />
 
-        <View style="@style/v_line" />
+            <EditText
+                android:id="@+id/edit_task_equipment"
+                style="@style/style_task_detail_edittext"
+                android:layout_weight="1" />
 
-        <TextView
-            style="@style/style_task_detail_textview"
-            android:text="@string/task_product_type" />
+            <View style="@style/v_line" />
 
-        <View style="@style/v_line" />
+            <TextView
+                style="@style/style_task_detail_textview"
+                android:text="@string/task_product_type" />
 
-        <EditText
-            android:id="@+id/edit_task_product_type"
-            style="@style/style_task_detail_edittext"
-            android:layout_weight="1" />
-    </TableRow>
+            <View style="@style/v_line" />
 
-    <View style="@style/h_line" />
+            <EditText
+                android:id="@+id/edit_task_product_type"
+                style="@style/style_task_detail_edittext"
+                android:layout_weight="1" />
+        </TableRow>
 
-    <TableRow>
+        <View style="@style/h_line" />
 
-        <TextView
-            style="@style/style_task_detail_textview"
-            android:text="@string/task_state" />
+        <TableRow>
 
-        <View style="@style/v_line" />
+            <TextView
+                style="@style/style_task_detail_textview"
+                android:text="@string/task_state" />
 
-        <EditText
-            android:id="@+id/edit_task_state"
-            style="@style/style_task_detail_edittext"
-            android:layout_weight="1" />
+            <View style="@style/v_line" />
 
-        <View style="@style/v_line" />
+            <EditText
+                android:id="@+id/edit_task_state"
+                style="@style/style_task_detail_edittext"
+                android:layout_weight="1" />
 
-        <TextView
-            style="@style/style_task_detail_textview"
-            android:text="@string/task_type" />
+            <View style="@style/v_line" />
 
-        <View style="@style/v_line" />
+            <TextView
+                style="@style/style_task_detail_textview"
+                android:text="@string/task_type" />
 
-        <EditText
-            android:id="@+id/edit_task_type"
-            style="@style/style_task_detail_edittext"
-            android:layout_weight="1" />
-    </TableRow>
+            <View style="@style/v_line" />
 
-    <View style="@style/h_line" />
+            <EditText
+                android:id="@+id/edit_task_type"
+                style="@style/style_task_detail_edittext"
+                android:layout_weight="1" />
+        </TableRow>
 
-    <TableRow>
+        <View style="@style/h_line" />
 
-        <TextView
-            style="@style/style_task_detail_textview"
-            android:text="@string/task_recipient" />
+        <TableRow>
 
-        <View style="@style/v_line" />
+            <TextView
+                style="@style/style_task_detail_textview"
+                android:text="@string/task_recipient" />
 
-        <EditText
-            android:id="@+id/edit_task_recipient"
-            style="@style/style_task_detail_edittext"
-            android:layout_weight="1" />
+            <View style="@style/v_line" />
 
-        <View style="@style/v_line" />
+            <EditText
+                android:id="@+id/edit_task_recipient"
+                style="@style/style_task_detail_edittext"
+                android:layout_weight="1" />
 
-        <TextView
-            style="@style/style_task_detail_textview"
-            android:text="@string/task_recipient_phone" />
+            <View style="@style/v_line" />
 
-        <View style="@style/v_line" />
+            <TextView
+                style="@style/style_task_detail_textview"
+                android:text="@string/task_recipient_phone" />
 
-        <EditText
-            android:id="@+id/edit_task_recipient_phone"
-            style="@style/style_task_detail_edittext"
-            android:layout_weight="1" />
-    </TableRow>
+            <View style="@style/v_line" />
 
-    <View style="@style/h_line" />
+            <EditText
+                android:id="@+id/edit_task_recipient_phone"
+                style="@style/style_task_detail_edittext"
+                android:layout_weight="1" />
+        </TableRow>
 
-    <TableRow>
+        <View style="@style/h_line" />
 
-        <TextView
-            style="@style/style_task_detail_textview"
-            android:text="@string/task_accessory" />
+        <TableRow>
 
-        <View style="@style/v_line" />
+            <TextView
+                style="@style/style_task_detail_textview"
+                android:text="@string/task_accessory" />
 
-        <TextView
-            android:id="@+id/tv_task_accessory"
-            style="@style/style_task_detail_textview" />
-    </TableRow>
+            <View style="@style/v_line" />
 
-</TableLayout>
+            <TextView
+                android:id="@+id/tv_task_accessory"
+                style="@style/style_task_detail_textview" />
+        </TableRow>
+    </TableLayout>
+
+</ScrollView>
