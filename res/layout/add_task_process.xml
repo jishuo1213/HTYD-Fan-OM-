@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:ignore="HardcodedText" >
+
+    <TextView
+        android:id="@+id/content"
+        style="@style/style_task_detail_textview"
+        android:layout_height="wrap_content"
+        android:text="处理内容：" />
+
+    <EditText
+        android:id="@+id/edit_process_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/content"
+        android:layout_marginRight="10dp"
+        android:layout_toRightOf="@id/content"
+        android:hint="请输入本次处理内容"
+        android:textSize="15sp" />
+
+    <TableRow
+        android:id="@+id/row"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/edit_process_content"
+        android:layout_marginRight="10dp" >
+
+        <TextView
+            style="@style/style_task_detail_textview"
+            android:layout_height="wrap_content"
+            android:gravity="bottom"
+            android:text="开始处理时间：" />
+
+        <com.htyd.fan.om.util.ui.TextViewWithBottomLine
+            android:id="@+id/tv_process_start_time"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:hint="请选择开始处理时间"
+            android:padding="5dp"
+            android:textSize="15sp" />
+
+        <TextView
+            style="@style/style_task_detail_textview"
+            android:layout_height="wrap_content"
+            android:gravity="bottom"
+            android:text="本次处理耗时：" />
+
+        <com.htyd.fan.om.util.ui.TextViewWithBottomLine
+            android:id="@+id/tv_process_end_time"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:hint="请选择本次处理耗时："
+            android:padding="5dp"
+            android:textSize="15sp" />
+    </TableRow>
+
+    <TextView
+        android:id="@+id/tv_task_state"
+        style="@style/style_task_detail_textview"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/row"
+        android:gravity="bottom"
+        android:text="任务状态：" />
+
+    <RadioGroup
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/row"
+        android:orientation="horizontal"
+        android:layout_toRightOf="@id/tv_task_state" >
+
+        <RadioButton
+            android:id="@+id/radio_task_state_done"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="已完成"
+            android:textColor="@color/key_text" />
+        <RadioButton
+            android:id="@+id/radio_task_state_undone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="未完成"
+            android:textColor="@color/key_text" />
+    </RadioGroup>
+
+</RelativeLayout>
