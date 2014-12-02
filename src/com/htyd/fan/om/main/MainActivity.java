@@ -25,7 +25,7 @@ import android.widget.TextView;
 import com.htyd.fan.om.R;
 import com.htyd.fan.om.attendmanage.fragment.AttendCalendarFragment;
 import com.htyd.fan.om.main.fragment.TabFourFragment;
-import com.htyd.fan.om.main.fragment.TabTwoFragment;
+import com.htyd.fan.om.main.fragment.TodoReminde;
 import com.htyd.fan.om.taskmanage.fragment.TaskListFragment;
 import com.htyd.fan.om.util.ui.AttendOverflowMenu;
 import com.htyd.fan.om.util.ui.TaskOvewflowMenu;
@@ -83,7 +83,7 @@ public class MainActivity extends FragmentActivity {
 		tabDrawable = new Drawable[8];
 		TypedArray imgs = r.obtainTypedArray(R.array.tab_drawable_id);
 		AttendCalendarFragment tab1 = new AttendCalendarFragment();
-		TabTwoFragment tab2 = new TabTwoFragment();
+		TodoReminde tab2 = new TodoReminde();
 		TaskListFragment tab3 = new TaskListFragment();
 		TabFourFragment tab4 = new TabFourFragment();
 		TaskOvewflowMenu temp = (TaskOvewflowMenu)thirdProvider;

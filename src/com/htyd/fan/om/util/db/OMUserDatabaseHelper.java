@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.htyd.fan.om.model.AttendBean;
 import com.htyd.fan.om.model.TaskDetailBean;
+import com.htyd.fan.om.model.TaskProcessBean;
 import com.htyd.fan.om.util.base.Preferences;
 
 public class OMUserDatabaseHelper extends SQLiteOpenHelper {
@@ -25,6 +26,7 @@ public class OMUserDatabaseHelper extends SQLiteOpenHelper {
 		Log.i("fanjishuo____onCreate", db.getPath());
 		db.execSQL(SQLSentence.CREATE_TABLE_CHECK);
 		db.execSQL(SQLSentence.CREATE_TABLE_TASK);
+		db.execSQL(SQLSentence.CREATE_TABLE_TASK_PROCESS);
 	}
 
 	@Override
@@ -50,6 +52,15 @@ public class OMUserDatabaseHelper extends SQLiteOpenHelper {
 				SQLSentence.COLUMN_TASK_STATE + "= ?",
 				new String[] { String.valueOf(state) }, null, null, null);
 		return new TaskCursor(wrapper);
+	}
+
+	public TaskProcessCursor queryProcessByTaskId(int taskId) {
+		Cursor wrapper = getReadableDatabase().query(
+				SQLSentence.TABLE_TASK_PROCESS,
+				new String[] { SQLSentence.COLUMN_TASKPROCESS_TASK_ID },
+				SQLSentence.COLUMN_TASKPROCESS_TASK_ID + "= ?",
+				new String[] { String.valueOf(taskId) }, null, null, null);
+		return new TaskProcessCursor(wrapper);
 	}
 
 	public static class AttendCursor extends CursorWrapper {
@@ -107,9 +118,28 @@ public class OMUserDatabaseHelper extends SQLiteOpenHelper {
 			mBean.planEndTime = getLong(getColumnIndex(SQLSentence.COLUMN_TASK_PLAN_ENDTIME));
 			mBean.taskState = getInt(getColumnIndex(SQLSentence.COLUMN_TASK_STATE));
 			mBean.taskType = getInt(getColumnIndex(SQLSentence.COLUMN_TASK_TYPE));
-			Log.i("fanjishuo____getTask", mBean.taskType+"");
+			Log.i("fanjishuo____getTask", mBean.taskType + "");
 			return mBean;
 		}
 	}
 
+	public static class TaskProcessCursor extends CursorWrapper {
+
+		public TaskProcessCursor(Cursor cursor) {
+			super(cursor);
+		}
+
+		public TaskProcessBean getTaskProcess() {
+			TaskProcessBean mBean = new TaskProcessBean();
+			mBean.taskid = getInt(getColumnIndex(SQLSentence.COLUMN_TASKPROCESS_TASK_ID));
+			mBean.taskState = getInt(getColumnIndex(SQLSentence.COLUMN_TASKPROCESS_TASK_STATE));
+			mBean.startTime = getLong(getColumnIndex(SQLSentence.COLUMN_TASKPROCESS_STARTTIME));
+			mBean.endTime = getLong(getColumnIndex(SQLSentence.COLUMN_TASKPROCESS_ENDTIME));
+			mBean.createTime = getLong(getColumnIndex(SQLSentence.COLUMN_TASKPROCESS_CREATE_TIME));
+			mBean.processContent = getString(getColumnIndex(SQLSentence.COLUMN_TASKPROCESS_TASK_PROCESSWHAT));
+			mBean.processPerson = getString(getColumnIndex(SQLSentence.COLUMN_TASKPROCESS_PROCESS_PERSON));
+			mBean.personPhone = getString(getColumnIndex(SQLSentence.COLUMN_TASKPROCESS_PERSON_PHONE));
+			return mBean;
+		}
+	}
 }

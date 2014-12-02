@@ -69,8 +69,7 @@ public class NetOperating {
 	}
 
 	public static String getResultFromNet(Context context, JSONObject param,
-			String Url, String operate) throws InterruptedException,
-			ExecutionException {
+			String Url, String operate) throws Exception {
 		String result = "";
 		if (param == null) {
 			result = HttpHelper.GetResponse(context, Url + operate);
@@ -81,7 +80,7 @@ public class NetOperating {
 		}
 		Log.i("fanjishuo_____getResultFromNet", result);
 		if (result.equals("false") || result.length() == 0) {
-			throw new RuntimeException("请求数据失败");
+			throw new Exception("请求数据失败");
 		}
 		return result;
 	}

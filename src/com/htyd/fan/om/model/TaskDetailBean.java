@@ -9,8 +9,7 @@ import android.util.Log;
 
 public class TaskDetailBean implements Parcelable {
 
-	
-	public int taskId;//任务ID
+	public int taskId;// 任务ID
 	public String workProvince;// 任务所在省份
 	public String workCity;// 任务所在市
 	public String workDistrict;// 任务所在县区
@@ -26,16 +25,13 @@ public class TaskDetailBean implements Parcelable {
 	public String productType;// 产品类别
 	public long planStartTime;// 计划开始时间
 	public long planEndTime;// 计划结束时间
-	public long saveTime;//填写保存时间
+	public long saveTime;// 填写保存时间
 	public int taskState;// 任务状态//0:在处理任务 1:待领取任务 2:已完成任务
 	public int taskType;// 任务类别
 
-	
-	
-	
 	public TaskDetailBean() {
 	}
-	
+
 	public void setFromJson(JSONObject json) throws JSONException {
 		taskId = json.getInt("RWID");
 		installLocation = json.getString("AZDD");
@@ -48,10 +44,17 @@ public class TaskDetailBean implements Parcelable {
 		taskAccessory = json.getString("AZDD");
 		equipment = json.getString("AZDD");
 		productType = json.getString("AZDD");
-		taskState = Integer.parseInt(json.getString("RWZT"));
-		Log.i("fanjishuo____setFromJson", taskState+"taskState");
+		switch (Integer.parseInt(json.getString("RWZT"))) {
+		case 0:
+			taskState = 1;
+		case 1:
+			taskState = 0;
+		default:
+			taskState = 2;
+		}
+		Log.i("fanjishuo____setFromJson", taskState + "taskState");
 	}
-	
+
 	@Override
 	public int describeContents() {
 		return 0;

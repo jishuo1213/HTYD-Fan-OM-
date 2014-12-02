@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.htyd.fan.om.model.AttendBean;
 import com.htyd.fan.om.model.TaskDetailBean;
+import com.htyd.fan.om.model.TaskProcessBean;
 
 public class OMUserDatabaseManager {
 
@@ -68,12 +69,31 @@ public class OMUserDatabaseManager {
 		return db.insert(SQLSentence.TABLE_TASK, null, cv);
 	}
 
+	public long insertTaskProcessBean(TaskProcessBean mBean) {
+		ContentValues cv = new ContentValues();
+		cv.put(SQLSentence.COLUMN_TASKPROCESS_TASK_ID, mBean.taskid);
+		cv.put(SQLSentence.COLUMN_TASKPROCESS_TASK_STATE, mBean.taskState);
+		cv.put(SQLSentence.COLUMN_TASKPROCESS_STARTTIME, mBean.startTime);
+		cv.put(SQLSentence.COLUMN_TASKPROCESS_ENDTIME, mBean.endTime);
+		cv.put(SQLSentence.COLUMN_TASKPROCESS_CREATE_TIME, mBean.createTime);
+		cv.put(SQLSentence.COLUMN_TASKPROCESS_TASK_PROCESSWHAT,
+				mBean.processContent);
+		cv.put(SQLSentence.COLUMN_TASKPROCESS_PROCESS_PERSON,
+				mBean.processPerson);
+		cv.put(SQLSentence.COLUMN_TASKPROCESS_PERSON_PHONE, mBean.personPhone);
+		return db.insert(SQLSentence.TABLE_TASK_PROCESS, null, cv);
+	}
+
 	public Cursor queryAttendCursor(int monthNum) {
 		return mHelper.queryMonthAttend(monthNum);
 	}
 
 	public Cursor queryTaskCursorByState(int state) {
 		return mHelper.queryTaskByState(state);
+	}
+	
+	public Cursor queryProcessByTaskId(int taskId){
+		return mHelper.queryProcessByTaskId(taskId);
 	}
 
 	public void closeDb() {
@@ -85,9 +105,10 @@ public class OMUserDatabaseManager {
 
 	/**
 	 * 打开数据库 0：read 1：write
+	 * 
 	 * @param state
 	 */
-	
+
 	public void openDb(int state) {
 		if (state == 1) {
 			if (db.isReadOnly() || !db.isOpen()) {

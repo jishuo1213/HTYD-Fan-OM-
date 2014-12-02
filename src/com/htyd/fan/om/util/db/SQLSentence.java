@@ -69,4 +69,18 @@ public class SQLSentence {
 			+ "recipientphone text ,taskaccesspry text ,taskequipment text ,producttype text ,"
 			+ "planstarttime integer ,planendtime integer ,taskstate integer ,tasktype integer)";
 
+	public static final String TABLE_TASK_PROCESS = "taskprocess";
+	public static final String COLUMN_TASKPROCESS_ID = "_id";
+	public static final String COLUMN_TASKPROCESS_TASK_ID = "task_id";
+	public static final String COLUMN_TASKPROCESS_STARTTIME = "task_start_time";
+	public static final String COLUMN_TASKPROCESS_ENDTIME = "task_end_time";
+	public static final String COLUMN_TASKPROCESS_TASK_PROCESSWHAT = "task_process_what";
+	public static final String COLUMN_TASKPROCESS_TASK_STATE = "task_state";
+	public static final String COLUMN_TASKPROCESS_PROCESS_PERSON = "process_person";
+	public static final String COLUMN_TASKPROCESS_PERSON_PHONE = "person_phone";
+	public static final String COLUMN_TASKPROCESS_CREATE_TIME = "create_time";
+	
+	public  static final String CREATE_TABLE_TASK_PROCESS = "create table taskprocess ("
+			+ "_id integer primary key autoincrement, task_id integer references task(_id), task_start_time integer, task_end_time  integer, "
+			+" task_process_what text , task_state integer , process_person text, person_phone text, create_time integer)";
 }

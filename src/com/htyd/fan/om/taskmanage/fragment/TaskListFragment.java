@@ -85,6 +85,9 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 
 	private void initView(View v) {
 		mListView = (ListView) v.findViewById(R.id.list_my_task);
+		if(mListView.getAdapter() == null){
+			mListView.setAdapter(allTaskAdapter);
+		}
 		mListView.setOnItemClickListener(new TaskItemClickListener());
 	}
 
@@ -145,6 +148,7 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 			case 2:
 				return completedNum;
 			case -1:
+				Log.i("fanjishuo___getcount", (inProcessTaskNum + beReceiveNum + completedNum)+"");
 				return inProcessTaskNum + beReceiveNum + completedNum;
 			}
 			return 0;
@@ -163,7 +167,7 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 				if (position < inProcessTaskNum) {
 					return taskMap.get(INPROCESSINGTASK).get(position);
 				} else if (position >= inProcessTaskNum
-						&& position < (inProcessTaskNum + beReceiveNum - 1)) {
+						&& position < (inProcessTaskNum + beReceiveNum)) {
 					return taskMap.get(BERECEIVE).get(
 							position - inProcessTaskNum);
 				} else {
@@ -251,7 +255,7 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 				result = NetOperating.getResultFromNet(getContext(), params, Urls.TASKURL, "Operate=getAllRwxx");
 			} catch (InterruptedException | ExecutionException e) {
 				e.printStackTrace();
-			} catch (RuntimeException e){
+			} catch (Exception e){
 				UItoolKit.showToastShort(getContext(), e.getLocalizedMessage());
 			}
 			boolean success = false;
@@ -270,6 +274,7 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 
 	private class TaskCursorCallback implements LoaderCallbacks<Cursor> {
 
+		
 		@Override
 		public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 			return new TaskCursorLoader(getActivity(), args.getInt(TASKSTATE));
@@ -297,10 +302,10 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 						break;
 					}
 				}
+				allTaskAdapter = new TaskAdapter(-1);
 				if (mListView != null) {
 					mListView.setAdapter(allTaskAdapter);
 				}
-				allTaskAdapter = new TaskAdapter(-1);
 				inProcessTaskAdapter = new TaskAdapter(0);
 				beReceiveAdapter = new TaskAdapter(1);
 				completedAdapter = new TaskAdapter(2);

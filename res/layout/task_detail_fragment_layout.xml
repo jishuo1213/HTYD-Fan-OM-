@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" 
+    android:layout_height="wrap_content"
     android:layout_margin="10dp"
-    >
+    android:background="@color/activity_bg_color" >
 
     <TableLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_frame"
-        android:scrollbars="vertical" >
+        android:scrollbars="vertical"
+        android:shrinkColumns="0,2" >
 
-        <TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
 
             <TextView
                 style="@style/style_task_detail_textview"
@@ -22,6 +25,7 @@
             <TextView
                 android:id="@+id/tv_task_location"
                 style="@style/style_task_detail_textview"
+                android:layout_width="0dp"
                 android:layout_weight="1" />
 
             <View style="@style/v_line" />
@@ -40,7 +44,9 @@
 
         <View style="@style/h_line" />
 
-        <TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
 
             <TextView
                 style="@style/style_task_detail_textview"
@@ -55,7 +61,9 @@
 
         <View style="@style/h_line" />
 
-        <TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
 
             <TextView
                 style="@style/style_task_detail_textview"
@@ -71,7 +79,9 @@
 
         <View style="@style/h_line" />
 
-        <TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
 
             <TextView
                 style="@style/style_task_detail_textview"
@@ -82,14 +92,14 @@
             <EditText
                 android:id="@+id/edit_task_description"
                 style="@style/style_task_detail_edittext"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:lines="4" />
+                android:layout_weight="1" />
         </TableRow>
 
         <View style="@style/h_line" />
 
-        <TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
 
             <TextView
                 style="@style/style_task_detail_textview"
@@ -118,7 +128,9 @@
 
         <View style="@style/h_line" />
 
-        <TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
 
             <TextView
                 style="@style/style_task_detail_textview"
@@ -147,7 +159,9 @@
 
         <View style="@style/h_line" />
 
-        <TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
 
             <TextView
                 style="@style/style_task_detail_textview"
@@ -176,7 +190,9 @@
 
         <View style="@style/h_line" />
 
-        <TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
 
             <TextView
                 style="@style/style_task_detail_textview"
@@ -205,7 +221,9 @@
 
         <View style="@style/h_line" />
 
-        <TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
 
             <TextView
                 style="@style/style_task_detail_textview"
@@ -234,7 +252,9 @@
 
         <View style="@style/h_line" />
 
-        <TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
 
             <TextView
                 style="@style/style_task_detail_textview"

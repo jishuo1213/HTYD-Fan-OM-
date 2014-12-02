@@ -21,7 +21,7 @@ public class ReceiveTaskFragment extends Fragment {
 	private static final String SELECTTASK = "selecttask";
 
 	private TaskViewPanel mPanel;
-	private TaskDetailBean mBean;
+	protected TaskDetailBean mBean;
 
 
 	public static Fragment newInstance(Parcelable mBean) {
@@ -35,6 +35,7 @@ public class ReceiveTaskFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setHasOptionsMenu(true);
 		mBean = (TaskDetailBean) getArguments().get(SELECTTASK);
 	}
 
@@ -68,7 +69,7 @@ public class ReceiveTaskFragment extends Fragment {
 		return super.onOptionsItemSelected(item);
 	}
 
-	private class TaskViewPanel {
+	protected static class TaskViewPanel {
 
 		public TextView taskLocation, taskAddress/* taskAccessory */;
 		public EditText taskInstallLocation, taskTitle, taskDescription,
@@ -121,32 +122,19 @@ public class ReceiveTaskFragment extends Fragment {
 			taskRecipientPhone.setText(mBean.recipientPhone);
 		}
 
-		/*
-		 * public void getTaskBean(TaskDetailBean mBean) { mBean.installLocation
-		 * = taskInstallLocation.getText().toString(); mBean.taskTitle =
-		 * taskTitle.getText().toString(); mBean.taskDescription =
-		 * taskDescription.getText().toString(); mBean.taskContacts =
-		 * taskContacts.getText().toString(); mBean.contactsPhone =
-		 * taskContactsPhone.getText().toString(); mBean.equipment =
-		 * taskEquipment.getText().toString(); mBean.productType =
-		 * taskProductType.getText().toString(); mBean.recipientsName =
-		 * taskRecipient.getText().toString(); mBean.recipientPhone =
-		 * taskRecipientPhone.getText().toString(); }
-		 */
-
 		public void setViewEnable() {
-			taskInstallLocation.setEnabled(false);
-			taskTitle.setEnabled(false);
-			taskContacts.setEnabled(false);
-			taskContactsPhone.setEnabled(false);
-			taskPlanStartTime.setEnabled(false);
-			taskPlanEndTime.setEnabled(false);
-			taskEquipment.setEnabled(false);
-			taskProductType.setEnabled(false);
-			taskState.setEnabled(false);
-			taskType.setEnabled(false);
-			taskRecipient.setEnabled(false);
-			taskRecipientPhone.setEnabled(false);
+			taskInstallLocation.setFocusable(false);
+			taskTitle.setFocusable(false);
+			taskContacts.setFocusable(false);
+			taskContactsPhone.setFocusable(false);
+			taskPlanStartTime.setFocusable(false);
+			taskPlanEndTime.setFocusable(false);
+			taskEquipment.setFocusable(false);
+			taskProductType.setFocusable(false);
+			taskState.setFocusable(false);
+			taskType.setFocusable(false);
+			taskRecipient.setFocusable(false);
+			taskRecipientPhone.setFocusable(false);
 		}
 	}
 }

@@ -154,6 +154,9 @@ public class LoginActivity extends Activity {
 			} catch (ExecutionException e) {
 				e.printStackTrace();
 				return null;
+			} catch (Exception e) {
+				e.printStackTrace();
+				return null;
 			}
 		}
 	}

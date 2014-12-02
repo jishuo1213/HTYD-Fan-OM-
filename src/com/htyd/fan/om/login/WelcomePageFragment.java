@@ -98,6 +98,11 @@ public class WelcomePageFragment extends Fragment {
 		@Override
 		protected String doInBackground(String... params) {
 
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e2) {
+				e2.printStackTrace();
+			}
 			JSONObject param = new JSONObject();
 			String result = "";
 			try {
@@ -113,6 +118,9 @@ public class WelcomePageFragment extends Fragment {
 				e.printStackTrace();
 				return result;
 			} catch (ExecutionException e) {
+				e.printStackTrace();
+				return result;
+			} catch (Exception e) {
 				e.printStackTrace();
 				return result;
 			}
