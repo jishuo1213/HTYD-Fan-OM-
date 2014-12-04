@@ -44,13 +44,17 @@ public class TaskDetailBean implements Parcelable {
 		taskAccessory = json.getString("AZDD");
 		equipment = json.getString("AZDD");
 		productType = json.getString("AZDD");
+		Log.i("fanjishuo____setFromJson", Integer.parseInt(json.getString("RWZT"))+"");
 		switch (Integer.parseInt(json.getString("RWZT"))) {
 		case 0:
 			taskState = 1;
+			break;
 		case 1:
 			taskState = 0;
+			break;
 		default:
 			taskState = 2;
+			break;
 		}
 		Log.i("fanjishuo____setFromJson", taskState + "taskState");
 	}

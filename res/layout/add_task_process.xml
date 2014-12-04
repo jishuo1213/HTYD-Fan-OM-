@@ -86,7 +86,7 @@
             android:id="@+id/radio_task_state_undone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="未完成"
+            android:text="在处理"
             android:textColor="@color/key_text" />
     </RadioGroup>
 

@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" 
+    android:layout_height="match_parent"
     tools:ignore="HardcodedText" >
 
     <TextView
@@ -22,17 +22,25 @@
         android:gravity="center"
         android:padding="5dp"
         android:text="111111111111"
-        android:textColor="@color/key_text"
-        />
-    <TextView 
+        android:textColor="@color/key_text" />
+
+    <TextView
         android:id="@+id/tv_task_state"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:text="1111111111"
         android:gravity="center"
         android:padding="5dp"
-        android:layout_centerVertical="true"
-        />
+        android:text="1111111111" />
+
+    <TextView
+        android:id="@+id/tv_task_num"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:gravity="center"
+        android:padding="5dp"
+        android:layout_below="@id/tv_task_state"
+        android:text="1111111111" />
 
 </RelativeLayout>

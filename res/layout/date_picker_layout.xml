@@ -5,106 +5,144 @@
     android:layout_height="match_parent"
     tools:ignore="HardcodedText" >
 
-<!--     <View
-        android:id="@+id/depart"
-        android:layout_width="1dp"
-        android:layout_height="match_parent"
-        android:layout_centerHorizontal="true" /> -->
-
-    <Spinner
-        android:id="@+id/spinner_day"
-        android:layout_width="wrap_content"
+    <TableRow
+        android:id="@+id/timee"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_centerHorizontal="true"
-       />
+        android:layout_margin="5dp" >
 
-    <Spinner
-        android:id="@+id/spinner_month"
-        android:layout_width="wrap_content"
+        <Spinner
+            android:id="@+id/spinner_year"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="bottom"
+            android:layout_weight="1" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="年"
+            android:gravity="bottom"
+            android:textSize="20sp" />
+
+        <Spinner
+            android:id="@+id/spinner_month"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="bottom"
+            android:layout_weight="1" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="月"
+            android:gravity="bottom"
+            android:textSize="20sp" />
+
+        <Spinner
+            android:id="@+id/spinner_day"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="bottom"
+            android:layout_weight="1" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="日"
+            android:gravity="bottom"
+            android:textSize="20sp" />
+
+        <Spinner
+            android:id="@+id/spinner_hour"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="bottom"
+            android:layout_weight="1" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="点"
+            android:gravity="bottom"
+            android:textSize="20sp" />
+
+        <Spinner
+            android:id="@+id/spinner_minute"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_weight="1"
+            android:gravity="bottom"
+            android:calendarViewShown="false" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="分"
+            android:gravity="bottom"
+            android:textSize="20sp" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_toLeftOf="@id/spinner_day"
-       />
+        android:layout_below="@id/timee"
+        android:layout_margin="5dp" >
 
-    <Spinner
-        android:id="@+id/spinner_year"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_toLeftOf="@id/spinner_month"
-        />
+        <TextView
+            android:id="@+id/tv_today"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:padding="5dp"
+            android:text="今天"
+            android:textSize="20sp" />
 
-    <Spinner
-        android:id="@+id/spinner_hour"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_toRightOf="@id/spinner_day"
-        />
+        <TextView
+            android:id="@+id/tv_tomorrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:padding="5dp"
+            android:text="明天"
+            android:textSize="20sp" />
 
-    <Spinner
-        android:id="@+id/spinner_minute"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_toRightOf="@id/spinner_hour"
-        android:calendarViewShown="false"
-       />
+        <TextView
+            android:id="@+id/tv_after_tomorrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:padding="5dp"
+            android:text="后天"
+            android:textSize="20sp" />
 
- <!--    <TextView
-        android:id="@+id/tv_today"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@id/date_picker"
-        android:layout_below="@id/date_picker"
-        android:padding="5dp"
-        android:text="今天"
-        android:textSize="20sp" />
-
-    <TextView
-        android:id="@+id/tv_after_tomorrow"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignRight="@id/date_picker"
-        android:layout_below="@id/date_picker"
-        android:padding="5dp"
-        android:text="后天"
-        android:textSize="20sp" />
-
-    <TextView
-        android:id="@+id/tv_tomorrow"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/date_picker"
-        android:layout_toLeftOf="@id/tv_after_tomorrow"
-        android:layout_toRightOf="@id/tv_today"
-        android:gravity="center_horizontal"
-        android:padding="5dp"
-        android:text="明天"
-        android:textSize="20sp" />
-
-
-    <TextView
-        android:id="@+id/tv_pm"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignRight="@id/time_picker"
-        android:layout_below="@id/time_picker"
-        android:padding="5dp"
-        android:text="下午"
-        android:textSize="20sp" />
-
-    <TextView
-        android:id="@+id/tv_am"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@id/time_picker"
-        android:layout_below="@id/time_picker"
-        android:layout_toLeftOf="@id/tv_pm"
-        android:gravity="center_horizontal"
-        android:padding="5dp"
-        android:text="上午"
-        android:textSize="20sp" /> -->
+        <TextView
+            android:id="@+id/tv_am"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:padding="5dp"
+            android:text="上午"
+            android:textSize="20sp" />
+        
+        <TextView
+            android:id="@+id/tv_pm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:padding="5dp"
+            android:text="下午"
+            android:textSize="20sp" />
+    </TableRow>
 
 </RelativeLayout>

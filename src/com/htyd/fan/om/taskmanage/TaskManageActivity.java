@@ -10,6 +10,7 @@ import com.htyd.fan.om.R;
 import com.htyd.fan.om.taskmanage.fragment.CreateTaskFragment;
 import com.htyd.fan.om.taskmanage.fragment.ReceiveTaskFragment;
 import com.htyd.fan.om.taskmanage.fragment.TaskListFragment;
+import com.htyd.fan.om.taskmanage.fragment.TaskWithProcessFragment;
 import com.htyd.fan.om.util.base.SimpleFragmentActivity;
 
 public class TaskManageActivity extends SimpleFragmentActivity {
@@ -24,6 +25,9 @@ public class TaskManageActivity extends SimpleFragmentActivity {
 	protected Fragment[] createFragment() {
 		switch (getIntent().getIntExtra(TaskListFragment.TASKTYPE, -1)) {
 		case 0:// 在处理
+			Fragment processfragment = TaskWithProcessFragment.newInstance(getIntent()
+					.getParcelableExtra(TaskListFragment.SELECTITEM));
+			 return new Fragment[] { processfragment };
 		case 1:// 待领取
 			Fragment fragment = ReceiveTaskFragment.newInstance(getIntent()
 					.getParcelableExtra(TaskListFragment.SELECTITEM));

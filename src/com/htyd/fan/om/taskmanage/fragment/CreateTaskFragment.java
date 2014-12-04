@@ -20,12 +20,14 @@ import android.widget.TextView;
 
 import com.htyd.fan.om.R;
 import com.htyd.fan.om.model.TaskDetailBean;
+import com.htyd.fan.om.util.base.Utils;
 import com.htyd.fan.om.util.db.OMUserDatabaseManager;
 import com.htyd.fan.om.util.fragment.CameraActivity;
 import com.htyd.fan.om.util.fragment.CameraFragment;
 import com.htyd.fan.om.util.fragment.DateTimePickerDialog;
 import com.htyd.fan.om.util.fragment.RecodingDialogFragment;
 import com.htyd.fan.om.util.fragment.SelectLocationDialogFragment;
+import com.htyd.fan.om.util.fragment.SpendTimePickerDialog;
 import com.htyd.fan.om.util.ui.UItoolKit;
 
 public class CreateTaskFragment extends Fragment {
@@ -33,11 +35,13 @@ public class CreateTaskFragment extends Fragment {
 	private static final int REQUESTPHOTO = 1;//照片
 	private static final int REQUESTRECORDING = 2;//录音
 	private static final int REQUESTSTARTDATE = 3;//开始时间
+	private static final int REQUESTENDTIME = 4;//结束时间
 
 	private TaskViewPanel mPanel;
 	private TaskDetailBean mBean;
 	private SelectViewClickListener mListener;
 	private OMUserDatabaseManager mManager;
+	protected long startTime;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -72,7 +76,10 @@ public class CreateTaskFragment extends Fragment {
 			}else if(requestCode == REQUESTRECORDING){
 				UItoolKit.showToastShort(getActivity(), data.getStringArrayExtra(RecodingDialogFragment.FILEPATHARRAY)[0]);
 			}else if(requestCode == REQUESTSTARTDATE){
-				UItoolKit.showToastShort(getActivity(), data.getLongExtra(DateTimePickerDialog.EXTRATIME,0)+"");
+				startTime = data.getLongExtra(DateTimePickerDialog.EXTRATIME,0);
+				UItoolKit.showToastShort(getActivity(), Utils.formatTime(data.getLongExtra(DateTimePickerDialog.EXTRATIME,0)));
+			}else if(requestCode == REQUESTENDTIME){
+				UItoolKit.showToastShort(getActivity(), Utils.formatTime(data.getLongExtra(SpendTimePickerDialog.ENDTIME,0)));
 			}
 		}
 	}
@@ -203,6 +210,15 @@ public class CreateTaskFragment extends Fragment {
 				DateTimePickerDialog dateDialog = new DateTimePickerDialog();
 				dateDialog.setTargetFragment(CreateTaskFragment.this, REQUESTSTARTDATE);
 				dateDialog.show(fm, null);
+				break;
+			case R.id.tv_work_need_time:
+				if(startTime == 0){
+					UItoolKit.showToastShort(getActivity(), "请先选择开始时间");
+					return;
+				}
+				SpendTimePickerDialog spendDialog = (SpendTimePickerDialog) SpendTimePickerDialog.newInstance(startTime);
+				spendDialog.setTargetFragment(CreateTaskFragment.this, REQUESTENDTIME);
+				spendDialog.show(fm, null);
 				break;
 			}
 		}
