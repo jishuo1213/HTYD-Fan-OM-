@@ -1,5 +1,10 @@
 package com.htyd.fan.om.model;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.htyd.fan.om.util.base.Utils;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -52,5 +57,17 @@ public class TaskProcessBean implements Parcelable {
 			return mBean;
 		}
 	};
-
+public JSONObject toJson() throws JSONException{
+	JSONObject json = new JSONObject();
+	json.put("CLID", "1");
+	json.put("RWID", taskid+"");
+	json.put("KSSJ", Utils.formatTime(startTime));
+	json.put("JSSJ", Utils.formatTime(endTime));
+	json.put("CLNR", processContent);
+	json.put("WCBZ", taskState+"");
+	json.put("TXSJ", Utils.formatTime(createTime));
+	json.put("CLR", processPerson);
+	json.put("CLRDH", personPhone);
+	return json;
+}
 }

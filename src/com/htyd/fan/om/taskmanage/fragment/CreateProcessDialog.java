@@ -1,5 +1,9 @@
 package com.htyd.fan.om.taskmanage.fragment;
 
+import java.lang.reflect.Field;
+
+import org.json.JSONException;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -10,6 +14,7 @@ import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -20,8 +25,11 @@ import android.widget.TextView;
 import com.htyd.fan.om.R;
 import com.htyd.fan.om.model.TaskProcessBean;
 import com.htyd.fan.om.util.base.Utils;
+import com.htyd.fan.om.util.db.OMUserDatabaseManager;
 import com.htyd.fan.om.util.fragment.DateTimePickerDialog;
 import com.htyd.fan.om.util.fragment.SpendTimePickerDialog;
+import com.htyd.fan.om.util.https.NetOperating;
+import com.htyd.fan.om.util.https.Urls;
 import com.htyd.fan.om.util.ui.UItoolKit;
 
 public class CreateProcessDialog extends DialogFragment {
@@ -62,7 +70,7 @@ public class CreateProcessDialog extends DialogFragment {
 		builder.setView(v);
 		if(getArguments().getBoolean(SHOWORNOT,false)){
 			builder.setTitle("查看处理内容");
-			builder.setPositiveButton("确定", dialogListener);
+			builder.setPositiveButton("确定", null);
 			setViewShow((TaskProcessBean)getArguments().getParcelable(REPROCESSBEAN));
 		}else{
 			builder.setTitle("新建处理内容");
@@ -120,11 +128,24 @@ public class CreateProcessDialog extends DialogFragment {
 		public void onClick(DialogInterface dialog, int which) {
 			switch (which) {
 			case Dialog.BUTTON_POSITIVE:
+			    Field field;
+				try {
+					field = dialog.getClass().getSuperclass().getDeclaredField("mShowing");
+					field.setAccessible(true);
+					field.set(dialog, false);
+				} catch (NoSuchFieldException e) {
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				} catch (IllegalArgumentException e) {
+					e.printStackTrace();
+				}
 				if (!checkCanSave()) {
 					UItoolKit.showToastShort(getActivity(), "这些都不能不填");
-					return;
 				}
-				sendReult();
+				if(checkCanSave()){
+					sendReult();
+				}
 				break;
 			case Dialog.BUTTON_NEGATIVE:
 				break;
@@ -181,7 +202,52 @@ public class CreateProcessDialog extends DialogFragment {
 		}
 		mBean.createTime = System.currentTimeMillis();
 		i.putExtra(PROCESSBEAN, mBean);
+		startTask(mBean);
 		getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, i);
 	}
+	
+	private class SaveTaskProcessTask extends AsyncTask<TaskProcessBean, Void, Boolean>{
 
+		@Override
+		protected Boolean doInBackground(TaskProcessBean... params) {
+			String result = "";
+			try {
+				result = NetOperating.getResultFromNet(getActivity(), params[0].toJson(), Urls.TASKURL, "Operate=saveRwClxx");
+			} catch (JSONException e) {
+				e.printStackTrace();
+			} catch (Exception e) {
+				UItoolKit.showToastShort(getActivity(), "保存至网络出错");
+				e.printStackTrace();
+				return false;
+			}
+			parseResult(result);
+			long dbresult = OMUserDatabaseManager.getInstance(getActivity()).openDb(1).insertTaskProcessBean(params[0]);
+			if(dbresult != -1){
+				return true;
+			}
+			return false;
+		}
+
+		@Override
+		protected void onPostExecute(Boolean result) {
+			if(result){
+				UItoolKit.showToastShort(getActivity(), "保存成功");
+				dismiss();
+			}else{
+				UItoolKit.showToastShort(getActivity(), "保存不成功，请重试");
+			}
+			stopTask(this);
+		}
+	}
+	
+	protected void startTask(TaskProcessBean mBean){
+		new SaveTaskProcessTask().execute(mBean);
+	}
+
+	protected void stopTask(SaveTaskProcessTask task){
+		task.cancel(false);
+	}
+	
+	public void parseResult(String result) {
+	}
 }

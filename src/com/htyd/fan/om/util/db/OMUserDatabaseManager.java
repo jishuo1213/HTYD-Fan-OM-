@@ -107,19 +107,22 @@ public class OMUserDatabaseManager {
 	 * 打开数据库 0：read 1：write
 	 * 
 	 * @param state
+	 * @return 
 	 */
 
-	public void openDb(int state) {
+	public OMUserDatabaseManager openDb(int state) {
 		if (state == 1) {
 			if (db.isReadOnly() || !db.isOpen()) {
 				db = mHelper.getWritableDatabase();
 				Log.v("fanjishuo____opendb", "writeable");
-				return;
+				return sManager;
 			}
 		}
 		if (!db.isOpen()) {
 			Log.v("fanjishuo_____opendb", "readable");
 			db = mHelper.getReadableDatabase();
+			return sManager;
 		}
+		return sManager;
 	}
 }
