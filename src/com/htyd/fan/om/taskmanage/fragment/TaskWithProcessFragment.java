@@ -15,6 +15,7 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,7 +33,7 @@ import android.widget.TextView;
 import com.htyd.fan.om.R;
 import com.htyd.fan.om.model.TaskDetailBean;
 import com.htyd.fan.om.model.TaskProcessBean;
-import com.htyd.fan.om.taskmanage.fragment.ReceiveTaskFragment.TaskViewPanel;
+import com.htyd.fan.om.taskmanage.fragment.EditTaskFragment.TaskViewPanel;
 import com.htyd.fan.om.util.base.Utils;
 import com.htyd.fan.om.util.db.OMUserDatabaseHelper.TaskProcessCursor;
 import com.htyd.fan.om.util.db.OMUserDatabaseManager;
@@ -248,6 +249,7 @@ public class TaskWithProcessFragment extends Fragment {
 			listProcess = new ArrayList<TaskProcessBean>();
 			TaskProcessCursor cursor = (TaskProcessCursor) data;
 			if (cursor != null && cursor.moveToFirst()) {
+				Log.i("fanjishuo_____onLoadFinished", cursor.getCount()+"");
 				do {
 					listProcess.add(cursor.getTaskProcess());
 				} while (cursor.moveToNext());

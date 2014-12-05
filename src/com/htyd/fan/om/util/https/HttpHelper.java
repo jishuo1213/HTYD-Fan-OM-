@@ -68,14 +68,14 @@ public class HttpHelper {
 						if (nameValuePairs != null) {
 							for (int i = 0; i < nameValuePairs.length; i++) {
 								params.add(nameValuePairs[i]);
-								Log.d("HttpHelper", nameValuePairs[i]+"");
+								Log.d("fanjishuo____HttpHelper", nameValuePairs[i]+"");
 							}
 						}
 
 						UrlEncodedFormEntity urlEncoded = new UrlEncodedFormEntity(
 								params, CHARSET_UTF8);
 
-						Log.d("HttpHelper", url);
+						Log.d("fanjishuo____HttpHelper", url);
 
 						HttpPost httpPost = new HttpPost(url);
 						httpPost.setEntity(urlEncoded);
@@ -90,7 +90,7 @@ public class HttpHelper {
 								return "false";
 							}
 							HttpEntity resEntity = response.getEntity();
-
+							Log.i("fanjishuo____GetResponse", (resEntity == null)+"");
 							return (resEntity == null) ? null : EntityUtils
 									.toString(resEntity, CHARSET_UTF8);
 						} else {

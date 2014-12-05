@@ -19,4 +19,9 @@ public class Utils {
 		return new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss")
 		.format(time);
 	}
+	
+	@SuppressLint("SimpleDateFormat")
+	public static String formatTime(long time,String format){
+		return new SimpleDateFormat(format).format(time);
+	}
 }

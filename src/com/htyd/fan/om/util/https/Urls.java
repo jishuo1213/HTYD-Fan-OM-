@@ -12,4 +12,6 @@ public class Urls {
 	
 	public static final String TASKURL = BASEURL  + "rwAction?";
 	
+	public static final String TASKPROCESSURL = BASEURL  + "rwclAction?";
+	
 }

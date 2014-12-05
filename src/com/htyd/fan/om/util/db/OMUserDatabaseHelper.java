@@ -57,7 +57,7 @@ public class OMUserDatabaseHelper extends SQLiteOpenHelper {
 	public TaskProcessCursor queryProcessByTaskId(int taskId) {
 		Cursor wrapper = getReadableDatabase().query(
 				SQLSentence.TABLE_TASK_PROCESS,
-				new String[] { SQLSentence.COLUMN_TASKPROCESS_TASK_ID },
+				null,
 				SQLSentence.COLUMN_TASKPROCESS_TASK_ID + "= ?",
 				new String[] { String.valueOf(taskId) }, null, null, null);
 		return new TaskProcessCursor(wrapper);

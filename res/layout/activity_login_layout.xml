@@ -75,8 +75,8 @@
                 android:layout_marginTop="10dp"
                 android:background="@null"
                 android:hint="请输入密码"
-                android:padding="5dp"
                 android:inputType="textPassword"
+                android:padding="5dp"
                 android:textSize="20sp" />
 
             <Button
@@ -89,13 +89,30 @@
                 android:text="登录"
                 android:textColor="@color/key_text" />
 
-            <CheckBox
-                android:id="@+id/check_remember_pasword"
-                android:layout_width="wrap_content"
+            <TableRow
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="记住密码，下次自动登录"
-                android:textColor="@color/key_text" />
+                >
+
+                <CheckBox
+                    android:id="@+id/check_remember_pasword"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="记住密码"
+                    android:layout_weight="1"
+                    android:textColor="@color/key_text" />
+
+                <CheckBox
+                    android:id="@+id/check_auto_login"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="下次自动登录"
+                    android:layout_weight="1"
+                    android:textColor="@color/key_text" />
+            </TableRow>
         </LinearLayout>
     </ScrollView>
+
 </RelativeLayout>

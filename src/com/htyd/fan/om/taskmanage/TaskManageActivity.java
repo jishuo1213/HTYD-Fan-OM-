@@ -8,7 +8,7 @@ import android.view.MenuItem;
 
 import com.htyd.fan.om.R;
 import com.htyd.fan.om.taskmanage.fragment.CreateTaskFragment;
-import com.htyd.fan.om.taskmanage.fragment.ReceiveTaskFragment;
+import com.htyd.fan.om.taskmanage.fragment.EditTaskFragment;
 import com.htyd.fan.om.taskmanage.fragment.TaskListFragment;
 import com.htyd.fan.om.taskmanage.fragment.TaskWithProcessFragment;
 import com.htyd.fan.om.util.base.SimpleFragmentActivity;
@@ -28,11 +28,14 @@ public class TaskManageActivity extends SimpleFragmentActivity {
 			Fragment processfragment = TaskWithProcessFragment.newInstance(getIntent()
 					.getParcelableExtra(TaskListFragment.SELECTITEM));
 			 return new Fragment[] { processfragment };
-		case 1:// 待领取
-			Fragment fragment = ReceiveTaskFragment.newInstance(getIntent()
+		case -2:// 编辑任务
+			Fragment fragment = EditTaskFragment.newInstance(getIntent()
 					.getParcelableExtra(TaskListFragment.SELECTITEM));
 			return new Fragment[] { fragment };
 		case 2:// 已完成
+			Fragment taskendfragment = TaskWithProcessFragment.newInstance(getIntent()
+					.getParcelableExtra(TaskListFragment.SELECTITEM));
+			 return new Fragment[] { taskendfragment };
 		case -1:// 新建任务
 			return new Fragment[] { new CreateTaskFragment() };
 		}

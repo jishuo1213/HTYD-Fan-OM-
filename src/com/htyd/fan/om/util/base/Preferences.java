@@ -13,6 +13,7 @@ public class Preferences {
 	private static final String USERNAME = "username";
 	private static final String PASSWORD = "password";
 	private static final String ACCOUNT = "account";
+	private static final String REMBERPWD = "remberpwd";
 
 	private static SharedPreferences sp;
 	private static Editor editor;
@@ -38,7 +39,7 @@ public class Preferences {
 
 	public static String getUserName(Context context) {
 		sp = context.getSharedPreferences(PREFERENCENAME, Context.MODE_PRIVATE);
-		return sp.getString(USERNAME, null);
+		return sp.getString(USERNAME, "");
 	}
 
 	public static boolean getIsAutoLogin(Context context) {
@@ -75,5 +76,17 @@ public class Preferences {
 		editor = sp.edit();
 		editor.putString(ACCOUNT, account);
 		editor.apply();
+	}
+	
+	public static void setRememberPwd(Context context,boolean isrember){
+		sp = context.getSharedPreferences(PREFERENCENAME, Context.MODE_PRIVATE);
+		editor = sp.edit();
+		editor.putBoolean(REMBERPWD, isrember);
+		editor.apply();
+	}
+	
+	public static boolean getIsRemPwd(Context context){
+		sp = context.getSharedPreferences(PREFERENCENAME, Context.MODE_PRIVATE);
+		return sp.getBoolean(REMBERPWD, false);
 	}
 }

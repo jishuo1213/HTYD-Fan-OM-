@@ -59,15 +59,17 @@ public class TaskProcessBean implements Parcelable {
 	};
 public JSONObject toJson() throws JSONException{
 	JSONObject json = new JSONObject();
-	json.put("CLID", "1");
+	json.put("CLID", "15");
 	json.put("RWID", taskid+"");
-	json.put("KSSJ", Utils.formatTime(startTime));
-	json.put("JSSJ", Utils.formatTime(endTime));
+	json.put("KSSJ", Utils.formatTime(startTime,"yyyy-MM-dd HH:mm:ss"));
+	json.put("JSSJ", Utils.formatTime(endTime,"yyyy-MM-dd HH:mm:ss"));
 	json.put("CLNR", processContent);
 	json.put("WCBZ", taskState+"");
-	json.put("TXSJ", Utils.formatTime(createTime));
-	json.put("CLR", processPerson);
-	json.put("CLRDH", personPhone);
+	json.put("TXSJ", Utils.formatTime(createTime,"yyyy-MM-dd HH:mm:ss"));
+	json.put("CLR", "");
+	json.put("CLRDH", "");
+	json.put("TXRDH", "");
+	json.put("TXR", "");
 	return json;
 }
 }

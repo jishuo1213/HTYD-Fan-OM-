@@ -29,7 +29,7 @@ import com.htyd.fan.om.util.ui.UItoolKit;
 public class LoginActivity extends Activity {
 
 	protected EditText userNameEditText, passwordEditText;
-	private CheckBox checkBox;
+	private CheckBox checkBox, checkRemberPwd;
 	protected Button loginButton;
 	Context context;
 	protected String passWord;
@@ -46,9 +46,15 @@ public class LoginActivity extends Activity {
 		context = this;
 		userNameEditText = (EditText) findViewById(R.id.edit_login_username);
 		passwordEditText = (EditText) findViewById(R.id.edit_login_password);
-		checkBox = (CheckBox) findViewById(R.id.check_remember_pasword);
+		checkBox = (CheckBox) findViewById(R.id.check_auto_login);
+		checkRemberPwd = (CheckBox) findViewById(R.id.check_remember_pasword);
 		loginButton = (Button) findViewById(R.id.btn_log_in);
 		loginButton.setOnClickListener(LoginListener);
+		userNameEditText.setText(Preferences.getLastLoginAccount(getBaseContext()));
+		if(Preferences.getIsRemPwd(getBaseContext())){
+			passwordEditText.setText(Preferences.getLastLoginPassword(getBaseContext()));
+			checkRemberPwd.setChecked(true);
+		}
 	}
 
 	private OnClickListener LoginListener = new OnClickListener() {
@@ -120,7 +126,7 @@ public class LoginActivity extends Activity {
 				Preferences.setLastLoginAccount(getBaseContext(),
 						resultJson.getString("DLZH"));
 				Preferences.setLastLoginPassword(getBaseContext(),
-						DES.encryptDES(passWord,"19911213"));
+						DES.encryptDES(passWord, "19911213"));
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
@@ -128,6 +134,11 @@ public class LoginActivity extends Activity {
 				Preferences.setAutoLogin(getBaseContext(), true);
 			} else {
 				Preferences.setAutoLogin(getBaseContext(), false);
+			}
+			if (checkRemberPwd.isChecked()) {
+				Preferences.setRememberPwd(getBaseContext(), true);
+			} else {
+				Preferences.setRememberPwd(getBaseContext(), false);
 			}
 			loginButton.setEnabled(true);
 			Intent i = new Intent(getBaseContext(), MainActivity.class);

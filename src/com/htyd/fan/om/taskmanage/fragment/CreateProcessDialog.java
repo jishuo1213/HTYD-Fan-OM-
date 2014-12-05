@@ -3,6 +3,7 @@ package com.htyd.fan.om.taskmanage.fragment;
 import java.lang.reflect.Field;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -17,6 +18,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -35,9 +37,9 @@ import com.htyd.fan.om.util.ui.UItoolKit;
 public class CreateProcessDialog extends DialogFragment {
 
 	public static final String PROCESSBEAN = "processbean";
-	private static final int REQUESTSTARTTIME = 1;//开始时间
-	private static final int REQUESTENDTIME = 2;//结束时间
-	private static final String REPROCESSBEAN= "receprocessbean";
+	private static final int REQUESTSTARTTIME = 1;// 开始时间
+	private static final int REQUESTENDTIME = 2;// 结束时间
+	private static final String REPROCESSBEAN = "receprocessbean";
 	private static final String SHOWORNOT = "showornot";
 
 	private EditText processContent;
@@ -45,21 +47,22 @@ public class CreateProcessDialog extends DialogFragment {
 	private RadioButton done, undone;
 	protected long startTime, endTime;
 
-	public static DialogFragment newInstance(TaskProcessBean mBean,boolean showornot){
+	public static DialogFragment newInstance(TaskProcessBean mBean,
+			boolean showornot) {
 		DialogFragment fragment = new CreateProcessDialog();
 		Bundle bundle = new Bundle();
-		if(mBean != null)
+		if (mBean != null)
 			bundle.putParcelable(REPROCESSBEAN, mBean);
 		bundle.putBoolean(SHOWORNOT, showornot);
 		fragment.setArguments(bundle);
 		return fragment;
 	}
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 	}
-	
+
 	@SuppressLint("InflateParams")
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -68,26 +71,27 @@ public class CreateProcessDialog extends DialogFragment {
 		initView(v);
 		Builder builder = new AlertDialog.Builder(getActivity());
 		builder.setView(v);
-		if(getArguments().getBoolean(SHOWORNOT,false)){
+		if (getArguments().getBoolean(SHOWORNOT, false)) {
 			builder.setTitle("查看处理内容");
 			builder.setPositiveButton("确定", null);
-			setViewShow((TaskProcessBean)getArguments().getParcelable(REPROCESSBEAN));
-		}else{
+			setViewShow((TaskProcessBean) getArguments().getParcelable(
+					REPROCESSBEAN));
+		} else {
 			builder.setTitle("新建处理内容");
 			builder.setPositiveButton("保存", dialogListener);
 		}
-		
+
 		builder.setNegativeButton("取消", dialogListener);
 		return builder.create();
 	}
-	
+
 	private void setViewShow(TaskProcessBean mBean) {
 		processContent.setText(mBean.processContent);
 		selectStartTime.setText(Utils.formatTime(mBean.startTime));
 		selectEndTime.setText(Utils.formatTime(mBean.endTime));
-		if(mBean.taskState == 0){
+		if (mBean.taskState == 0) {
 			undone.setChecked(true);
-		}else{
+		} else {
 			done.setChecked(true);
 		}
 		processContent.setFocusable(false);
@@ -99,14 +103,17 @@ public class CreateProcessDialog extends DialogFragment {
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if(resultCode == Activity.RESULT_OK){
-			if(requestCode == REQUESTSTARTTIME){
-				startTime = data.getLongExtra(DateTimePickerDialog.EXTRATIME,0);
-				UItoolKit.showToastShort(getActivity(), Utils.formatTime(startTime));
+		if (resultCode == Activity.RESULT_OK) {
+			if (requestCode == REQUESTSTARTTIME) {
+				startTime = data
+						.getLongExtra(DateTimePickerDialog.EXTRATIME, 0);
+				UItoolKit.showToastShort(getActivity(),
+						Utils.formatTime(startTime));
 				selectStartTime.setText(Utils.formatTime(startTime));
-			}else if(requestCode == REQUESTENDTIME){
-				endTime = data.getLongExtra(SpendTimePickerDialog.ENDTIME,0);
-				UItoolKit.showToastShort(getActivity(), Utils.formatTime(endTime));
+			} else if (requestCode == REQUESTENDTIME) {
+				endTime = data.getLongExtra(SpendTimePickerDialog.ENDTIME, 0);
+				UItoolKit.showToastShort(getActivity(),
+						Utils.formatTime(endTime));
 				selectEndTime.setText(Utils.formatTime(endTime));
 			}
 		}
@@ -128,9 +135,10 @@ public class CreateProcessDialog extends DialogFragment {
 		public void onClick(DialogInterface dialog, int which) {
 			switch (which) {
 			case Dialog.BUTTON_POSITIVE:
-			    Field field;
 				try {
-					field = dialog.getClass().getSuperclass().getDeclaredField("mShowing");
+					Field field;
+					field = dialog.getClass().getSuperclass()
+							.getDeclaredField("mShowing");
 					field.setAccessible(true);
 					field.set(dialog, false);
 				} catch (NoSuchFieldException e) {
@@ -143,47 +151,62 @@ public class CreateProcessDialog extends DialogFragment {
 				if (!checkCanSave()) {
 					UItoolKit.showToastShort(getActivity(), "这些都不能不填");
 				}
-				if(checkCanSave()){
+				if (checkCanSave()) {
 					sendReult();
 				}
 				break;
 			case Dialog.BUTTON_NEGATIVE:
+				try {
+					Field field;
+					field = dialog.getClass().getSuperclass()
+							.getDeclaredField("mShowing");
+					field.setAccessible(true);
+					field.set(dialog, true);
+				} catch (NoSuchFieldException e) {
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				} catch (IllegalArgumentException e) {
+					e.printStackTrace();
+				}
 				break;
 			}
 		}
 	};
 
-	
-	
 	private View.OnClickListener selectTimeListener = new View.OnClickListener() {
-		
+
 		@Override
 		public void onClick(View v) {
 			FragmentManager fm = getActivity().getFragmentManager();
-			switch(v.getId()){
-			case  R.id.tv_process_start_time:
-				DateTimePickerDialog dateDialog = (DateTimePickerDialog) DateTimePickerDialog.newInstance(false);
-				dateDialog.setTargetFragment(CreateProcessDialog.this,REQUESTSTARTTIME);
+			switch (v.getId()) {
+			case R.id.tv_process_start_time:
+				DateTimePickerDialog dateDialog = (DateTimePickerDialog) DateTimePickerDialog
+						.newInstance(false);
+				dateDialog.setTargetFragment(CreateProcessDialog.this,
+						REQUESTSTARTTIME);
 				dateDialog.show(fm, null);
 				break;
-			case  R.id.tv_process_end_time:
-				if(startTime == 0){
+			case R.id.tv_process_end_time:
+				if (startTime == 0) {
 					UItoolKit.showToastShort(getActivity(), "先选择开始时间");
 					return;
 				}
-				SpendTimePickerDialog spendDialog = (SpendTimePickerDialog) SpendTimePickerDialog.newInstance(startTime);
-				spendDialog.setTargetFragment(CreateProcessDialog.this,REQUESTENDTIME);
+				SpendTimePickerDialog spendDialog = (SpendTimePickerDialog) SpendTimePickerDialog
+						.newInstance(startTime);
+				spendDialog.setTargetFragment(CreateProcessDialog.this,
+						REQUESTENDTIME);
 				spendDialog.show(fm, null);
 				break;
 			}
 		}
 	};
-	
+
 	protected boolean checkCanSave() {
 		return !(TextUtils.isEmpty(processContent.getText())
 				|| TextUtils.isEmpty(selectStartTime.getText())
-				|| TextUtils.isEmpty(selectEndTime.getText())
-				|| (!done.isChecked() && !undone.isChecked()));
+				|| TextUtils.isEmpty(selectEndTime.getText()) || (!done
+				.isChecked() && !undone.isChecked()));
 	}
 
 	protected void sendReult() {
@@ -191,7 +214,6 @@ public class CreateProcessDialog extends DialogFragment {
 			return;
 		}
 		TaskProcessBean mBean = new TaskProcessBean();
-		Intent i = new Intent();
 		mBean.processContent = processContent.getText().toString();
 		mBean.startTime = startTime;
 		mBean.endTime = endTime;
@@ -201,53 +223,73 @@ public class CreateProcessDialog extends DialogFragment {
 			mBean.taskState = 0;
 		}
 		mBean.createTime = System.currentTimeMillis();
-		i.putExtra(PROCESSBEAN, mBean);
 		startTask(mBean);
-		getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, i);
 	}
-	
-	private class SaveTaskProcessTask extends AsyncTask<TaskProcessBean, Void, Boolean>{
+
+	private class SaveTaskProcessTask extends
+			AsyncTask<TaskProcessBean, Void, Boolean> {
+		private TaskProcessBean mBean;
 
 		@Override
 		protected Boolean doInBackground(TaskProcessBean... params) {
 			String result = "";
+			mBean = params[0];
 			try {
-				result = NetOperating.getResultFromNet(getActivity(), params[0].toJson(), Urls.TASKURL, "Operate=saveRwClxx");
+				result = NetOperating.getResultFromNet(getActivity(),
+						params[0].toJson(), Urls.TASKPROCESSURL,
+						"Operate=saveRwClxx");
 			} catch (JSONException e) {
 				e.printStackTrace();
+				return false;
 			} catch (Exception e) {
-				UItoolKit.showToastShort(getActivity(), "保存至网络出错");
 				e.printStackTrace();
 				return false;
 			}
-			parseResult(result);
-			long dbresult = OMUserDatabaseManager.getInstance(getActivity()).openDb(1).insertTaskProcessBean(params[0]);
-			if(dbresult != -1){
-				return true;
+			Log.i("fanjishuo_____doInBackground", (params[0] == null) + "");
+			if (parseResult(result)) {
+				long dbresult = OMUserDatabaseManager
+						.getInstance(getActivity())
+						.insertTaskProcessBean(params[0]);
+				if (dbresult != -1) {
+					return true;
+				}
+			} else {
+				return false;
 			}
 			return false;
 		}
 
 		@Override
 		protected void onPostExecute(Boolean result) {
-			if(result){
+			if (result) {
 				UItoolKit.showToastShort(getActivity(), "保存成功");
 				dismiss();
-			}else{
+				Intent i = new Intent();
+				i.putExtra(PROCESSBEAN, mBean);
+				getTargetFragment().onActivityResult(getTargetRequestCode(),
+						Activity.RESULT_OK, i);
+			} else {
 				UItoolKit.showToastShort(getActivity(), "保存不成功，请重试");
 			}
 			stopTask(this);
 		}
 	}
-	
-	protected void startTask(TaskProcessBean mBean){
+
+	protected void startTask(TaskProcessBean mBean) {
 		new SaveTaskProcessTask().execute(mBean);
 	}
 
-	protected void stopTask(SaveTaskProcessTask task){
+	protected void stopTask(SaveTaskProcessTask task) {
 		task.cancel(false);
 	}
-	
-	public void parseResult(String result) {
+
+	public boolean parseResult(String result) {
+		try {
+			JSONObject json = new JSONObject(result);
+			return json.getBoolean("RESULT");
+		} catch (JSONException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 }

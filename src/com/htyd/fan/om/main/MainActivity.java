@@ -25,7 +25,6 @@ import android.widget.TextView;
 import com.htyd.fan.om.R;
 import com.htyd.fan.om.attendmanage.fragment.AttendCalendarFragment;
 import com.htyd.fan.om.main.fragment.TabFourFragment;
-import com.htyd.fan.om.main.fragment.TodoReminde;
 import com.htyd.fan.om.taskmanage.fragment.TaskListFragment;
 import com.htyd.fan.om.util.ui.AttendOverflowMenu;
 import com.htyd.fan.om.util.ui.TaskOvewflowMenu;
@@ -83,13 +82,13 @@ public class MainActivity extends FragmentActivity {
 		tabDrawable = new Drawable[8];
 		TypedArray imgs = r.obtainTypedArray(R.array.tab_drawable_id);
 		AttendCalendarFragment tab1 = new AttendCalendarFragment();
-		TodoReminde tab2 = new TodoReminde();
+//		TodoReminde tab2 = new TodoReminde();
 		TaskListFragment tab3 = new TaskListFragment();
 		TabFourFragment tab4 = new TabFourFragment();
 		TaskOvewflowMenu temp = (TaskOvewflowMenu)thirdProvider;
 		temp.setListener(tab3);
 		fragmentList.add(tab1);
-		fragmentList.add(tab2);
+//		fragmentList.add(tab2);
 		fragmentList.add(tab3);
 		fragmentList.add(tab4);
 		for (int i = 0; i < 8; i++) {
@@ -141,12 +140,12 @@ public class MainActivity extends FragmentActivity {
 	}
 
 	private class TabPanel {
-		private TextView tabOneTextView, tabTwoTextView, tabThreeTextView,
+		private TextView tabOneTextView, tabThreeTextView,
 				tabFourTextView;
 
 		public TabPanel() {
 			tabOneTextView = (TextView) findViewById(R.id.tv_tab_one);
-			tabTwoTextView = (TextView) findViewById(R.id.tv_tab_two);
+	//		tabTwoTextView = (TextView) findViewById(R.id.tv_tab_two);
 			tabThreeTextView = (TextView) findViewById(R.id.tv_tab_three);
 			tabFourTextView = (TextView) findViewById(R.id.tv_tab_four);
 		}
@@ -154,11 +153,11 @@ public class MainActivity extends FragmentActivity {
 		public void setTabTag() {
 			TabClickListener mClickListener = new TabClickListener();
 			tabOneTextView.setTag(0);
-			tabTwoTextView.setTag(1);
-			tabThreeTextView.setTag(2);
-			tabFourTextView.setTag(3);
+	//		tabTwoTextView.setTag(1);
+			tabThreeTextView.setTag(1);
+			tabFourTextView.setTag(2);
 			tabOneTextView.setOnClickListener(mClickListener);
-			tabTwoTextView.setOnClickListener(mClickListener);
+	//		tabTwoTextView.setOnClickListener(mClickListener);
 			tabThreeTextView.setOnClickListener(mClickListener);
 			tabFourTextView.setOnClickListener(mClickListener);
 		}
@@ -172,21 +171,21 @@ public class MainActivity extends FragmentActivity {
 					setTabImg(tabOneTextView, tabDrawable[0]);
 				}
 				break;
-			case 1:
+			/*case 1:
 				if (ispressed) {
 					setTabImg(tabTwoTextView, tabDrawable[5]);
 				} else {
 					setTabImg(tabTwoTextView, tabDrawable[1]);
 				}
-				break;
-			case 2:
+				break;*/
+			case 1:
 				if (ispressed) {
 					setTabImg(tabThreeTextView, tabDrawable[6]);
 				} else {
 					setTabImg(tabThreeTextView, tabDrawable[2]);
 				}
 				break;
-			case 3:
+			case 2:
 				if (ispressed) {
 					setTabImg(tabFourTextView, tabDrawable[7]);
 				} else {
@@ -222,12 +221,12 @@ public class MainActivity extends FragmentActivity {
 			menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 			break;
 		case 1:
-			menuItem.setVisible(false);
-			break;
-		case 2:
 			menuItem.setVisible(true);
 			menuItem.setActionProvider(thirdProvider);
 			menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+			break;
+		case 2:
+			menuItem.setVisible(false);
 			break;
 		case 3:
 			menuItem.setVisible(false);

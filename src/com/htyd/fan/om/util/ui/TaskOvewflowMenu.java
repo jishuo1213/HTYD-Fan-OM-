@@ -27,10 +27,10 @@ public class TaskOvewflowMenu extends BaseOverflowMenu {
 		customChooser.setIc_resource(R.drawable.ofm_add_icon);
 		customChooser.setTitle("在处理任务");
 		mList.add(customChooser);
-		customChooser = new CustomChooser();
+/*		customChooser = new CustomChooser();
 		customChooser.setIc_resource(R.drawable.ofm_card_icon);
 		customChooser.setTitle("待领取任务");
-		mList.add(customChooser);
+		mList.add(customChooser);*/
 		customChooser = new CustomChooser();
 		customChooser.setIc_resource(R.drawable.ofm_collect_icon);
 		customChooser.setTitle("已完成任务");

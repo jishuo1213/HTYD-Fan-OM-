@@ -22,19 +22,16 @@ import com.htyd.fan.om.R;
 import com.htyd.fan.om.model.TaskDetailBean;
 import com.htyd.fan.om.util.base.Utils;
 import com.htyd.fan.om.util.db.OMUserDatabaseManager;
-import com.htyd.fan.om.util.fragment.CameraActivity;
-import com.htyd.fan.om.util.fragment.CameraFragment;
 import com.htyd.fan.om.util.fragment.DateTimePickerDialog;
-import com.htyd.fan.om.util.fragment.RecodingDialogFragment;
 import com.htyd.fan.om.util.fragment.SelectLocationDialogFragment;
 import com.htyd.fan.om.util.fragment.SpendTimePickerDialog;
 import com.htyd.fan.om.util.ui.UItoolKit;
 
 public class CreateTaskFragment extends Fragment {
 
-	private static final int REQUESTPHOTO = 1;//照片
+/*	private static final int REQUESTPHOTO = 1;//照片
 	private static final int REQUESTRECORDING = 2;//录音
-	private static final int REQUESTSTARTDATE = 3;//开始时间
+*/	private static final int REQUESTSTARTDATE = 3;//开始时间
 	private static final int REQUESTENDTIME = 4;//结束时间
 
 	private TaskViewPanel mPanel;
@@ -71,10 +68,10 @@ public class CreateTaskFragment extends Fragment {
 				mBean.workCity = str[1];
 				mBean.workDistrict = str[2];
 				mPanel.taskWorkLocation.setText(mBean.getWorkLocation());
-			}else if(requestCode == REQUESTPHOTO){
+		/*	}else if(requestCode == REQUESTPHOTO){
 				UItoolKit.showToastShort(getActivity(), data.getStringExtra(CameraFragment.EXTRA_PHOTO_FILENAME));
 			}else if(requestCode == REQUESTRECORDING){
-				UItoolKit.showToastShort(getActivity(), data.getStringArrayExtra(RecodingDialogFragment.FILEPATHARRAY)[0]);
+				UItoolKit.showToastShort(getActivity(), data.getStringArrayExtra(RecodingDialogFragment.FILEPATHARRAY)[0]);*/
 			}else if(requestCode == REQUESTSTARTDATE){
 				startTime = data.getLongExtra(DateTimePickerDialog.EXTRATIME,0);
 				UItoolKit.showToastShort(getActivity(), Utils.formatTime(data.getLongExtra(DateTimePickerDialog.EXTRATIME,0)));
@@ -117,7 +114,7 @@ public class CreateTaskFragment extends Fragment {
 				.inflate(R.menu.add_accessory_menu, menu);
 	}
 
-	@Override
+/*	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_take_photo:
@@ -135,7 +132,7 @@ public class CreateTaskFragment extends Fragment {
 		default:
 			return super.onContextItemSelected(item);
 		}
-	}
+	}*/
 
 	
 	private void initView(View v) {
@@ -145,13 +142,13 @@ public class CreateTaskFragment extends Fragment {
 
 	private class TaskViewPanel {
 
-		private TextView addAccessory, taskWorkLocation, taskStartTime,
+		private TextView taskWorkLocation, taskStartTime,
 				taskNeedTime, taskEquipment, taskType;
 		private EditText taskTitle, taskDescription, taskInstallLocation,
 				taskContact, taskContactPhone;
 
 		public TaskViewPanel(View v) {
-			addAccessory = (TextView) v.findViewById(R.id.tv_add_accessory);
+//			addAccessory = (TextView) v.findViewById(R.id.tv_add_accessory);
 			taskTitle = (EditText) v.findViewById(R.id.edit_task_title);
 			taskDescription = (EditText) v
 					.findViewById(R.id.edit_task_description);
@@ -191,8 +188,8 @@ public class CreateTaskFragment extends Fragment {
 			taskNeedTime.setOnClickListener(mListener);
 			taskEquipment.setOnClickListener(mListener);
 			taskType.setOnClickListener(mListener);
-			addAccessory.setOnClickListener(mListener);
-			registerForContextMenu(addAccessory);
+/*			addAccessory.setOnClickListener(mListener);
+			registerForContextMenu(addAccessory);*/
 		}
 	}
 
@@ -207,7 +204,7 @@ public class CreateTaskFragment extends Fragment {
 				locationDialog.show(fm, null);
 				break;
 			case R.id.tv_start_time:
-				DateTimePickerDialog dateDialog = new DateTimePickerDialog();
+				DateTimePickerDialog dateDialog =  (DateTimePickerDialog) DateTimePickerDialog.newInstance(true);
 				dateDialog.setTargetFragment(CreateTaskFragment.this, REQUESTSTARTDATE);
 				dateDialog.show(fm, null);
 				break;

@@ -235,18 +235,6 @@
             </TableRow>
         </TableLayout>
 
-        <TextView
-            android:id="@+id/tv_add_accessory"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="10dp"
-            android:drawablePadding="10dp"
-            android:drawableRight="@drawable/add"
-            android:gravity="bottom"
-            android:text="添加附件"
-            android:textColor="@color/key_text"
-            android:textSize="18sp" />
     </LinearLayout>
 
 </ScrollView>

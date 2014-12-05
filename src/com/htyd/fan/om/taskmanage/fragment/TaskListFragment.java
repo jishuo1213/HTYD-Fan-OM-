@@ -18,10 +18,14 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
@@ -85,10 +89,11 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 
 	private void initView(View v) {
 		mListView = (ListView) v.findViewById(R.id.list_my_task);
-		if(mListView.getAdapter() == null){
+		if (mListView.getAdapter() == null) {
 			mListView.setAdapter(allTaskAdapter);
 		}
 		mListView.setOnItemClickListener(new TaskItemClickListener());
+		registerForContextMenu(mListView);
 	}
 
 	@Override
@@ -97,18 +102,43 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 		case 0:
 			mListView.setAdapter(inProcessTaskAdapter);
 			break;
-		case 1:
+/*		case 1:
 			mListView.setAdapter(beReceiveAdapter);
-			break;
-		case 2:
+			break;*/
+		case 1:
 			mListView.setAdapter(completedAdapter);
 			break;
-		case 3:
+		case 2:
 			Intent i = new Intent(getActivity(), TaskManageActivity.class);
 			i.putExtra(TASKTYPE, -1);
 			startActivity(i);
 			break;
 		}
+	}
+
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.menu_edit_task:
+			AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
+					.getMenuInfo();
+			int position = info.position;
+			Intent i = new Intent(getActivity(), TaskManageActivity.class);
+			TaskDetailBean mBean = (TaskDetailBean) mListView.getAdapter()
+					.getItem(position);
+			i.putExtra(SELECTITEM, mBean);
+			i.putExtra(TASKTYPE, -2);
+			startActivity(i);
+			return true;
+		default:
+			return super.onContextItemSelected(item);
+		}
+	}
+
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+		getActivity().getMenuInflater().inflate(R.menu.edit_task_menu, menu);
 	}
 
 	private class TaskItemClickListener implements OnItemClickListener {
@@ -119,7 +149,7 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 			TaskDetailBean mBean = (TaskDetailBean) parent.getAdapter()
 					.getItem(position);
 			Intent i = new Intent(getActivity(), TaskManageActivity.class);
-			i.putExtra(TASKTYPE, mBean.taskType);
+			i.putExtra(TASKTYPE, mBean.taskState);
 			i.putExtra(SELECTITEM, mBean);
 			startActivity(i);
 		}
@@ -148,7 +178,8 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 			case 2:
 				return completedNum;
 			case -1:
-				Log.i("fanjishuo___getcount", (inProcessTaskNum + beReceiveNum + completedNum)+"");
+				Log.i("fanjishuo___getcount",
+						(inProcessTaskNum + beReceiveNum + completedNum) + "");
 				return inProcessTaskNum + beReceiveNum + completedNum;
 			}
 			return 0;
@@ -235,27 +266,28 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 
 		@Override
 		protected Cursor loadFromNet() {
-			
+
 			JSONObject params = new JSONObject();
 			try {
 				params.put("RWBT", "");
 				params.put("TXSJ", "");
 				params.put("RWID", "");
-				if(taskState == -1){
+				if (taskState == -1) {
 					params.put("RWZT", "");
-				}else{
-					params.put("RWZT", taskState+"");
+				} else {
+					params.put("RWZT", taskState + "");
 				}
 			} catch (JSONException e1) {
 				e1.printStackTrace();
 			}
-			Log.i("fanjishuo____loadFromNet", "taskState"+taskState);
+			Log.i("fanjishuo____loadFromNet", "taskState" + taskState);
 			String result = "";
 			try {
-				result = NetOperating.getResultFromNet(getContext(), params, Urls.TASKURL, "Operate=getAllRwxx");
+				result = NetOperating.getResultFromNet(getContext(), params,
+						Urls.TASKURL, "Operate=getAllRwxx");
 			} catch (InterruptedException | ExecutionException e) {
 				e.printStackTrace();
-			} catch (Exception e){
+			} catch (Exception e) {
 				UItoolKit.showToastShort(getContext(), e.getLocalizedMessage());
 			}
 			boolean success = false;
@@ -264,9 +296,9 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
-			if(success){
+			if (success) {
 				return loadCursor();
-			}else{
+			} else {
 				return null;
 			}
 		}
@@ -274,7 +306,6 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 
 	private class TaskCursorCallback implements LoaderCallbacks<Cursor> {
 
-		
 		@Override
 		public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 			return new TaskCursorLoader(getActivity(), args.getInt(TASKSTATE));
@@ -286,9 +317,9 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 			if (data != null && data.moveToFirst()) {
 				isLoaderFinish = true;
 				TaskCursor taskCursor = (TaskCursor) data;
-				do{
+				do {
 					mList.add(taskCursor.getTask());
-				}while(data.moveToNext());
+				} while (data.moveToNext());
 				for (TaskDetailBean mBean : mList) {
 					switch (mBean.taskState) {
 					case 0:// 在处理任务

@@ -110,19 +110,16 @@ public class OMUserDatabaseManager {
 	 * @return 
 	 */
 
-	public OMUserDatabaseManager openDb(int state) {
+	public void openDb(int state) {
 		if (state == 1) {
 			if (db.isReadOnly() || !db.isOpen()) {
 				db = mHelper.getWritableDatabase();
 				Log.v("fanjishuo____opendb", "writeable");
-				return sManager;
 			}
 		}
 		if (!db.isOpen()) {
 			Log.v("fanjishuo_____opendb", "readable");
 			db = mHelper.getReadableDatabase();
-			return sManager;
 		}
-		return sManager;
 	}
 }
