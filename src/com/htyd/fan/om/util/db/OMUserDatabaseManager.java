@@ -49,10 +49,7 @@ public class OMUserDatabaseManager {
 
 	public long insertTaskBean(TaskDetailBean mBean) {
 		ContentValues cv = new ContentValues();
-		StringBuilder sb = new StringBuilder();
-		sb.append(mBean.workProvince).append("|").append(mBean.workCity)
-				.append("|").append(mBean.workDistrict);
-		cv.put(SQLSentence.COLUMN_TASK_WORK_LOCATION, sb.toString());
+		cv.put(SQLSentence.COLUMN_TASK_WORK_LOCATION, mBean.workLocation);
 		cv.put(SQLSentence.COLUMN_TASK_INSTALL_LOCATION, mBean.installLocation);
 		cv.put(SQLSentence.COLUMN_TASK_DESCRIPTION, mBean.taskDescription);
 		cv.put(SQLSentence.COLUMN_TASK_CONTACTS, mBean.taskContacts);

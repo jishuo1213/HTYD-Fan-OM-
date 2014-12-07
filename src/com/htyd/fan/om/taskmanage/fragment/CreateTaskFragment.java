@@ -62,16 +62,7 @@ public class CreateTaskFragment extends Fragment {
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (resultCode == Activity.RESULT_OK) {
 			if (requestCode == 0) {
-				String[] str = data.getStringExtra(
-						SelectLocationDialogFragment.LOCATION).split("\\|");
-				mBean.workProvince = str[0];
-				mBean.workCity = str[1];
-				mBean.workDistrict = str[2];
-				mPanel.taskWorkLocation.setText(mBean.getWorkLocation());
-		/*	}else if(requestCode == REQUESTPHOTO){
-				UItoolKit.showToastShort(getActivity(), data.getStringExtra(CameraFragment.EXTRA_PHOTO_FILENAME));
-			}else if(requestCode == REQUESTRECORDING){
-				UItoolKit.showToastShort(getActivity(), data.getStringArrayExtra(RecodingDialogFragment.FILEPATHARRAY)[0]);*/
+				mPanel.taskWorkLocation.setText(data.getStringExtra(SelectLocationDialogFragment.LOCATION));
 			}else if(requestCode == REQUESTSTARTDATE){
 				startTime = data.getLongExtra(DateTimePickerDialog.EXTRATIME,0);
 				UItoolKit.showToastShort(getActivity(), Utils.formatTime(data.getLongExtra(DateTimePickerDialog.EXTRATIME,0)));

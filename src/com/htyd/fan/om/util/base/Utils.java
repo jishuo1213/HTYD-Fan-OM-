@@ -15,6 +15,12 @@ public class Utils {
 	}
 	
 	@SuppressLint("SimpleDateFormat")
+	public static long parseDate(String source,String format) throws ParseException{
+		SimpleDateFormat sdf = new SimpleDateFormat(format);
+		return	sdf.parse(source).getTime();
+	}
+	
+	@SuppressLint("SimpleDateFormat")
 	public static String formatTime(long time){
 		return new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss")
 		.format(time);

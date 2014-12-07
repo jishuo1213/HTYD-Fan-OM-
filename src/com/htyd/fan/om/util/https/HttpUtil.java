@@ -15,6 +15,8 @@ public class HttpUtil {
 				HttpURLConnection connection = null;
 				try {
 					URL url = new URL(address);
+					Log.i("fanjishuo____sendHttpRequest", address);
+					Log.i("fanjishuo____sendHttpRequest", url.toString());
 					connection = (HttpURLConnection) url.openConnection();
 					connection.setRequestMethod("GET");
 					connection.setConnectTimeout(8000);

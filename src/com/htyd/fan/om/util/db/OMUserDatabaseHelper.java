@@ -100,11 +100,7 @@ public class OMUserDatabaseHelper extends SQLiteOpenHelper {
 			if (isBeforeFirst() || isAfterLast())
 				return null;
 			TaskDetailBean mBean = new TaskDetailBean();
-			String address = getString(getColumnIndex(SQLSentence.COLUMN_TASK_WORK_LOCATION));
-			String[] temp = address.split("|");
-			mBean.workProvince = temp[0];
-			mBean.workCity = temp[1];
-			mBean.workDistrict = temp[2];
+			mBean.workLocation = getString(getColumnIndex(SQLSentence.COLUMN_TASK_WORK_LOCATION));
 			mBean.installLocation = getString(getColumnIndex(SQLSentence.COLUMN_TASK_INSTALL_LOCATION));
 			mBean.taskDescription = getString(getColumnIndex(SQLSentence.COLUMN_TASK_DESCRIPTION));
 			mBean.taskContacts = getString(getColumnIndex(SQLSentence.COLUMN_TASK_CONTACTS));

@@ -10,9 +10,7 @@ import android.util.Log;
 public class TaskDetailBean implements Parcelable {
 
 	public int taskId;// 任务ID
-	public String workProvince;// 任务所在省份
-	public String workCity;// 任务所在市
-	public String workDistrict;// 任务所在县区
+	public String workLocation;//工作地点
 	public String installLocation;// 安装地点
 	public String taskTitle;// 任务标题
 	public String taskDescription;// 任务描述
@@ -34,6 +32,7 @@ public class TaskDetailBean implements Parcelable {
 
 	public void setFromJson(JSONObject json) throws JSONException {
 		taskId = json.getInt("RWID");
+		workLocation = json.getString("GZDD");
 		installLocation = json.getString("AZDD");
 		taskTitle = json.getString("RWBT");
 		taskDescription = json.getString("RWMS");
@@ -44,16 +43,17 @@ public class TaskDetailBean implements Parcelable {
 		taskAccessory = json.getString("AZDD");
 		equipment = json.getString("AZDD");
 		productType = json.getString("AZDD");
-		Log.i("fanjishuo____setFromJson", Integer.parseInt(json.getString("RWZT"))+"");
+		Log.i("fanjishuo____setFromJson",
+				Integer.parseInt(json.getString("RWZT")) + "");
 		switch (Integer.parseInt(json.getString("RWZT"))) {
-		case 0://待领取
-			taskState = 0;//在处理
+		case 0:// 待领取
+			taskState = 0;// 在处理
 			break;
 		case 1:
 			taskState = 0;
 			break;
 		default:
-			taskState = 2;//已完成
+			taskState = 2;// 已完成
 			break;
 		}
 		Log.i("fanjishuo____setFromJson", taskState + "taskState");
@@ -67,9 +67,7 @@ public class TaskDetailBean implements Parcelable {
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeInt(taskId);
-		dest.writeString(workProvince);
-		dest.writeString(workCity);
-		dest.writeString(workDistrict);
+		dest.writeString(workLocation);
 		dest.writeString(installLocation);
 		dest.writeString(taskTitle);
 		dest.writeString(taskDescription);
@@ -99,9 +97,7 @@ public class TaskDetailBean implements Parcelable {
 		public TaskDetailBean createFromParcel(Parcel source) {
 			TaskDetailBean mBean = new TaskDetailBean();
 			mBean.taskId = source.readInt();
-			mBean.workProvince = source.readString();
-			mBean.workCity = source.readString();
-			mBean.workDistrict = source.readString();
+			mBean.workLocation = source.readString();
 			mBean.installLocation = source.readString();
 			mBean.taskTitle = source.readString();
 			mBean.taskDescription = source.readString();
@@ -123,13 +119,24 @@ public class TaskDetailBean implements Parcelable {
 
 	public String getDetailAddress() {
 		StringBuilder sb = new StringBuilder();
-		return sb.append(workProvince).append(workCity).append(workDistrict)
+		return sb.append(workLocation)
 				.append(installLocation).toString();
 	}
 
-	public String getWorkLocation() {
-		StringBuilder sb = new StringBuilder();
-		return sb.append(workProvince).append(workCity).append(workDistrict)
-				.toString();
+	@Override
+	public boolean equals(Object o) {
+		TaskDetailBean mBean = (TaskDetailBean) o;
+		return taskId == mBean.taskId
+				&& getDetailAddress().equals(mBean.getDetailAddress())
+				&& taskTitle.equals(mBean.taskTitle)
+				&& taskDescription.equals(mBean.taskDescription)
+				&& taskAccessory.equals(mBean.taskAccessory)
+				&& equipment.equals(mBean.equipment)
+				&& productType.equals(mBean.productType)
+				&& planStartTime == mBean.planStartTime
+				&& planEndTime == mBean.planEndTime
+				&& saveTime == mBean.saveTime && taskState == mBean.taskState
+				&& taskType == mBean.taskType;
 	}
+
 }

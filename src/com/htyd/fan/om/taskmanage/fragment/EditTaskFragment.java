@@ -1,7 +1,9 @@
 package com.htyd.fan.om.taskmanage.fragment;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.view.LayoutInflater;
@@ -25,11 +27,15 @@ import com.htyd.fan.om.util.ui.UItoolKit;
 public class EditTaskFragment extends Fragment {
 
 	private static final String SELECTTASK = "selecttask";
+	private static final int REQUESTSTARTTIME = 1;
+	private static final int REQUESTENDTIME = 2;
+	private static final int REQUESTLOCATION = 0;
 
 	private TaskViewPanel mPanel;
 	protected TaskDetailBean mBean;
-
-
+	private long startTime;
+	
+	
 	public static Fragment newInstance(Parcelable mBean) {
 		Bundle args = new Bundle();
 		args.putParcelable(SELECTTASK, mBean);
@@ -57,7 +63,7 @@ public class EditTaskFragment extends Fragment {
 	private void initView(View v) {
 		mPanel = new TaskViewPanel(v);
 		mPanel.setTaskShow(mBean);
-//		mPanel.setViewEnable();
+		// mPanel.setViewEnable();
 		mPanel.taskLocation.setOnClickListener(dialogClickListener);
 		mPanel.taskAddress.setOnClickListener(dialogClickListener);
 		mPanel.taskPlanStartTime.setOnClickListener(dialogClickListener);
@@ -78,55 +84,75 @@ public class EditTaskFragment extends Fragment {
 		 */
 		return super.onOptionsItemSelected(item);
 	}
-	
+
 	private OnClickListener dialogClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
 			FragmentManager fm = getActivity().getFragmentManager();
-			switch(v.getId()){
+			switch (v.getId()) {
 			case R.id.tv_task_location:
 				SelectLocationDialogFragment locationDialog = new SelectLocationDialogFragment();
-				locationDialog.setTargetFragment(EditTaskFragment.this, 0);
+				locationDialog.setTargetFragment(EditTaskFragment.this,
+						REQUESTLOCATION);
 				locationDialog.show(fm, null);
 				break;
 			case R.id.edit_task_plan_starttime:
-				DateTimePickerDialog dateDialog =  (DateTimePickerDialog) DateTimePickerDialog.newInstance(true);
-				dateDialog.setTargetFragment(EditTaskFragment.this, REQUESTSTARTDATE);
+				DateTimePickerDialog dateDialog = (DateTimePickerDialog) DateTimePickerDialog
+						.newInstance(true);
+				dateDialog.setTargetFragment(EditTaskFragment.this,
+						REQUESTSTARTTIME);
 				dateDialog.show(fm, null);
 				break;
 			case R.id.edit_task_plan_endtime:
-				if(startTime == 0){
+				if (startTime == 0) {
 					UItoolKit.showToastShort(getActivity(), "请先选择开始时间");
 					return;
 				}
-				SpendTimePickerDialog spendDialog = (SpendTimePickerDialog) SpendTimePickerDialog.newInstance(startTime);
-				spendDialog.setTargetFragment(CreateTaskFragment.this, REQUESTENDTIME);
+				SpendTimePickerDialog spendDialog = (SpendTimePickerDialog) SpendTimePickerDialog
+						.newInstance(startTime);
+				spendDialog.setTargetFragment(EditTaskFragment.this,
+						REQUESTENDTIME);
 				spendDialog.show(fm, null);
 				break;
 			}
 		}
 	};
 
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (resultCode == Activity.RESULT_OK) {
+			if (requestCode == REQUESTLOCATION) {
+/*				String[] str = data.getStringExtra(
+						SelectLocationDialogFragment.LOCATION).split("\\|");
+				mBean.workProvince = str[0];
+				mBean.workCity = str[1];
+				mBean.workDistrict = str[2];*/
+				mPanel.taskLocation.setText(data.getStringExtra(SelectLocationDialogFragment.LOCATION));
+			} else if (requestCode == REQUESTSTARTTIME) {
+				startTime = data.getLongExtra(DateTimePickerDialog.EXTRATIME, 0);
+				mPanel.taskPlanStartTime.setText(Utils.formatTime(startTime));
+			} else if (requestCode == REQUESTENDTIME) {
+				long endTime = data.getLongExtra(SpendTimePickerDialog.ENDTIME, 0);
+				mPanel.taskPlanEndTime.setText(Utils.formatTime(endTime));
+			}
+		}
+	};
+
 	protected static class TaskViewPanel {
 
-		public TextView taskLocation, taskAddress,taskPlanStartTime,taskPlanEndTime;/* taskAccessory */;
+		public TextView taskLocation, taskAddress, taskPlanStartTime,
+				taskPlanEndTime;/* taskAccessory */;
 		public EditText taskInstallLocation, taskTitle, taskDescription,
-				taskEquipment, taskProductType, taskState,
-				taskType, taskRecipient, taskRecipientPhone;
+				taskEquipment, taskProductType, taskState, taskType,
+				taskRecipient, taskRecipientPhone;
 
 		public TaskViewPanel(View v) {
 			taskLocation = (TextView) v.findViewById(R.id.tv_task_location);
 			taskAddress = (TextView) v.findViewById(R.id.tv_task_address);
-			// taskAccessory = (TextView)
-			// v.findViewById(R.id.tv_task_accessory);
 			taskInstallLocation = (EditText) v
 					.findViewById(R.id.edit_task_install_location);
 			taskTitle = (EditText) v.findViewById(R.id.edit_task_title);
 			taskDescription = (EditText) v
 					.findViewById(R.id.edit_task_description);
-/*			taskContacts = (EditText) v.findViewById(R.id.edit_task_contacts);
-			taskContactsPhone = (EditText) v
-					.findViewById(R.id.edit_task_contacts_phone);*/
 			taskPlanStartTime = (TextView) v
 					.findViewById(R.id.edit_task_plan_starttime);
 			taskPlanEndTime = (TextView) v
@@ -139,18 +165,15 @@ public class EditTaskFragment extends Fragment {
 			taskRecipient = (EditText) v.findViewById(R.id.edit_task_recipient);
 			taskRecipientPhone = (EditText) v
 					.findViewById(R.id.edit_task_recipient_phone);
-			
-			
+
 		}
 
 		public void setTaskShow(TaskDetailBean mBean) {
-			taskLocation.setText(mBean.getWorkLocation());
+			taskLocation.setText(mBean.workLocation);
 			taskAddress.setText(mBean.getDetailAddress());
 			taskInstallLocation.setText(mBean.installLocation);
 			taskTitle.setText(mBean.taskTitle);
 			taskDescription.setText(mBean.taskDescription);
-/*			taskContacts.setText(mBean.taskContacts);
-			taskContactsPhone.setText(mBean.contactsPhone);*/
 			taskPlanStartTime.setText(Utils.formatTime(mBean.planStartTime));
 			taskPlanEndTime.setText(Utils.formatTime(mBean.planEndTime));
 			taskEquipment.setText(mBean.equipment);
@@ -164,8 +187,6 @@ public class EditTaskFragment extends Fragment {
 		public void setViewEnable() {
 			taskInstallLocation.setFocusable(false);
 			taskTitle.setFocusable(false);
-/*			taskContacts.setFocusable(false);
-			taskContactsPhone.setFocusable(false);*/
 			taskPlanStartTime.setFocusable(false);
 			taskPlanEndTime.setFocusable(false);
 			taskEquipment.setFocusable(false);
@@ -176,4 +197,11 @@ public class EditTaskFragment extends Fragment {
 			taskRecipientPhone.setFocusable(false);
 		}
 	}
+	
+	private TaskDetailBean getTaskBean(){
+		TaskDetailBean taskBean = new TaskDetailBean();
+		taskBean.taskId = mBean.taskId;
+		return taskBean;
+	} 
+	
 }
