@@ -8,13 +8,11 @@ import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -23,10 +21,7 @@ import android.widget.TextView;
 import com.htyd.fan.om.R;
 import com.htyd.fan.om.model.TaskDetailBean;
 import com.htyd.fan.om.util.base.Utils;
-import com.htyd.fan.om.util.fragment.CameraActivity;
-import com.htyd.fan.om.util.fragment.CameraFragment;
 import com.htyd.fan.om.util.fragment.DateTimePickerDialog;
-import com.htyd.fan.om.util.fragment.RecodingDialogFragment;
 import com.htyd.fan.om.util.fragment.SelectLocationDialogFragment;
 import com.htyd.fan.om.util.fragment.SpendTimePickerDialog;
 import com.htyd.fan.om.util.ui.UItoolKit;
@@ -34,9 +29,9 @@ import com.htyd.fan.om.util.ui.UItoolKit;
 public class EditTaskFragment extends Fragment {
 
 	private static final String SELECTTASK = "selecttask";
-	private static final int REQUESTPHOTO = 3;//照片
+/*	private static final int REQUESTPHOTO = 3;//照片
 	private static final int REQUESTRECORDING = 4;//录音
-	
+*/	
 	private static final int REQUESTSTARTTIME = 1;//开始时间
 	private static final int REQUESTENDTIME = 2;//结束时间
 	private static final int REQUESTLOCATION = 0;//工作地点
@@ -77,7 +72,7 @@ public class EditTaskFragment extends Fragment {
 		mPanel.taskAddress.setOnClickListener(dialogClickListener);
 		mPanel.taskPlanStartTime.setOnClickListener(dialogClickListener);
 		mPanel.taskPlanEndTime.setOnClickListener(dialogClickListener);
-		registerForContextMenu(mPanel.taskAccessory);
+		mPanel.taskAccessory.setOnClickListener(dialogClickListener);
 		getActivity().getActionBar().setTitle("编辑任务");
 	}
 
@@ -87,7 +82,7 @@ public class EditTaskFragment extends Fragment {
 		inflater.inflate(R.menu.task_edit_menu, menu);
 	}
 
-	@Override
+/*	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
 		getActivity().getMenuInflater()
@@ -112,7 +107,7 @@ public class EditTaskFragment extends Fragment {
 		default:
 			return super.onContextItemSelected(item);
 		}
-	}
+	}*/
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -183,12 +178,12 @@ public class EditTaskFragment extends Fragment {
 				long endTime = data.getLongExtra(SpendTimePickerDialog.ENDTIME,
 						0);
 				mPanel.taskPlanEndTime.setText(Utils.formatTime(endTime));
-			}else if (requestCode == REQUESTPHOTO) {
+			}/*else if (requestCode == REQUESTPHOTO) {
 				UItoolKit.showToastShort(getActivity(), data
 						.getStringExtra(CameraFragment.EXTRA_PHOTO_FILENAME));
 			} else if (requestCode == REQUESTRECORDING) {
 				UItoolKit.showToastShort(getActivity(),data.getStringArrayExtra(RecodingDialogFragment.FILEPATHARRAY)[0]);
-			}
+			}*/
 		}
 	};
 

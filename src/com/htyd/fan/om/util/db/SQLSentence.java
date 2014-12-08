@@ -38,14 +38,17 @@ public class SQLSentence {
 	public static final String COLUMN_ADDRESS = "location";
 	public static final String COLUMN_MONTH = "month";
 
-/*	public static final String CREATE_TABLE_CHECK = "create table check ("
-			+ "_id integer primary key autoincrement, time integer ,latitude real ,longitude real ,"
-			+ "addstate text, addsort text, name text ,location text ,month integer)";*/
-	
-	public static final  String CREATE_TABLE_CHECK = "create table attend_check (" 
+	/*
+	 * public static final String CREATE_TABLE_CHECK = "create table check (" +
+	 * "_id integer primary key autoincrement, time integer ,latitude real ,longitude real ,"
+	 * +
+	 * "addstate text, addsort text, name text ,location text ,month integer)";
+	 */
+
+	public static final String CREATE_TABLE_CHECK = "create table attend_check ("
 			+ "_id integer primary key autoincrement, time integer ,latitude real ,"
-			+"longitude real ,addstate text ,addsort text ,name text, location text ,month integer)";
-	
+			+ "longitude real ,addstate text ,addsort text ,name text, location text ,month integer)";
+
 	public static final String TABLE_TASK = "task";
 	public static final String COLUMN_TASK_ID = "_id";
 	public static final String COLUMN_TASK_WORK_LOCATION = "worklocation";
@@ -79,8 +82,19 @@ public class SQLSentence {
 	public static final String COLUMN_TASKPROCESS_PROCESS_PERSON = "process_person";
 	public static final String COLUMN_TASKPROCESS_PERSON_PHONE = "person_phone";
 	public static final String COLUMN_TASKPROCESS_CREATE_TIME = "create_time";
-	
-	public  static final String CREATE_TABLE_TASK_PROCESS = "create table taskprocess ("
+
+	public static final String CREATE_TABLE_TASK_PROCESS = "create table taskprocess ("
 			+ "_id integer primary key autoincrement, task_id integer references task(_id), task_start_time integer, task_end_time  integer, "
-			+" task_process_what text , task_state integer , process_person text, person_phone text, create_time integer)";
+			+ " task_process_what text , task_state integer , process_person text, person_phone text, create_time integer)";
+
+	public static final String TABLE_TASK_ACCESSORY = "taskaccessory";
+	public static final String COLUMN_TASK_ACCESSORY_ID = "_id";
+	public static final String COLUMN_TASK_ACCESSORY_TASKID = "task_id";
+	public static final String COLUMN_TASK_ACCESSORY_PATH = "accessory_path";
+	public static final String COLUMN_TASK_ACCESSORY_STATE = "accessory_state";
+	public static final String COLUMN_TASK_ACCESSORY_TYPE = "accessory_type";
+
+	public static final String CREATE_TABLE_TASK_ACCESSORY = "create table taskaccessory ("
+			+ "_id integer primary key autoincrement, task_id integer references task(_id), accessory_path text"
+			+ ", accessory_state integer ,accessory_type integer)";
 }

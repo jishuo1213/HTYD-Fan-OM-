@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:ignore="HardcodedText" 
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/tv_add_accessory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:drawableLeft="@drawable/add"
+        android:drawablePadding="5dp"
+        android:hint="点击添加附件"
+        android:gravity="center_vertical"
+        android:textColor="@color/key_text"
+        android:textSize="18sp"
+        />
+    
+    <ListView
+        android:id="@+id/list_accessory" 
+        android:layout_margin="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:divider="@color/key_text"
+        android:dividerHeight="1px"
+        />
+
+</LinearLayout>

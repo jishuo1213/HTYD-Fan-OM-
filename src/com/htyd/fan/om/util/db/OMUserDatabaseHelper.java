@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.htyd.fan.om.model.AffiliatedFileBean;
 import com.htyd.fan.om.model.AttendBean;
 import com.htyd.fan.om.model.TaskDetailBean;
 import com.htyd.fan.om.model.TaskProcessBean;
@@ -27,6 +28,7 @@ public class OMUserDatabaseHelper extends SQLiteOpenHelper {
 		db.execSQL(SQLSentence.CREATE_TABLE_CHECK);
 		db.execSQL(SQLSentence.CREATE_TABLE_TASK);
 		db.execSQL(SQLSentence.CREATE_TABLE_TASK_PROCESS);
+		db.execSQL(SQLSentence.CREATE_TABLE_TASK_ACCESSORY);
 	}
 
 	@Override
@@ -56,11 +58,18 @@ public class OMUserDatabaseHelper extends SQLiteOpenHelper {
 
 	public TaskProcessCursor queryProcessByTaskId(int taskId) {
 		Cursor wrapper = getReadableDatabase().query(
-				SQLSentence.TABLE_TASK_PROCESS,
-				null,
+				SQLSentence.TABLE_TASK_PROCESS, null,
 				SQLSentence.COLUMN_TASKPROCESS_TASK_ID + "= ?",
 				new String[] { String.valueOf(taskId) }, null, null, null);
 		return new TaskProcessCursor(wrapper);
+	}
+
+	public TaskAccessoryCursor queryAccessoryByTaskId(int taskId) {
+		Cursor wrapper = getReadableDatabase().query(
+				SQLSentence.TABLE_TASK_ACCESSORY, null,
+				SQLSentence.COLUMN_TASK_ACCESSORY_TASKID + "= ?",
+				new String[] { String.valueOf(taskId) }, null, null, null);
+		return new TaskAccessoryCursor(wrapper);
 	}
 
 	public static class AttendCursor extends CursorWrapper {
@@ -135,6 +144,22 @@ public class OMUserDatabaseHelper extends SQLiteOpenHelper {
 			mBean.processContent = getString(getColumnIndex(SQLSentence.COLUMN_TASKPROCESS_TASK_PROCESSWHAT));
 			mBean.processPerson = getString(getColumnIndex(SQLSentence.COLUMN_TASKPROCESS_PROCESS_PERSON));
 			mBean.personPhone = getString(getColumnIndex(SQLSentence.COLUMN_TASKPROCESS_PERSON_PHONE));
+			return mBean;
+		}
+	}
+
+	public static class TaskAccessoryCursor extends CursorWrapper {
+
+		public TaskAccessoryCursor(Cursor cursor) {
+			super(cursor);
+		}
+
+		public AffiliatedFileBean getAccessory() {
+			AffiliatedFileBean mBean = new AffiliatedFileBean();
+			mBean.filePath = getString(getColumnIndex(SQLSentence.COLUMN_TASK_ACCESSORY_PATH));
+			mBean.fileState = getInt(getColumnIndex(SQLSentence.COLUMN_TASK_ACCESSORY_STATE));
+			mBean.fileType = getInt(getColumnIndex(SQLSentence.COLUMN_TASK_ACCESSORY_TYPE));
+			mBean.taskId = getInt(getColumnIndex(SQLSentence.COLUMN_TASK_ACCESSORY_TASKID));
 			return mBean;
 		}
 	}

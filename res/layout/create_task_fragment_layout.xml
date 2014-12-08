@@ -236,18 +236,24 @@
         </TableLayout>
 
         <TextView
+            android:id="@+id/tv_add_accessory"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/add"
-            android:id="@+id/tv_add_accessory"
-            android:gravity="center"
-            android:hint="点击添加附件"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="10dp"
-            android:textSize="18sp"
-            android:textColor="@color/key_text"
+            android:drawableLeft="@drawable/add"
             android:drawablePadding="5dp"
-             />
+            android:gravity="center"
+            android:hint="点击添加附件"
+            android:textColor="@color/key_text"
+            android:textSize="18sp" />
+
+        <com.htyd.fan.om.util.ui.ListViewForScrollView
+            android:id="@+id/list_accessory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="@color/key_text"
+            android:dividerHeight="1px" />
     </LinearLayout>
 
 </ScrollView>

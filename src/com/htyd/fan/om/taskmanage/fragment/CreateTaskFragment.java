@@ -1,5 +1,8 @@
 package com.htyd.fan.om.taskmanage.fragment;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -16,10 +19,14 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.htyd.fan.om.R;
+import com.htyd.fan.om.model.AffiliatedFileBean;
 import com.htyd.fan.om.model.TaskDetailBean;
+import com.htyd.fan.om.taskmanage.fragment.TaskAccessoryAdapter.UpLoadFileListener;
+import com.htyd.fan.om.util.base.PictureUtils;
 import com.htyd.fan.om.util.base.Utils;
 import com.htyd.fan.om.util.db.OMUserDatabaseManager;
 import com.htyd.fan.om.util.fragment.CameraActivity;
@@ -28,9 +35,11 @@ import com.htyd.fan.om.util.fragment.DateTimePickerDialog;
 import com.htyd.fan.om.util.fragment.RecodingDialogFragment;
 import com.htyd.fan.om.util.fragment.SelectLocationDialogFragment;
 import com.htyd.fan.om.util.fragment.SpendTimePickerDialog;
+import com.htyd.fan.om.util.https.HttpMultipartPost;
+import com.htyd.fan.om.util.ui.ListViewForScrollView;
 import com.htyd.fan.om.util.ui.UItoolKit;
 
-public class CreateTaskFragment extends Fragment {
+public class CreateTaskFragment extends Fragment implements UpLoadFileListener{
 
 	private static final int REQUESTPHOTO = 1;// 照片
 	private static final int REQUESTRECORDING = 2;// 录音
@@ -42,6 +51,8 @@ public class CreateTaskFragment extends Fragment {
 	private SelectViewClickListener mListener;
 	private OMUserDatabaseManager mManager;
 	protected long startTime;
+	private List<AffiliatedFileBean> accessoryList;
+	protected ListViewForScrollView accessoryListView;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -60,6 +71,14 @@ public class CreateTaskFragment extends Fragment {
 		initView(v);
 		return v;
 	}
+	
+	@Override
+	public void onStop() {
+		for(int i = 0; i<accessoryList.size();i++){
+			PictureUtils.cleanImageView((ImageView) accessoryListView.getChildAt(i).findViewById(R.id.img_accessory_file));
+		}
+		super.onStop();
+	}
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -76,6 +95,19 @@ public class CreateTaskFragment extends Fragment {
 				UItoolKit.showToastShort(getActivity(), Utils.formatTime(data
 						.getLongExtra(SpendTimePickerDialog.ENDTIME, 0)));
 			} else if (requestCode == REQUESTPHOTO) {
+				if(accessoryList == null){
+					accessoryList = new ArrayList<AffiliatedFileBean>();
+				}
+				AffiliatedFileBean mBean = new AffiliatedFileBean();
+				mBean.filePath = data.getStringExtra(CameraFragment.EXTRA_PHOTO_FILENAME);
+				mBean.fileState = 0;
+				accessoryList.add(mBean);
+				if(accessoryListView.getAdapter() == null){
+					accessoryListView.setAdapter(new TaskAccessoryAdapter(accessoryList,getActivity(),this));
+				}else{
+					TaskAccessoryAdapter mAdapter = (TaskAccessoryAdapter)accessoryListView.getAdapter();
+					mAdapter.notifyDataSetChanged();
+				}
 				UItoolKit.showToastShort(getActivity(), data
 						.getStringExtra(CameraFragment.EXTRA_PHOTO_FILENAME));
 			} else if (requestCode == REQUESTRECORDING) {
@@ -140,6 +172,7 @@ public class CreateTaskFragment extends Fragment {
 	private void initView(View v) {
 		mPanel = new TaskViewPanel(v);
 		mPanel.setListener();
+		accessoryListView = (ListViewForScrollView) v.findViewById(R.id.list_accessory);
 	}
 
 	private class TaskViewPanel {
@@ -225,5 +258,18 @@ public class CreateTaskFragment extends Fragment {
 				break;
 			}
 		}
+	}
+
+	@Override
+	public void onUpLoadClick(AffiliatedFileBean mBean) {
+		HttpMultipartPost post = new HttpMultipartPost(getActivity(), mBean.filePath);
+		post.execute();
+	}
+
+	@Override
+	public void onDeleteClick(AffiliatedFileBean mBean, int position) {
+		accessoryList.remove(position);
+		TaskAccessoryAdapter mAdapter = (TaskAccessoryAdapter)accessoryListView.getAdapter();
+		mAdapter.notifyDataSetChanged();
 	}
 }

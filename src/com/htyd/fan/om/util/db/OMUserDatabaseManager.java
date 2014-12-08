@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.htyd.fan.om.model.AffiliatedFileBean;
 import com.htyd.fan.om.model.AttendBean;
 import com.htyd.fan.om.model.TaskDetailBean;
 import com.htyd.fan.om.model.TaskProcessBean;
@@ -81,6 +82,15 @@ public class OMUserDatabaseManager {
 		return db.insert(SQLSentence.TABLE_TASK_PROCESS, null, cv);
 	}
 
+	public long insertTaskAccessoryBean(AffiliatedFileBean mBean) {
+		ContentValues cv = new ContentValues();
+		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_PATH, mBean.filePath);
+		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_STATE, mBean.fileState);
+		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_TYPE, mBean.fileType);
+		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_TASKID, mBean.taskId);
+		return db.insert(SQLSentence.TABLE_TASK_ACCESSORY, null, cv);
+	}
+
 	public Cursor queryAttendCursor(int monthNum) {
 		return mHelper.queryMonthAttend(monthNum);
 	}
@@ -88,9 +98,13 @@ public class OMUserDatabaseManager {
 	public Cursor queryTaskCursorByState(int state) {
 		return mHelper.queryTaskByState(state);
 	}
-	
-	public Cursor queryProcessByTaskId(int taskId){
+
+	public Cursor queryProcessByTaskId(int taskId) {
 		return mHelper.queryProcessByTaskId(taskId);
+	}
+
+	public Cursor queryAccessoryByTaskId(int taskId) {
+		return mHelper.queryAccessoryByTaskId(taskId);
 	}
 
 	public void closeDb() {
@@ -104,7 +118,7 @@ public class OMUserDatabaseManager {
 	 * 打开数据库 0：read 1：write
 	 * 
 	 * @param state
-	 * @return 
+	 * @return
 	 */
 
 	public void openDb(int state) {
