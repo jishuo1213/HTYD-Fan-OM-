@@ -3,12 +3,17 @@ package com.htyd.fan.om.taskmanage.fragment;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -27,6 +32,7 @@ import com.htyd.fan.om.model.AffiliatedFileBean;
 import com.htyd.fan.om.model.TaskDetailBean;
 import com.htyd.fan.om.taskmanage.fragment.TaskAccessoryAdapter.UpLoadFileListener;
 import com.htyd.fan.om.util.base.PictureUtils;
+import com.htyd.fan.om.util.base.Preferences;
 import com.htyd.fan.om.util.base.Utils;
 import com.htyd.fan.om.util.db.OMUserDatabaseManager;
 import com.htyd.fan.om.util.fragment.CameraActivity;
@@ -36,6 +42,8 @@ import com.htyd.fan.om.util.fragment.RecodingDialogFragment;
 import com.htyd.fan.om.util.fragment.SelectLocationDialogFragment;
 import com.htyd.fan.om.util.fragment.SpendTimePickerDialog;
 import com.htyd.fan.om.util.https.HttpMultipartPost;
+import com.htyd.fan.om.util.https.NetOperating;
+import com.htyd.fan.om.util.https.Urls;
 import com.htyd.fan.om.util.ui.ListViewForScrollView;
 import com.htyd.fan.om.util.ui.UItoolKit;
 
@@ -74,6 +82,10 @@ public class CreateTaskFragment extends Fragment implements UpLoadFileListener{
 	
 	@Override
 	public void onStop() {
+		if(accessoryList == null || accessoryList.size() == 0){
+			super.onStop();
+			return;
+		}
 		for(int i = 0; i<accessoryList.size();i++){
 			PictureUtils.cleanImageView((ImageView) accessoryListView.getChildAt(i).findViewById(R.id.img_accessory_file));
 		}
@@ -89,11 +101,15 @@ public class CreateTaskFragment extends Fragment implements UpLoadFileListener{
 			} else if (requestCode == REQUESTSTARTDATE) {
 				startTime = data
 						.getLongExtra(DateTimePickerDialog.EXTRATIME, 0);
+				mPanel.taskStartTime.setText(Utils.formatTime(startTime));
 				UItoolKit.showToastShort(getActivity(), Utils.formatTime(data
 						.getLongExtra(DateTimePickerDialog.EXTRATIME, 0)));
 			} else if (requestCode == REQUESTENDTIME) {
 				UItoolKit.showToastShort(getActivity(), Utils.formatTime(data
 						.getLongExtra(SpendTimePickerDialog.ENDTIME, 0)));
+				mPanel.taskNeedTime.setText( Utils.formatTime(data
+						.getLongExtra(SpendTimePickerDialog.ENDTIME, 0)));
+				
 			} else if (requestCode == REQUESTPHOTO) {
 				if(accessoryList == null){
 					accessoryList = new ArrayList<AffiliatedFileBean>();
@@ -131,11 +147,7 @@ public class CreateTaskFragment extends Fragment implements UpLoadFileListener{
 				return true;
 			}
 			mPanel.getTaskDetailBean(mBean);
-			mManager.openDb(1);
-			mManager.insertTaskBean(mBean);
-			/**
-			 * 上传到服务器
-			 */
+			startTask(mBean);
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -179,8 +191,8 @@ public class CreateTaskFragment extends Fragment implements UpLoadFileListener{
 
 		private TextView taskWorkLocation, taskStartTime, taskNeedTime,
 				taskEquipment, taskType, addAccessory;
-		private EditText taskTitle, taskDescription, taskInstallLocation,
-				taskContact, taskContactPhone;
+		private EditText taskTitle, taskDescription, taskInstallLocation;
+				/*taskContact, taskContactPhone*/
 
 		public TaskViewPanel(View v) {
 			addAccessory = (TextView) v.findViewById(R.id.tv_add_accessory);
@@ -192,9 +204,9 @@ public class CreateTaskFragment extends Fragment implements UpLoadFileListener{
 					.findViewById(R.id.edit_install_location);
 			taskStartTime = (TextView) v.findViewById(R.id.tv_start_time);
 			taskNeedTime = (TextView) v.findViewById(R.id.tv_work_need_time);
-			taskContact = (EditText) v.findViewById(R.id.edit_contacts);
+/*			taskContact = (EditText) v.findViewById(R.id.edit_contacts);
 			taskContactPhone = (EditText) v
-					.findViewById(R.id.edit_contacts_phone);
+					.findViewById(R.id.edit_contacts_phone);*/
 			taskEquipment = (TextView) v.findViewById(R.id.tv_task_equipment);
 			taskType = (TextView) v.findViewById(R.id.tv_task_type);
 		}
@@ -209,11 +221,17 @@ public class CreateTaskFragment extends Fragment implements UpLoadFileListener{
 		public void getTaskDetailBean(TaskDetailBean mBean) {
 			mBean.taskDescription = taskDescription.getText().toString();
 			mBean.installLocation = taskInstallLocation.getText().toString();
+			mBean.workLocation = taskWorkLocation.getText().toString();
 			mBean.taskTitle = taskTitle.getText().toString();
-			mBean.taskContacts = taskContact.getText().toString();
-			mBean.contactsPhone = taskContactPhone.getText().toString();
+/*			mBean.taskContacts = taskContact.getText().toString();
+			mBean.contactsPhone = taskContactPhone.getText().toString();*/
 			mBean.equipment = taskEquipment.getText().toString();
-			mBean.taskContacts = taskDescription.getText().toString();
+//			mBean.taskContacts = taskDescription.getText().toString();
+			mBean.planStartTime = startTime;
+			mBean.planEndTime = Utils.parseDate(taskNeedTime.getText().toString(), "yyyy年MM月dd日 HH:mm:ss");
+			mBean.recipientsName = Preferences.getUserinfo(getActivity(), "YHMC");
+			mBean.recipientPhone = Preferences.getUserinfo(getActivity(), "SHOUJ");
+			mBean.taskState = 0;
 			mBean.taskType = 1;
 		}
 
@@ -271,5 +289,55 @@ public class CreateTaskFragment extends Fragment implements UpLoadFileListener{
 		accessoryList.remove(position);
 		TaskAccessoryAdapter mAdapter = (TaskAccessoryAdapter)accessoryListView.getAdapter();
 		mAdapter.notifyDataSetChanged();
+	}
+	
+	private class SaveTask extends AsyncTask<TaskDetailBean, Void, Boolean>{
+
+		@Override
+		protected Boolean doInBackground(TaskDetailBean... params) {
+			String result = "";
+			try {
+				JSONObject param = params[0].toJson();
+				param.put("YHID", Preferences.getUserinfo(getActivity(), "YHID"));
+				result = NetOperating.getResultFromNet(getActivity(), param, Urls.TASKURL, "Operate=saveRwxx");
+			} catch (JSONException e) {
+				e.printStackTrace();
+				return false;
+			} catch (Exception e) {
+				e.printStackTrace();
+				return false;
+			}
+			try {
+				JSONObject json = new JSONObject(result);
+				Log.i("fanjishuo___doInBackground", result+"result");
+				if(json.has("RWID"))
+					mBean.taskNetId = Integer.parseInt(json.getString("RWID"));
+				return json.getBoolean("RESULT");
+			} catch (JSONException e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
+		
+		@Override
+		protected void onPostExecute(Boolean result) {
+			if(result){
+				mBean.saveTime = System.currentTimeMillis();
+				mManager.openDb(1);
+				mManager.insertTaskBean(mBean);
+				UItoolKit.showToastShort(getActivity(), "保存成功!");
+				getActivity().finish();
+			}else{
+				UItoolKit.showToastShort(getActivity(), "保存至网络失败");
+			}
+		}
+	}
+	
+	protected void startTask(TaskDetailBean mBean){
+		new SaveTask().execute(mBean);
+	}
+	
+	protected void stopTask(SaveTask task){
+		task.cancel(false);
 	}
 }

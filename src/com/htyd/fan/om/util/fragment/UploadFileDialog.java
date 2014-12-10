@@ -12,10 +12,12 @@ import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -40,6 +42,9 @@ public class UploadFileDialog extends DialogFragment implements UpLoadFileListen
 
 	public static DialogFragment newInstance(ArrayList<AffiliatedFileBean> list) {
 		Bundle args = new Bundle();
+		if(list == null){
+			list = new ArrayList<AffiliatedFileBean>();
+		}
 		args.putParcelableArrayList(FILE, list);
 		DialogFragment fragment = new UploadFileDialog();
 		fragment.setArguments(args);
@@ -71,7 +76,13 @@ public class UploadFileDialog extends DialogFragment implements UpLoadFileListen
 		mListView = (ListView) v.findViewById(R.id.list_accessory);
 		TextView createAccessory = (TextView) v
 				.findViewById(R.id.tv_add_accessory);
-		registerForContextMenu(createAccessory);
+		createAccessory.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				Intent i = new Intent(getActivity(), CameraActivity.class);
+				startActivityForResult(i, REQUESTPHOTO);
+			}
+		});
 		if(listAccessory.size() > 0){
 			mListView.setAdapter(new TaskAccessoryAdapter(listAccessory, getActivity(), this));
 		}
@@ -86,6 +97,7 @@ public class UploadFileDialog extends DialogFragment implements UpLoadFileListen
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
+		Log.i("fanjishuo_____onContextItemSelected", "takephoto");
 		switch (item.getItemId()) {
 		case R.id.menu_take_photo:
 			Intent i = new Intent(getActivity(), CameraActivity.class);
@@ -156,9 +168,7 @@ public class UploadFileDialog extends DialogFragment implements UpLoadFileListen
 			TaskAccessoryAdapter mAdapter = (TaskAccessoryAdapter) mListView
 					.getAdapter();
 			mAdapter.notifyDataSetChanged();
-			/**
-			 * 从数据库删除
-			 */
+			deleteAccessoryFromDb(mBean);
 		} else {
 			listAccessory.remove(position);
 			TaskAccessoryAdapter mAdapter = (TaskAccessoryAdapter) mListView
@@ -167,28 +177,16 @@ public class UploadFileDialog extends DialogFragment implements UpLoadFileListen
 			/**
 			 * 从网上删除
 			 */
+			deleteAccessoryFromDb(mBean);
+			deleteAccessoryFromNet(mBean);
 		}
 	}
-
-	/*
-	 * @Override public void aborted() { Log.d("fanjishuo____UpLoadFile",
-	 * "upload_aborted"); uploadState.setText(R.string.load_cancel); state =
-	 * LOADCANCEL; UItoolKit.showToastShort(getActivity(), "上传取消"); }
-	 * 
-	 * @Override public void completed() { Log.d("fanjishuo____UpLoadFile",
-	 * "upload_completed"); uploadState.setText(R.string.load_success); state =
-	 * LOADSUCCESS; UItoolKit.showToastShort(getActivity(), "上传成功!"); }
-	 * 
-	 * @Override public void failed() { Log.d("fanjishuo____UpLoadFile",
-	 * "upload_failed"); uploadState.setText(R.string.load_failed); state =
-	 * LOADFAILED; }
-	 * 
-	 * @Override public void started() { Log.d("fanjishuo____UpLoadFile",
-	 * "upload_Started"); uploadState.setText(R.string.start_upload); }
-	 * 
-	 * @Override public void transferred(int arg0) {
-	 * Log.d("fanjishuo____UpLoadFile", "upload_transferred"); if (state == 0) {
-	 * uploadState.setText(R.string.uploading); state = UPLOADING; }
-	 * upBytes.setText(arg0 / 1024 + "kb"); }
-	 */
+	
+	private void deleteAccessoryFromDb(AffiliatedFileBean mBean){
+		
+	}
+	
+	private void deleteAccessoryFromNet(AffiliatedFileBean mBean){
+		
+	}
 }

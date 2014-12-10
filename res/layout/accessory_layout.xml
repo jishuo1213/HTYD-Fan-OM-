@@ -14,7 +14,7 @@
         android:layout_marginTop="10dp"
         android:drawableLeft="@drawable/add"
         android:drawablePadding="5dp"
-        android:hint="点击添加附件"
+        android:hint="拍照上传"
         android:gravity="center_vertical"
         android:textColor="@color/key_text"
         android:textSize="18sp"

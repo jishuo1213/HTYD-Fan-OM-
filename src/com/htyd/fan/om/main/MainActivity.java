@@ -37,7 +37,7 @@ public class MainActivity extends FragmentActivity {
 	private FragmentPagerAdapter pageAdapter;
 	private TabPanel tabPanel;
 	private int currentPos;
-	private Menu menu;
+	private static Menu menu;
 	private ActionProvider firstProvider,thirdProvider;
 
 	@Override
@@ -61,7 +61,7 @@ public class MainActivity extends FragmentActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		this.menu = menu;
+		MainActivity.menu = menu;
 		getMenuInflater().inflate(R.menu.menu_popup, menu);
 		MenuItem menuItem = menu.findItem(R.id.more_menu);
 		menuItem.setActionProvider(firstProvider);
@@ -212,7 +212,10 @@ public class MainActivity extends FragmentActivity {
 		}
 	}
 
-	private void setOvewflowMenu(int pos) {
+	protected void setOvewflowMenu(int pos) {
+		if(menu == null){
+			return;
+		}
 		MenuItem menuItem = menu.findItem(R.id.more_menu);
 		switch(pos){
 		case 0:

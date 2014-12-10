@@ -20,7 +20,7 @@ public class OMUserDatabaseManager {
 
 	private OMUserDatabaseManager(Context context) {
 		mAppContext = context;
-		mHelper = new OMUserDatabaseHelper(mAppContext);
+		mHelper = OMUserDatabaseHelper.getInstance(mAppContext);
 		db = mHelper.getWritableDatabase();
 	}
 
@@ -30,7 +30,7 @@ public class OMUserDatabaseManager {
 		}
 		return sManager;
 	}
-
+	/*-------------------------------------------数据库插入操作---------------------------------------------*/
 	public long insertAttendBean(AttendBean mBean) {
 		ContentValues cv = new ContentValues();
 		StringBuilder sb = new StringBuilder();
@@ -42,19 +42,20 @@ public class OMUserDatabaseManager {
 		cv.put(SQLSentence.COLUMN_LONGITUDE, mBean.longitude);
 		cv.put(SQLSentence.COLUMN_MONTH, mBean.month);
 		cv.put(SQLSentence.COLUMN_TIME, mBean.time);
-		cv.put(SQLSentence.COLUMN_USERNAME, mBean.userName);
-		cv.put(SQLSentence.COLUMN_ADDSTATE, mBean.addState);
-		cv.put(SQLSentence.COLUMN_ADDSORT, mBean.addSort);
+		cv.put(SQLSentence.COLUMN_CHOOSE_LOCATION, mBean.choseLocation);
+		cv.put(SQLSentence.COLUMN_ATTEND_STATE,mBean.state);
+		Log.i("fanjishuo___insertAttendBean", mBean.toString());
 		return db.insert(SQLSentence.TABLE_CHECK, null, cv);
 	}
 
 	public long insertTaskBean(TaskDetailBean mBean) {
 		ContentValues cv = new ContentValues();
+		cv.put(SQLSentence.COLUMN_TASK_NET_ID, mBean.taskNetId);
 		cv.put(SQLSentence.COLUMN_TASK_WORK_LOCATION, mBean.workLocation);
 		cv.put(SQLSentence.COLUMN_TASK_INSTALL_LOCATION, mBean.installLocation);
 		cv.put(SQLSentence.COLUMN_TASK_DESCRIPTION, mBean.taskDescription);
-		cv.put(SQLSentence.COLUMN_TASK_CONTACTS, mBean.taskContacts);
-		cv.put(SQLSentence.COLUMN_TASK_CONTACT_PHONE, mBean.contactsPhone);
+/*		cv.put(SQLSentence.COLUMN_TASK_CONTACTS, mBean.taskContacts);
+		cv.put(SQLSentence.COLUMN_TASK_CONTACT_PHONE, mBean.contactsPhone);*/
 		cv.put(SQLSentence.COLUMN_TASK_RECIPIENT_NAME, mBean.recipientsName);
 		cv.put(SQLSentence.COLUMN_TASK_RECIPIENT_PHONE, mBean.recipientPhone);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY, mBean.taskAccessory);
@@ -62,6 +63,7 @@ public class OMUserDatabaseManager {
 		cv.put(SQLSentence.COLUMN_TASK_PRODUCT_TYPE, mBean.productType);
 		cv.put(SQLSentence.COLUMN_TASK_PLAN_STARTTIME, mBean.planStartTime);
 		cv.put(SQLSentence.COLUMN_TASK_PLAN_ENDTIME, mBean.planEndTime);
+		cv.put(SQLSentence.COLUMN_TASK_CREATE_TIME, mBean.saveTime);
 		cv.put(SQLSentence.COLUMN_TASK_STATE, mBean.taskState);
 		cv.put(SQLSentence.COLUMN_TASK_TYPE, mBean.taskType);
 		return db.insert(SQLSentence.TABLE_TASK, null, cv);
@@ -90,7 +92,36 @@ public class OMUserDatabaseManager {
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_TASKID, mBean.taskId);
 		return db.insert(SQLSentence.TABLE_TASK_ACCESSORY, null, cv);
 	}
+	/*-------------------------------------------数据库修改操作---------------------------------------------*/
+	public long updateTask(TaskDetailBean mBean){
+		ContentValues cv = new ContentValues();
+		cv.put(SQLSentence.COLUMN_TASK_WORK_LOCATION, mBean.workLocation);
+		cv.put(SQLSentence.COLUMN_TASK_INSTALL_LOCATION, mBean.installLocation);
+		cv.put(SQLSentence.COLUMN_TASK_DESCRIPTION, mBean.taskDescription);
+/*		cv.put(SQLSentence.COLUMN_TASK_CONTACTS, mBean.taskContacts);
+		cv.put(SQLSentence.COLUMN_TASK_CONTACT_PHONE, mBean.contactsPhone);*/
+		cv.put(SQLSentence.COLUMN_TASK_RECIPIENT_NAME, mBean.recipientsName);
+		cv.put(SQLSentence.COLUMN_TASK_RECIPIENT_PHONE, mBean.recipientPhone);
+		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY, mBean.taskAccessory);
+		cv.put(SQLSentence.COLUMN_TASK_EQUIPMENT, mBean.equipment);
+		cv.put(SQLSentence.COLUMN_TASK_PRODUCT_TYPE, mBean.productType);
+		cv.put(SQLSentence.COLUMN_TASK_PLAN_STARTTIME, mBean.planStartTime);
+		cv.put(SQLSentence.COLUMN_TASK_PLAN_ENDTIME, mBean.planEndTime);
+		cv.put(SQLSentence.COLUMN_TASK_STATE, mBean.taskState);
+		cv.put(SQLSentence.COLUMN_TASK_TYPE, mBean.taskType);
+		return db.update(SQLSentence.TABLE_TASK, cv, "_id = ?", new String [] {String.valueOf(mBean.taskLocalId)});
+	}
+	/*-------------------------------------------数据库删除操作---------------------------------------------*/
+	
+	public long deleteTask(TaskDetailBean mBean){
+		return db.delete(SQLSentence.TABLE_TASK, "_id = ?", new String [] {String.valueOf(mBean.taskLocalId)});
+	}
+	
+	public long detelteTaskAccessory(AffiliatedFileBean mBean) {
+		return db.delete(SQLSentence.TABLE_TASK_ACCESSORY, "task_id = ?",new String[] { String.valueOf(mBean.taskId) });
+	}
 
+	/*-------------------------------------------数据库查询操作---------------------------------------------*/
 	public Cursor queryAttendCursor(int monthNum) {
 		return mHelper.queryMonthAttend(monthNum);
 	}

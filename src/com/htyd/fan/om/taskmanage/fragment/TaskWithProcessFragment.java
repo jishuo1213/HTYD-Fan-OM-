@@ -68,7 +68,7 @@ public class TaskWithProcessFragment extends Fragment {
 		mManager = getActivity().getLoaderManager();
 		mCallback = new TaskProcessCursorCallback();
 		Bundle args = new Bundle();
-		args.putInt(TASKID, mBean.taskId);
+		args.putInt(TASKID, mBean.taskNetId);
 		mManager.initLoader(0, args, mCallback);
 		setHasOptionsMenu(true);
 	}

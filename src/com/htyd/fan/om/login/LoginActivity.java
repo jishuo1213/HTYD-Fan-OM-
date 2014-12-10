@@ -104,6 +104,7 @@ public class LoginActivity extends Activity {
 			JSONObject resultJson = null;
 			try {
 				resultJson = new JSONObject(result);
+				Preferences.setUserInfo(getBaseContext(), result);
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}

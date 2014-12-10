@@ -19,11 +19,11 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
@@ -34,6 +34,7 @@ import android.widget.TextView;
 import com.htyd.fan.om.R;
 import com.htyd.fan.om.model.TaskDetailBean;
 import com.htyd.fan.om.taskmanage.TaskManageActivity;
+import com.htyd.fan.om.util.base.Preferences;
 import com.htyd.fan.om.util.base.Utils;
 import com.htyd.fan.om.util.db.OMUserDatabaseHelper.TaskCursor;
 import com.htyd.fan.om.util.db.OMUserDatabaseManager;
@@ -41,7 +42,6 @@ import com.htyd.fan.om.util.https.NetOperating;
 import com.htyd.fan.om.util.https.Urls;
 import com.htyd.fan.om.util.https.Utility;
 import com.htyd.fan.om.util.loaders.SQLiteCursorLoader;
-import com.htyd.fan.om.util.ui.UItoolKit;
 import com.htyd.fan.om.util.ui.CustomChooserView.OnItemChooserListener;
 
 public class TaskListFragment extends Fragment implements OnItemChooserListener {
@@ -277,6 +277,10 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 				} else {
 					params.put("RWZT", taskState + "");
 				}
+				params.put("TXSJ_BEGIN", "");
+				params.put("TXSJ_END", "");
+				params.put("TXR", Preferences.getUserinfo(getContext(), "YHMC"));
+				params.put("RWGL", "");
 			} catch (JSONException e1) {
 				e1.printStackTrace();
 			}
@@ -287,8 +291,9 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 						Urls.TASKURL, "Operate=getAllRwxx");
 			} catch (InterruptedException | ExecutionException e) {
 				e.printStackTrace();
+				return null;
 			} catch (Exception e) {
-				UItoolKit.showToastShort(getContext(), e.getLocalizedMessage());
+				return null;
 			}
 			boolean success = false;
 			try {

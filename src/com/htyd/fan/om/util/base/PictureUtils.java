@@ -41,7 +41,12 @@ public class PictureUtils {
 		if (!(imageview.getDrawable() instanceof BitmapDrawable))
 			return;
 		BitmapDrawable b = (BitmapDrawable) imageview.getDrawable();
-			b.getBitmap().recycle();
-			imageview.setImageBitmap(null);
+		
+			try {
+				b.getBitmap().recycle();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		imageview.setImageBitmap(null);
 	}
 }

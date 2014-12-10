@@ -16,10 +16,18 @@ import com.htyd.fan.om.util.base.Preferences;
 public class OMUserDatabaseHelper extends SQLiteOpenHelper {
 
 	private static final int VERSION = 1;
+	private static OMUserDatabaseHelper sHelper;
 
-	public OMUserDatabaseHelper(Context context) {
+	private OMUserDatabaseHelper(Context context) {
 		super(context, Preferences.getUserId(context) + "_om.sqlite", null,
 				VERSION);
+	}
+	
+	public static OMUserDatabaseHelper getInstance(Context context){
+		if(sHelper == null){
+			sHelper = new OMUserDatabaseHelper(context);
+		}
+		return sHelper;
 	}
 
 	@Override
@@ -37,9 +45,10 @@ public class OMUserDatabaseHelper extends SQLiteOpenHelper {
 
 	public AttendCursor queryMonthAttend(int monthNum) {
 		Cursor wrapper = getReadableDatabase().query(SQLSentence.TABLE_CHECK,
-				new String[] { SQLSentence.COLUMN_MONTH },
+				null,
 				SQLSentence.COLUMN_MONTH + "= ?",
 				new String[] { String.valueOf(monthNum) }, null, null, null);
+		Log.i("fanjishuo____queryMonthAttend", "monthNum"+monthNum+wrapper.getCount());
 		return new AttendCursor(wrapper);
 	}
 
@@ -92,9 +101,8 @@ public class OMUserDatabaseHelper extends SQLiteOpenHelper {
 			mBean.latitude = getDouble(getColumnIndex(SQLSentence.COLUMN_LATITUDE));
 			mBean.longitude = getDouble(getColumnIndex(SQLSentence.COLUMN_LONGITUDE));
 			mBean.time = getLong(getColumnIndex(SQLSentence.COLUMN_TIME));
-			mBean.addState = getString(getColumnIndex(SQLSentence.COLUMN_ADDSTATE));
-			mBean.addSort = getString(getColumnIndex(SQLSentence.COLUMN_ADDSORT));
-			mBean.userName = getString(getColumnIndex(SQLSentence.COLUMN_USERNAME));
+			mBean.choseLocation = getString(getColumnIndex(SQLSentence.COLUMN_CHOOSE_LOCATION));
+			mBean.state = getInt(getColumnIndex(SQLSentence.COLUMN_ATTEND_STATE));
 			return mBean;
 		}
 	}
@@ -109,11 +117,13 @@ public class OMUserDatabaseHelper extends SQLiteOpenHelper {
 			if (isBeforeFirst() || isAfterLast())
 				return null;
 			TaskDetailBean mBean = new TaskDetailBean();
+			mBean.taskLocalId = getInt(getColumnIndex(SQLSentence.COLUMN_TASK_ID));
+			mBean.taskNetId = getInt(getColumnIndex(SQLSentence.COLUMN_TASK_NET_ID));
 			mBean.workLocation = getString(getColumnIndex(SQLSentence.COLUMN_TASK_WORK_LOCATION));
 			mBean.installLocation = getString(getColumnIndex(SQLSentence.COLUMN_TASK_INSTALL_LOCATION));
 			mBean.taskDescription = getString(getColumnIndex(SQLSentence.COLUMN_TASK_DESCRIPTION));
-			mBean.taskContacts = getString(getColumnIndex(SQLSentence.COLUMN_TASK_CONTACTS));
-			mBean.contactsPhone = getString(getColumnIndex(SQLSentence.COLUMN_TASK_CONTACT_PHONE));
+/*			mBean.taskContacts = getString(getColumnIndex(SQLSentence.COLUMN_TASK_CONTACTS));
+			mBean.contactsPhone = getString(getColumnIndex(SQLSentence.COLUMN_TASK_CONTACT_PHONE));*/
 			mBean.recipientsName = getString(getColumnIndex(SQLSentence.COLUMN_TASK_RECIPIENT_NAME));
 			mBean.recipientPhone = getString(getColumnIndex(SQLSentence.COLUMN_TASK_RECIPIENT_PHONE));
 			mBean.taskAccessory = getString(getColumnIndex(SQLSentence.COLUMN_TASK_ACCESSORY));
@@ -123,6 +133,7 @@ public class OMUserDatabaseHelper extends SQLiteOpenHelper {
 			mBean.planEndTime = getLong(getColumnIndex(SQLSentence.COLUMN_TASK_PLAN_ENDTIME));
 			mBean.taskState = getInt(getColumnIndex(SQLSentence.COLUMN_TASK_STATE));
 			mBean.taskType = getInt(getColumnIndex(SQLSentence.COLUMN_TASK_TYPE));
+			mBean.saveTime = getLong(getColumnIndex(SQLSentence.COLUMN_TASK_CREATE_TIME));
 			Log.i("fanjishuo____getTask", mBean.taskType + "");
 			return mBean;
 		}

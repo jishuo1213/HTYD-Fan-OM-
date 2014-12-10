@@ -19,7 +19,7 @@ public class OMDatabaseManager {
 
 	private OMDatabaseManager(Context appContext) {
 		mAppContext = appContext;
-		mHelper = new OMDatabaseHelper(mAppContext);
+		mHelper =  OMDatabaseHelper.getInstance(mAppContext);
 		db = mHelper.getWritableDatabase();
 	}
 
@@ -29,7 +29,7 @@ public class OMDatabaseManager {
 		}
 		return sManager;
 	}
-
+	
 	public long insertProvince(ProvinceBean mBean) {
 		ContentValues cv = new ContentValues();
 		cv.put(SQLSentence.COLUMN_PROVINCE_CODE, mBean.provinceCode);
@@ -52,7 +52,7 @@ public class OMDatabaseManager {
 		cv.put(SQLSentence.COLUMN_DISTRICT_NAME, mBean.districtName);
 		return db.insert(SQLSentence.TABLE_DISTRICT, null, cv);
 	}
-
+	
 	public Cursor queryCursor(int parentId, int type) {
 		switch (type) {
 		case 0:

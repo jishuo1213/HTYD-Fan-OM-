@@ -64,6 +64,7 @@ public class WelcomePageFragment extends Fragment {
 			JSONObject resultJson = null;
 			try {
 				resultJson = new JSONObject(result);
+				Preferences.setUserInfo(getActivity(), result);
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}

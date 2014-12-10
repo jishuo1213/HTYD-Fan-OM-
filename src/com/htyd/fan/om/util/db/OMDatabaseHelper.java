@@ -14,11 +14,19 @@ public class OMDatabaseHelper extends SQLiteOpenHelper {
 
 	private static final String DB_NAME = "om.sqlite";
 	private static final int VERSION = 1;
+	private static OMDatabaseHelper sHelper;
 
-	public OMDatabaseHelper(Context context) {
+	private OMDatabaseHelper(Context context) {
 		super(context, DB_NAME, null, VERSION);
 	}
 
+	public static OMDatabaseHelper getInstance(Context context){
+		if(sHelper == null){
+			sHelper = new OMDatabaseHelper(context);
+		}
+		return sHelper;
+	}
+	
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		db.execSQL(SQLSentence.CREATE_TABLE_PROVINCE);

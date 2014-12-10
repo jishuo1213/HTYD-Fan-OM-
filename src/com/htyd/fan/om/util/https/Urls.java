@@ -14,6 +14,6 @@ public class Urls {
 	
 	public static final String TASKPROCESSURL = BASEURL  + "rwclAction?";
 	
-	public static final String UPLOADFILE = BASEURL+"";
+	public static final String UPLOADFILE = BASEURL+"uploadAction?Operate=upload";
 	
 }

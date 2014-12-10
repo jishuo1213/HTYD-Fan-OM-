@@ -2,6 +2,7 @@ package com.htyd.fan.om.util.base;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 import android.annotation.SuppressLint;
 
@@ -9,15 +10,25 @@ import android.annotation.SuppressLint;
 public class Utils {
 	
 	@SuppressLint("SimpleDateFormat")
-	public static long parseDate(String source) throws ParseException{
+	public static long parseDate(String source){
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		return	sdf.parse(source).getTime();
+		try {
+			return	sdf.parse(source).getTime();
+		} catch (ParseException e) {
+			e.printStackTrace();
+			return 0;
+		}
 	}
 	
 	@SuppressLint("SimpleDateFormat")
-	public static long parseDate(String source,String format) throws ParseException{
+	public static long parseDate(String source,String format){
 		SimpleDateFormat sdf = new SimpleDateFormat(format);
-		return	sdf.parse(source).getTime();
+		try {
+			return	sdf.parse(source).getTime();
+		} catch (ParseException e) {
+			e.printStackTrace();
+			return 0;
+		}
 	}
 	
 	@SuppressLint("SimpleDateFormat")
@@ -29,5 +40,11 @@ public class Utils {
 	@SuppressLint("SimpleDateFormat")
 	public static String formatTime(long time,String format){
 		return new SimpleDateFormat(format).format(time);
+	}
+	
+	public static int getCalendarField(long time, int field) {
+		Calendar c = Calendar.getInstance();
+		c.setTimeInMillis(time);
+		return c.get(field);
 	}
 }

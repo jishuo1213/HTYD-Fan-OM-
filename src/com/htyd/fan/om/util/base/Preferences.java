@@ -1,5 +1,8 @@
 package com.htyd.fan.om.util.base;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -14,6 +17,7 @@ public class Preferences {
 	private static final String PASSWORD = "password";
 	private static final String ACCOUNT = "account";
 	private static final String REMBERPWD = "remberpwd";
+	private static final String USERINFO = "userinformation";
 
 	private static SharedPreferences sp;
 	private static Editor editor;
@@ -88,5 +92,26 @@ public class Preferences {
 	public static boolean getIsRemPwd(Context context){
 		sp = context.getSharedPreferences(PREFERENCENAME, Context.MODE_PRIVATE);
 		return sp.getBoolean(REMBERPWD, false);
+	}
+	
+	public static void setUserInfo(Context context, String userInfo){
+		sp = context.getSharedPreferences(PREFERENCENAME, Context.MODE_PRIVATE);
+		editor = sp.edit();
+		editor.putString(USERINFO, userInfo);
+		editor.apply();
+	}
+	
+	public static String getUserinfo(Context context,String key){
+		String userInfo = context.getSharedPreferences(PREFERENCENAME, Context.MODE_PRIVATE).getString(USERINFO, "");
+		if(userInfo.length() == 0){
+			return "";
+		}
+		try {
+			JSONObject json = new JSONObject(userInfo);
+			return json.getString(key);
+		} catch (JSONException e) {
+			e.printStackTrace();
+			return "";
+		}
 	}
 }

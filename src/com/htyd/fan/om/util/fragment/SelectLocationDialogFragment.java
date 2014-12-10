@@ -55,6 +55,11 @@ public class SelectLocationDialogFragment extends DialogFragment {
 	protected List<CityBean> cityList;
 	protected List<DistrictBean> districtList;
 	private LocationLoaderCallBack mCallBack;
+	private SelectLocationListener mListener;
+	
+	public interface SelectLocationListener{
+		public void OnSelectLocation(String location);
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -105,6 +110,10 @@ public class SelectLocationDialogFragment extends DialogFragment {
 		super.onDestroy();
 	}
 
+	public void setListener(SelectLocationListener listener){
+		this.mListener = listener;
+	}
+	
 	private void initView(View v) {
 		provinceSpinner = (Spinner) v.findViewById(R.id.spinner_province);
 		citySpinner = (Spinner) v.findViewById(R.id.spinner_city);
@@ -155,9 +164,11 @@ public class SelectLocationDialogFragment extends DialogFragment {
 			}
 		});
 	}
+	
+	
 
-	private void sendResult(int reusltCode) {
-		if (getTargetFragment() == null) {
+	protected void sendResult(int reusltCode) {
+		if (getTargetFragment() == null && mListener == null) {
 			return;
 		}
 		StringBuilder sb = new StringBuilder();
@@ -213,7 +224,11 @@ public class SelectLocationDialogFragment extends DialogFragment {
 				i.putExtra(LOCATION, sb.toString());
 			}
 		}
-		getTargetFragment().onActivityResult(getTargetRequestCode(),
+		if(mListener != null){
+			mListener.OnSelectLocation(sb.toString());
+			return;
+		}
+			getTargetFragment().onActivityResult(getTargetRequestCode(),
 				reusltCode, i);
 	}
 

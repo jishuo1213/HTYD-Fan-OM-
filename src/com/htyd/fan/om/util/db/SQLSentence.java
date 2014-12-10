@@ -32,25 +32,18 @@ public class SQLSentence {
 	public static final String COLUMN_TIME = "time";
 	public static final String COLUMN_LATITUDE = "latitude";
 	public static final String COLUMN_LONGITUDE = "longitude";
-	public static final String COLUMN_ADDSTATE = "addstate";
-	public static final String COLUMN_ADDSORT = "addsort";
-	public static final String COLUMN_USERNAME = "name";
 	public static final String COLUMN_ADDRESS = "location";
 	public static final String COLUMN_MONTH = "month";
-
-	/*
-	 * public static final String CREATE_TABLE_CHECK = "create table check (" +
-	 * "_id integer primary key autoincrement, time integer ,latitude real ,longitude real ,"
-	 * +
-	 * "addstate text, addsort text, name text ,location text ,month integer)";
-	 */
-
+	public static final String COLUMN_ATTEND_STATE = "attend_state";
+	public static final String COLUMN_CHOOSE_LOCATION = "choose_location";
+	
 	public static final String CREATE_TABLE_CHECK = "create table attend_check ("
-			+ "_id integer primary key autoincrement, time integer ,latitude real ,"
-			+ "longitude real ,addstate text ,addsort text ,name text, location text ,month integer)";
+			+ "_id integer primary key autoincrement, time integer ,latitude real ,attend_state integer,"
+			+ " longitude real  , location text ,month integer,choose_location text)";
 
 	public static final String TABLE_TASK = "task";
 	public static final String COLUMN_TASK_ID = "_id";
+	public static final String COLUMN_TASK_NET_ID = "task_id";
 	public static final String COLUMN_TASK_WORK_LOCATION = "worklocation";
 	public static final String COLUMN_TASK_INSTALL_LOCATION = "installlocation";
 	public static final String COLUMN_TASK_DESCRIPTION = "description";
@@ -63,6 +56,7 @@ public class SQLSentence {
 	public static final String COLUMN_TASK_PRODUCT_TYPE = "producttype";
 	public static final String COLUMN_TASK_PLAN_STARTTIME = "planstarttime";
 	public static final String COLUMN_TASK_PLAN_ENDTIME = "planendtime";
+	public static final String COLUMN_TASK_CREATE_TIME = "createtime";
 	public static final String COLUMN_TASK_STATE = "taskstate";
 	public static final String COLUMN_TASK_TYPE = "tasktype";
 
@@ -70,7 +64,7 @@ public class SQLSentence {
 			+ "_id integer primary key autoincrement, worklocation text ,installlocation text ,"
 			+ "description text ,taskcontacts text , contactphone text ,recipientname text ,"
 			+ "recipientphone text ,taskaccesspry text ,taskequipment text ,producttype text ,"
-			+ "planstarttime integer ,planendtime integer ,taskstate integer ,tasktype integer)";
+			+ "planstarttime integer ,planendtime integer ,taskstate integer ,tasktype integer,task_id integer,createtime integer)";
 
 	public static final String TABLE_TASK_PROCESS = "taskprocess";
 	public static final String COLUMN_TASKPROCESS_ID = "_id";

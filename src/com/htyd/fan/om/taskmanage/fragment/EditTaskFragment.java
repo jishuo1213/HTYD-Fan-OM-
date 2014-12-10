@@ -24,6 +24,7 @@ import com.htyd.fan.om.util.base.Utils;
 import com.htyd.fan.om.util.fragment.DateTimePickerDialog;
 import com.htyd.fan.om.util.fragment.SelectLocationDialogFragment;
 import com.htyd.fan.om.util.fragment.SpendTimePickerDialog;
+import com.htyd.fan.om.util.fragment.UploadFileDialog;
 import com.htyd.fan.om.util.ui.UItoolKit;
 
 public class EditTaskFragment extends Fragment {
@@ -161,6 +162,10 @@ public class EditTaskFragment extends Fragment {
 						REQUESTENDTIME);
 				spendDialog.show(fm, null);
 				break;
+			case R.id.tv_task_accessory:
+				UploadFileDialog uploadDialog = (UploadFileDialog) UploadFileDialog.newInstance(null);
+				uploadDialog.show(fm, null);
+				break;
 			}
 		}
 	};
@@ -234,7 +239,7 @@ public class EditTaskFragment extends Fragment {
 			taskType.setText(mBean.taskType + "");
 			taskRecipient.setText(mBean.recipientsName);
 			taskRecipientPhone.setText(mBean.recipientPhone);
-			taskId = mBean.taskId;
+			taskId = mBean.taskNetId;
 		}
 
 		public void setViewEnable() {
@@ -252,7 +257,7 @@ public class EditTaskFragment extends Fragment {
 
 		public TaskDetailBean getTaskBean() throws ParseException {
 			TaskDetailBean taskBean = new TaskDetailBean();
-			taskBean.taskId = taskId;
+			taskBean.taskNetId = taskId;
 			taskBean.workLocation = taskLocation.getText().toString();
 			taskBean.installLocation = taskInstallLocation.getText().toString();
 			taskBean.taskTitle = taskTitle.getText().toString();

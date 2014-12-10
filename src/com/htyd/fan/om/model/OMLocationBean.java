@@ -1,7 +1,5 @@
 package com.htyd.fan.om.model;
 
-import java.text.ParseException;
-
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -19,7 +17,7 @@ public class OMLocationBean implements Parcelable {
 	public float direction;
 	public double latitude;
 	public double longitude;
-	public int result;
+	public int result;//网络还是GPS
 
 	@Override
 	public int describeContents() {
@@ -74,10 +72,6 @@ public class OMLocationBean implements Parcelable {
 		latitude = loc.getLatitude();
 		longitude = loc.getLongitude();
 		result = loc.getLocType();
-		try {
-			time = Utils.parseDate(loc.getTime());
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
+		time = Utils.parseDate(loc.getTime());
 	}
 }
