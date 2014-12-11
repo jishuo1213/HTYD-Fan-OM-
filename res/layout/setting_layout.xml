@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:ignore="HardcodedText" 
+    android:background="@color/activity_bg_color" >
+
+    <TextView
+        android:id="@+id/welcome"
+        style="@style/style_normal_textview"
+        android:text="欢迎你，"
+        />
+    
+    <TextView 
+        android:id="@+id/tv_user_name"
+        style="@style/style_normal_textview"
+        android:layout_toRightOf="@id/welcome"
+        android:text="admin"
+        />
+    
+    <TextView 
+        android:id="@+id/setting"
+        style="?android:listSeparatorTextViewStyle"
+        android:layout_below="@id/tv_user_name"
+        android:text="设置项"
+        android:textSize="19sp"
+        />
+    
+    <TextView 
+        android:id="@+id/tv_custom_address"
+        style="@style/style_normal_textview"
+        android:layout_below="@id/setting"
+        android:text="管理常用地点"
+        />
+    
+</RelativeLayout>

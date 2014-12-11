@@ -27,13 +27,11 @@ public class AttendCalendarGridAdapter extends BaseAdapter {
 
 	@Override
 	public int getCount() {
-
 		return monthList.size();
 	}
 
 	@Override
 	public Object getItem(int position) {
-
 		return monthList.get(position);
 	}
 
@@ -79,13 +77,23 @@ public class AttendCalendarGridAdapter extends BaseAdapter {
 					convertView.setBackgroundColor(context.getResources()
 							.getColor(R.color.orange));
 				}
+				if (mBean.attendState == 0) {
+					mHolder.mTextView.setTextColor(context.getResources()
+							.getColor(R.color.key_text));
+				} else if (mBean.attendState == 1) {
+					mHolder.mTextView.setTextColor(context.getResources()
+							.getColor(R.color.green));
+				} else {
+					mHolder.mTextView.setTextColor(context.getResources()
+							.getColor(R.color.blue));
+				}
 			}
 		} else {
 			mHolder.mTextView.setText("");
 		}
 		return convertView;
 	}
-
+	
 	private class ViewHolder {
 		public TextView mTextView;
 	}

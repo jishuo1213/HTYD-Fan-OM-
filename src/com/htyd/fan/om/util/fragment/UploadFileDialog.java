@@ -24,8 +24,8 @@ import android.widget.TextView;
 
 import com.htyd.fan.om.R;
 import com.htyd.fan.om.model.AffiliatedFileBean;
-import com.htyd.fan.om.taskmanage.fragment.TaskAccessoryAdapter;
-import com.htyd.fan.om.taskmanage.fragment.TaskAccessoryAdapter.UpLoadFileListener;
+import com.htyd.fan.om.taskmanage.adapter.TaskAccessoryAdapter;
+import com.htyd.fan.om.taskmanage.adapter.TaskAccessoryAdapter.UpLoadFileListener;
 import com.htyd.fan.om.util.base.PictureUtils;
 import com.htyd.fan.om.util.https.HttpMultipartPost;
 import com.htyd.fan.om.util.ui.UItoolKit;

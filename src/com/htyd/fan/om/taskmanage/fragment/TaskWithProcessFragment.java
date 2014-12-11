@@ -3,6 +3,9 @@ package com.htyd.fan.om.taskmanage.fragment;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
@@ -37,6 +40,9 @@ import com.htyd.fan.om.taskmanage.fragment.EditTaskFragment.TaskViewPanel;
 import com.htyd.fan.om.util.base.Utils;
 import com.htyd.fan.om.util.db.OMUserDatabaseHelper.TaskProcessCursor;
 import com.htyd.fan.om.util.db.OMUserDatabaseManager;
+import com.htyd.fan.om.util.https.NetOperating;
+import com.htyd.fan.om.util.https.Urls;
+import com.htyd.fan.om.util.https.Utility;
 import com.htyd.fan.om.util.loaders.SQLiteCursorLoader;
 
 public class TaskWithProcessFragment extends Fragment {
@@ -92,7 +98,7 @@ public class TaskWithProcessFragment extends Fragment {
 		switch (item.getItemId()) {
 		case R.id.menu_create_task_process:
 			FragmentManager fm = getActivity().getFragmentManager();
-			CreateProcessDialog dialog = (CreateProcessDialog) CreateProcessDialog.newInstance(null, false);
+			CreateProcessDialog dialog = (CreateProcessDialog) CreateProcessDialog.newInstance(null, false,mBean.taskNetId);
 			dialog.setTargetFragment(TaskWithProcessFragment.this,
 					REQUEST_PROCESS);
 			dialog.show(fm, null);
@@ -144,7 +150,7 @@ public class TaskWithProcessFragment extends Fragment {
 			FragmentManager fm = getActivity().getFragmentManager();
 			CreateProcessDialog dialog = (CreateProcessDialog) CreateProcessDialog.newInstance(
 					(TaskProcessBean) parent.getAdapter().getItem(position),
-					true);
+					true,mBean.taskNetId);
 			dialog.show(fm, null);
 		}
 	};
@@ -153,7 +159,7 @@ public class TaskWithProcessFragment extends Fragment {
 		@Override
 		public void onClick(View v) {
 			FragmentManager fm = getActivity().getFragmentManager();
-			CreateProcessDialog dialog = (CreateProcessDialog) CreateProcessDialog.newInstance(null, false);
+			CreateProcessDialog dialog = (CreateProcessDialog) CreateProcessDialog.newInstance(null, false,mBean.taskNetId);
 			dialog.setTargetFragment(TaskWithProcessFragment.this,
 					REQUEST_PROCESS);
 			dialog.show(fm, null);
@@ -232,6 +238,20 @@ public class TaskWithProcessFragment extends Fragment {
 		@Override
 		protected Cursor loadFromNet() {
 			mManager.openDb(1);
+			JSONObject param = new JSONObject();
+			String result = "";
+			try {
+				param.put("CLID", "");
+				param.put("RWID", taskId);
+				result = NetOperating.getResultFromNet(getContext(), param, Urls.TASKPROCESSURL, "Operate=getAllRwclxx");
+				Utility.handleTaskProcessResponse(mManager, result);
+			} catch (JSONException e) {
+				e.printStackTrace();
+				return null;
+			} catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}
 			return loadCursor();
 		}
 	}

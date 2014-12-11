@@ -3,10 +3,10 @@ package com.htyd.fan.om.model;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.htyd.fan.om.util.base.Utils;
-
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import com.htyd.fan.om.util.base.Utils;
 
 public class TaskProcessBean implements Parcelable {
 
@@ -16,8 +16,6 @@ public class TaskProcessBean implements Parcelable {
 	public long endTime;//本次处理结束时间
 	public long createTime;//本次处理创建时间
 	public String processContent;//处理的内容
-	public String processPerson;//处理人
-	public String personPhone;//处理人电话
 
 	@Override
 	public int describeContents() {
@@ -32,8 +30,6 @@ public class TaskProcessBean implements Parcelable {
 		dest.writeLong(endTime);
 		dest.writeLong(createTime);
 		dest.writeString(processContent);
-		dest.writeString(processPerson);
-		dest.writeString(personPhone);
 	}
 
 	public static Parcelable.Creator<TaskProcessBean> CREATOR = new Creator<TaskProcessBean>() {
@@ -52,24 +48,28 @@ public class TaskProcessBean implements Parcelable {
 			mBean.endTime = source.readLong();
 			mBean.createTime = source.readLong();
 			mBean.processContent = source.readString();
-			mBean.processPerson = source.readString();
-			mBean.personPhone = source.readString();
 			return mBean;
 		}
 	};
-public JSONObject toJson() throws JSONException{
-	JSONObject json = new JSONObject();
-	json.put("CLID", "15");
-	json.put("RWID", taskid+"");
-	json.put("KSSJ", Utils.formatTime(startTime,"yyyy-MM-dd HH:mm:ss"));
-	json.put("JSSJ", Utils.formatTime(endTime,"yyyy-MM-dd HH:mm:ss"));
-	json.put("CLNR", processContent);
-	json.put("WCBZ", taskState+"");
-	json.put("TXSJ", Utils.formatTime(createTime,"yyyy-MM-dd HH:mm:ss"));
-	json.put("CLR", "");
-	json.put("CLRDH", "");
-	json.put("TXRDH", "");
-	json.put("TXR", "");
-	return json;
-}
+
+	public void setFromJson(JSONObject json) throws NumberFormatException, JSONException{
+		taskid = Integer.parseInt(json.getString("RWID"));
+		startTime = Utils.parseDate(json.getString("KSSJ"),"yyyy-MM-dd");
+		endTime = Utils.parseDate(json.getString("JSSJ"),"yyyy-MM-dd");
+		createTime = Utils.parseDate(json.getString("TXSJ"));
+		processContent = json.getString("CLNR");
+	}
+	
+	public JSONObject toJson() throws JSONException {
+		JSONObject json = new JSONObject();
+		json.put("RWID", taskid + "");
+		json.put("KSSJ", Utils.formatTime(startTime, "yyyy-MM-dd HH:mm:ss"));
+		json.put("JSSJ", Utils.formatTime(endTime, "yyyy-MM-dd HH:mm:ss"));
+		json.put("CLNR", processContent);
+		json.put("WCBZ", taskState + "");
+		json.put("TXSJ", Utils.formatTime(createTime, "yyyy-MM-dd HH:mm:ss"));
+		json.put("TXR", "");
+		json.put("TXRDH", "");
+		return json;
+	}
 }

@@ -24,7 +24,7 @@ public class LocationReceiver extends BroadcastReceiver {
 				Log.i("fanjishuo____onReceive", "NETWORK_PROVIDER");
 				onNetWorkLocationReceived(context, loc);
 			} else {
-				UItoolKit.showToastShort(context, "定位失败");
+				UItoolKit.showToastShort(context, "网络连接失败");
 			}
 			return;
 		}

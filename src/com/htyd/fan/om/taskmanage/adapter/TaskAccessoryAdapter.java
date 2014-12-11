@@ -1,4 +1,4 @@
-package com.htyd.fan.om.taskmanage.fragment;
+package com.htyd.fan.om.taskmanage.adapter;
 
 import java.util.List;
 

@@ -13,9 +13,7 @@ public class TabFourFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View v = inflater.inflate(R.layout.test_layout, container, false);
+		View v = inflater.inflate(R.layout.setting_layout, container, false);
 		return v;
 	}
-
-	
 }

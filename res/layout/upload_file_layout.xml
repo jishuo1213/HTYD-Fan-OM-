@@ -9,37 +9,13 @@
 
     <ImageView
         android:id="@+id/img_accessory_file"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
         android:layout_margin="3dp"
         android:contentDescription="@null"
         android:scaleType="center"
+        android:layout_gravity="center_vertical"
         android:src="@drawable/icon_marka" />
-
-    <!--
-<TextView
-        android:id="@+id/tv_upload_bytes"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="10"
-        android:padding="2dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:padding="2dp"
-        android:text="/"
-       />
-<TextView
-        android:id="@+id/tv_all_bytes"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="100"
-        android:padding="2dp" />
-    -->
 
     <TextView
         android:id="@+id/tv_file_name"

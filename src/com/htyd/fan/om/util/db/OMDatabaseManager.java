@@ -64,6 +64,18 @@ public class OMDatabaseManager {
 		}
 		return null;
 	}
+	
+	public void clearFeedTable(String tableName) {
+		String sql = "DELETE FROM " + tableName + ";";
+		db.execSQL(sql);
+		revertSeq(tableName);
+	}
+
+	private void revertSeq(String tableName) {
+		String sql = "update sqlite_sequence set seq=0 where name='"+ tableName + "'";
+		db.execSQL(sql);
+	}
+	
 
 	public void closeDb() {
 		if (db.isOpen()) {

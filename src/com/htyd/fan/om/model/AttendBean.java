@@ -1,12 +1,14 @@
 package com.htyd.fan.om.model;
 
+import java.util.Calendar;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.htyd.fan.om.util.base.Utils;
-
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import com.htyd.fan.om.util.base.Utils;
 
 public class AttendBean implements Parcelable {
 
@@ -97,12 +99,15 @@ public class AttendBean implements Parcelable {
 		json.put("QDWD", latitude);
 		return json;
 	}
-	@Override
-	public String toString() {
-		return "AttendBean [province=" + province + ", city=" + city
-				+ ", district=" + district + ", street=" + street
-				+ ", streetNum=" + streetNum + ", time=" + time + ", latitude="
-				+ latitude + ", longitude=" + longitude + ", state=" + state
-				+ ", choseLocation=" + choseLocation + ", month=" + month + "]";
+	
+	public void setFromJson(JSONObject json) throws JSONException{
+		choseLocation = json.getString("TXWZ");
+		time = Utils.parseDate(json.getString("QDRQ"),"yyyy-MM-dd");
+		if(Integer.parseInt(json.getString("SFBQ")) == 0){
+			state = 1;
+		}else{
+			state = 2;
+		}
+		month = Utils.getCalendarField(time, Calendar.MONTH);
 	}
 }

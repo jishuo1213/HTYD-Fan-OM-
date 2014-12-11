@@ -78,9 +78,6 @@ public class OMUserDatabaseManager {
 		cv.put(SQLSentence.COLUMN_TASKPROCESS_CREATE_TIME, mBean.createTime);
 		cv.put(SQLSentence.COLUMN_TASKPROCESS_TASK_PROCESSWHAT,
 				mBean.processContent);
-		cv.put(SQLSentence.COLUMN_TASKPROCESS_PROCESS_PERSON,
-				mBean.processPerson);
-		cv.put(SQLSentence.COLUMN_TASKPROCESS_PERSON_PHONE, mBean.personPhone);
 		return db.insert(SQLSentence.TABLE_TASK_PROCESS, null, cv);
 	}
 

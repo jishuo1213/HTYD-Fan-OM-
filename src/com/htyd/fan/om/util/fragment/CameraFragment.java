@@ -85,11 +85,9 @@ public class CameraFragment extends Fragment implements OnTouchListener {
 		super.onResume();
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
 			mCamera = Camera.open(0);
-
 		} else {
 			mCamera = Camera.open();
 		}
-
 	}
 
 	@Override

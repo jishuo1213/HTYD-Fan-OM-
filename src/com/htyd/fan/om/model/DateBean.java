@@ -9,6 +9,7 @@ public class DateBean implements Parcelable {
 	// public int month;
 	public int day;
 	public int state;// 是否为当前月的天 0:不是 1:是
+	public int attendState;
 
 	@Override
 	public int describeContents() {

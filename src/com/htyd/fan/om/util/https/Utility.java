@@ -8,10 +8,12 @@ import org.json.JSONTokener;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.htyd.fan.om.model.AttendBean;
 import com.htyd.fan.om.model.CityBean;
 import com.htyd.fan.om.model.DistrictBean;
 import com.htyd.fan.om.model.ProvinceBean;
 import com.htyd.fan.om.model.TaskDetailBean;
+import com.htyd.fan.om.model.TaskProcessBean;
 import com.htyd.fan.om.util.db.OMDatabaseManager;
 import com.htyd.fan.om.util.db.OMUserDatabaseManager;
 
@@ -53,7 +55,8 @@ public class Utility {
 					String[] array = c.split("\\|");
 					CityBean city = new CityBean();
 					city.cityCode = array[0];
-					city.cityName = array[1];
+					if(array.length >= 1)
+						city.cityName = array[1];
 					city.provinceID = provinceId;
 					// 将解析出来的数据存储到City表
 					mManager.insertCity(city);
@@ -88,7 +91,7 @@ public class Utility {
 		return false;
 	}
 	
-	public static boolean handleTaskResponse(OMUserDatabaseManager mManager,
+	public static  boolean handleTaskResponse(OMUserDatabaseManager mManager,
 			String response) throws JSONException {
 		mManager.openDb(1);
 		if (!TextUtils.isEmpty(response)) {
@@ -103,5 +106,38 @@ public class Utility {
 				return true;
 			}
 		return false;
+	}
+	
+	public static boolean handleTaskProcessResponse(OMUserDatabaseManager mManager,
+			String response) throws JSONException {
+		mManager.openDb(1);
+		if (!TextUtils.isEmpty(response)) {
+			TaskProcessBean mBean = new TaskProcessBean();
+			JSONObject resultJson = new JSONObject(response);
+			JSONArray array = (JSONArray) new JSONTokener(resultJson.getString("Rows")).nextValue();
+			for(int i = 0;i<array.length();i++){
+				mBean.setFromJson(array.getJSONObject(i));
+				mManager.insertTaskProcessBean(mBean);
+			}
+				return true;
+			}
+		return false;
+	}
+	
+	public static void handleAttend(OMUserDatabaseManager mManager, String response)
+			throws Exception {
+		mManager.openDb(1);
+		if (!TextUtils.isEmpty(response)) {
+			AttendBean mBean = new AttendBean();
+			JSONObject resultJson = new JSONObject(response);
+			JSONArray array = (JSONArray) new JSONTokener(
+					resultJson.getString("Rows")).nextValue();
+			for (int i = 0; i < array.length(); i++) {
+				mBean.setFromJson(array.getJSONObject(i));
+				mManager.insertAttendBean(mBean);
+			}
+		}else{
+		throw new Exception("错误");
+		}
 	}
 }

@@ -50,6 +50,7 @@ import com.htyd.fan.om.util.fragment.SelectLocationDialogFragment;
 import com.htyd.fan.om.util.fragment.SelectLocationDialogFragment.SelectLocationListener;
 import com.htyd.fan.om.util.https.NetOperating;
 import com.htyd.fan.om.util.https.Urls;
+import com.htyd.fan.om.util.https.Utility;
 import com.htyd.fan.om.util.loaders.SQLiteCursorLoader;
 import com.htyd.fan.om.util.ui.TextViewWithBorder;
 import com.htyd.fan.om.util.ui.UItoolKit;
@@ -74,8 +75,10 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		Calendar c = Calendar.getInstance();
+		selectDay = new GregorianCalendar(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DATE));
 		isFinish = false;
-		monthList = getMonth(Calendar.getInstance());
+		monthList = getMonth(c);
 		mLoadManager = getActivity().getLoaderManager();
 		mCallback = new AttendLoaderCallback();
 		Bundle args = new Bundle();
@@ -129,8 +132,6 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 				getActivity()));
 		monthGridView.setOnItemClickListener(new OnDayClickListener());
 		TextView month = (TextView) v.findViewById(R.id.tv_month);
-		Calendar c = Calendar.getInstance();
-		selectDay = new GregorianCalendar(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DATE));
 		month.setText(selectDay.get(Calendar.YEAR) + "年"
 				+ (selectDay.get(Calendar.MONTH) + 1) + "月");
 		attendTime = (TextView) v.findViewById(R.id.tv_attend_time);
@@ -314,7 +315,21 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 
 		@Override
 		protected Cursor loadFromNet() {
-
+			String result = "";
+			JSONObject param = new JSONObject();
+			try {
+				param.put("YHID", Preferences.getUserinfo(getContext(), "YHID"));
+				param.put("QDRQ", Calendar.getInstance().get(Calendar.YEAR) + "-" + (monthNum + 1));
+				result = NetOperating.getResultFromNet(getContext(), param,
+						Urls.SAVEATTENDURL, "Operate=getAllKqxxByyhidAndqdrq");
+				Utility.handleAttend(mManager, result);
+			} catch (JSONException e) {
+				e.printStackTrace();
+				return null;
+			} catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}
 			return loadCursor();
 		}
 
@@ -332,11 +347,14 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 		public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 			AttendCursor attendCursor = (AttendCursor) data;
 			if (attendCursor != null && attendCursor.moveToFirst()) {
+				int pos;
 				do {
 					AttendBean tempBean = attendCursor.getAttend();
-					attendMap.put(Utils.getCalendarField(tempBean.time, Calendar.DATE) - 1, tempBean);
-					setGridView(tempBean);
+					pos = Utils.getCalendarField(tempBean.time, Calendar.DATE) - 1;
+					attendMap.put(pos, tempBean);
+					setGridView(tempBean,firstDayPosition+pos);
 					Log.i("fanjishuo____onLoadFinished", 111+"");
+					monthList.get(firstDayPosition+pos).attendState = tempBean.state;
 				} while (attendCursor.moveToNext());
 				isFinish = true;
 				setDetailView(attendMap.get(currentSelect - firstDayPosition));
@@ -344,6 +362,7 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 			} else {
 				setDetailView(null);
 				UItoolKit.showToastShort(getActivity(), "还没有可加载的数据");
+				isFinish = true;
 			}
 		}
 
@@ -352,8 +371,17 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 		}
 	}
 
-	void setGridView(AttendBean attendBean) {
-		// v = monthGridView.getChildAt(firstDayPosition + position);
+	void setGridView(AttendBean attendBean, int pos) {
+		View v = monthGridView.getChildAt(pos);
+		if(v == null){
+			return;
+		}
+		TextView textView = (TextView) v.findViewById(R.id.tv_item_weekday);
+		if(attendBean.state == 1){
+			textView.setTextColor(getActivity().getResources().getColor(R.color.green));
+		}else if(attendBean.state == 2){
+			textView.setTextColor(getActivity().getResources().getColor(R.color.blue));
+		}
 	}
 
 	protected void setDetailView(AttendBean mBean) {
@@ -445,9 +473,16 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 				OMUserDatabaseManager.getInstance(getActivity()).openDb(1);
 				OMUserDatabaseManager.getInstance(getActivity())
 						.insertAttendBean(mBean);
-				UItoolKit.showToastShort(getActivity(), "签到成功");
+				if (mBean.state == 1) {
+					UItoolKit.showToastShort(getActivity(), "签到成功");
+				} else {
+					UItoolKit.showToastShort(getActivity(), "补签成功");
+				}
 				attendState.setText("已签到");
-				attendMap.put(Utils.getCalendarField(mBean.time, Calendar.DATE) - 1, mBean);
+				int pos = Utils.getCalendarField(mBean.time, Calendar.DATE) - 1;
+				monthList.get(firstDayPosition + pos).attendState = mBean.state;
+				setGridView(mBean, firstDayPosition + pos);
+				attendMap.put(pos, mBean);
 			} else if (result.equals("REPEAT")){
 				UItoolKit.showToastShort(getActivity(), "一天签十次也不会涨工资的");
 			}else{

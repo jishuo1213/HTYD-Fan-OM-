@@ -9,7 +9,10 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -28,9 +31,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.htyd.fan.om.R;
+import com.htyd.fan.om.map.LocationReceiver;
+import com.htyd.fan.om.map.OMLocationManager;
 import com.htyd.fan.om.model.AffiliatedFileBean;
+import com.htyd.fan.om.model.OMLocationBean;
 import com.htyd.fan.om.model.TaskDetailBean;
-import com.htyd.fan.om.taskmanage.fragment.TaskAccessoryAdapter.UpLoadFileListener;
+import com.htyd.fan.om.taskmanage.adapter.TaskAccessoryAdapter;
+import com.htyd.fan.om.taskmanage.adapter.TaskAccessoryAdapter.UpLoadFileListener;
 import com.htyd.fan.om.util.base.PictureUtils;
 import com.htyd.fan.om.util.base.Preferences;
 import com.htyd.fan.om.util.base.Utils;
@@ -61,7 +68,10 @@ public class CreateTaskFragment extends Fragment implements UpLoadFileListener{
 	protected long startTime;
 	private List<AffiliatedFileBean> accessoryList;
 	protected ListViewForScrollView accessoryListView;
-
+	protected double latitiude, longitude;
+	
+	
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -69,6 +79,7 @@ public class CreateTaskFragment extends Fragment implements UpLoadFileListener{
 		mBean = new TaskDetailBean();
 		mListener = new SelectViewClickListener();
 		mManager = OMUserDatabaseManager.getInstance(getActivity());
+		OMLocationManager.get(getActivity()).startLocationUpdate();
 	}
 
 	@Override
@@ -81,7 +92,14 @@ public class CreateTaskFragment extends Fragment implements UpLoadFileListener{
 	}
 	
 	@Override
+	public void onStart() {
+		super.onStart();
+		getActivity().registerReceiver(mLocationReceiver, new IntentFilter(OMLocationManager.ACTION_LOCATION));
+	}
+	
+	@Override
 	public void onStop() {
+		getActivity().unregisterReceiver(mLocationReceiver);
 		if(accessoryList == null || accessoryList.size() == 0){
 			super.onStop();
 			return;
@@ -277,7 +295,22 @@ public class CreateTaskFragment extends Fragment implements UpLoadFileListener{
 			}
 		}
 	}
+	private BroadcastReceiver mLocationReceiver = new LocationReceiver() {
 
+		@Override
+		protected void onNetWorkLocationReceived(Context context,
+				OMLocationBean loc) {
+			
+		}
+
+		@Override
+		protected void onGPSLocationReceived(Context context, OMLocationBean loc) {
+			latitiude = loc.latitude;
+			longitude = loc.longitude;
+			OMLocationManager.get(getActivity()).stopLocationUpdate();
+		}
+		
+	};
 	@Override
 	public void onUpLoadClick(AffiliatedFileBean mBean) {
 		HttpMultipartPost post = new HttpMultipartPost(getActivity(), mBean.filePath);
@@ -299,6 +332,8 @@ public class CreateTaskFragment extends Fragment implements UpLoadFileListener{
 			try {
 				JSONObject param = params[0].toJson();
 				param.put("YHID", Preferences.getUserinfo(getActivity(), "YHID"));
+				param.put("RWJD", longitude);
+				param.put("RWWD", latitiude);
 				result = NetOperating.getResultFromNet(getActivity(), param, Urls.TASKURL, "Operate=saveRwxx");
 			} catch (JSONException e) {
 				e.printStackTrace();

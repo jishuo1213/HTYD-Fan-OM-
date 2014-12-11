@@ -26,6 +26,7 @@ import android.widget.TextView;
 
 import com.htyd.fan.om.R;
 import com.htyd.fan.om.model.TaskProcessBean;
+import com.htyd.fan.om.util.base.Preferences;
 import com.htyd.fan.om.util.base.Utils;
 import com.htyd.fan.om.util.db.OMUserDatabaseManager;
 import com.htyd.fan.om.util.fragment.DateTimePickerDialog;
@@ -41,19 +42,22 @@ public class CreateProcessDialog extends DialogFragment {
 	private static final int REQUESTENDTIME = 2;// 结束时间
 	private static final String REPROCESSBEAN = "receprocessbean";
 	private static final String SHOWORNOT = "showornot";
+	private static final String TASKID = "taskid";
 
 	private EditText processContent;
 	private TextView selectStartTime, selectEndTime;
 	private RadioButton done, undone;
 	protected long startTime, endTime;
-
+	private DialogInterface dialog;
+	
 	public static DialogFragment newInstance(TaskProcessBean mBean,
-			boolean showornot) {
+			boolean showornot,int taskID) {
 		DialogFragment fragment = new CreateProcessDialog();
 		Bundle bundle = new Bundle();
 		if (mBean != null)
 			bundle.putParcelable(REPROCESSBEAN, mBean);
 		bundle.putBoolean(SHOWORNOT, showornot);
+		bundle.putInt(TASKID, taskID);
 		fragment.setArguments(bundle);
 		return fragment;
 	}
@@ -82,6 +86,7 @@ public class CreateProcessDialog extends DialogFragment {
 		}
 
 		builder.setNegativeButton("取消", dialogListener);
+		dialog = builder.create();
 		return builder.create();
 	}
 
@@ -135,19 +140,8 @@ public class CreateProcessDialog extends DialogFragment {
 		public void onClick(DialogInterface dialog, int which) {
 			switch (which) {
 			case Dialog.BUTTON_POSITIVE:
-				try {
-					Field field;
-					field = dialog.getClass().getSuperclass()
-							.getDeclaredField("mShowing");
-					field.setAccessible(true);
-					field.set(dialog, false);
-				} catch (NoSuchFieldException e) {
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-				} catch (IllegalArgumentException e) {
-					e.printStackTrace();
-				}
+				CreateProcessDialog.this.dialog = dialog;
+				isShowDialog(dialog,false);
 				if (!checkCanSave()) {
 					UItoolKit.showToastShort(getActivity(), "这些都不能不填");
 				}
@@ -156,19 +150,7 @@ public class CreateProcessDialog extends DialogFragment {
 				}
 				break;
 			case Dialog.BUTTON_NEGATIVE:
-				try {
-					Field field;
-					field = dialog.getClass().getSuperclass()
-							.getDeclaredField("mShowing");
-					field.setAccessible(true);
-					field.set(dialog, true);
-				} catch (NoSuchFieldException e) {
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-				} catch (IllegalArgumentException e) {
-					e.printStackTrace();
-				}
+				isShowDialog(dialog,true);
 				break;
 			}
 		}
@@ -217,6 +199,8 @@ public class CreateProcessDialog extends DialogFragment {
 		mBean.processContent = processContent.getText().toString();
 		mBean.startTime = startTime;
 		mBean.endTime = endTime;
+		mBean.taskid = getArguments().getInt(TASKID);
+		Log.i("fanjishuo____sendReult", mBean.taskid+"");
 		if (done.isChecked()) {
 			mBean.taskState = 2;
 		} else {
@@ -235,8 +219,11 @@ public class CreateProcessDialog extends DialogFragment {
 			String result = "";
 			mBean = params[0];
 			try {
+				JSONObject param = params[0].toJson();
+				param.put("CLR", Preferences.getUserinfo(getActivity(), "YHMC"));
+				param.put("CLRDH", Preferences.getUserinfo(getActivity(), "SHOUJ"));
 				result = NetOperating.getResultFromNet(getActivity(),
-						params[0].toJson(), Urls.TASKPROCESSURL,
+						param, Urls.TASKPROCESSURL,
 						"Operate=saveRwClxx");
 			} catch (JSONException e) {
 				e.printStackTrace();
@@ -246,28 +233,19 @@ public class CreateProcessDialog extends DialogFragment {
 				return false;
 			}
 			Log.i("fanjishuo_____doInBackground", (params[0] == null) + "");
-			if (parseResult(result)) {
-				long dbresult = OMUserDatabaseManager
-						.getInstance(getActivity())
-						.insertTaskProcessBean(params[0]);
-				if (dbresult != -1) {
-					return true;
-				}
-			} else {
-				return false;
-			}
-			return false;
+			return parseResult(result);
 		}
 
 		@Override
 		protected void onPostExecute(Boolean result) {
 			if (result) {
+			    OMUserDatabaseManager.getInstance(getActivity()).insertTaskProcessBean(mBean);
 				UItoolKit.showToastShort(getActivity(), "保存成功");
-				dismiss();
 				Intent i = new Intent();
 				i.putExtra(PROCESSBEAN, mBean);
 				getTargetFragment().onActivityResult(getTargetRequestCode(),
 						Activity.RESULT_OK, i);
+				isShowDialog(dialog,true);
 			} else {
 				UItoolKit.showToastShort(getActivity(), "保存不成功，请重试");
 			}
@@ -283,7 +261,7 @@ public class CreateProcessDialog extends DialogFragment {
 		task.cancel(false);
 	}
 
-	public boolean parseResult(String result) {
+	protected boolean parseResult(String result) {
 		try {
 			JSONObject json = new JSONObject(result);
 			return json.getBoolean("RESULT");
@@ -292,4 +270,20 @@ public class CreateProcessDialog extends DialogFragment {
 			return false;
 		}
 	}
+	
+	protected void isShowDialog(DialogInterface dialog, boolean isshow) {
+		try {
+			Field field = dialog.getClass().getSuperclass()
+					.getDeclaredField("mShowing");
+			field.setAccessible(true);
+			field.set(dialog, isshow);
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		}
+	}
+
 }

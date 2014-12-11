@@ -153,8 +153,6 @@ public class OMUserDatabaseHelper extends SQLiteOpenHelper {
 			mBean.endTime = getLong(getColumnIndex(SQLSentence.COLUMN_TASKPROCESS_ENDTIME));
 			mBean.createTime = getLong(getColumnIndex(SQLSentence.COLUMN_TASKPROCESS_CREATE_TIME));
 			mBean.processContent = getString(getColumnIndex(SQLSentence.COLUMN_TASKPROCESS_TASK_PROCESSWHAT));
-			mBean.processPerson = getString(getColumnIndex(SQLSentence.COLUMN_TASKPROCESS_PROCESS_PERSON));
-			mBean.personPhone = getString(getColumnIndex(SQLSentence.COLUMN_TASKPROCESS_PERSON_PHONE));
 			return mBean;
 		}
 	}

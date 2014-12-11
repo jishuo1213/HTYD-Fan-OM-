@@ -5,7 +5,6 @@ import org.json.JSONObject;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import com.htyd.fan.om.util.base.Utils;
 
@@ -17,9 +16,7 @@ public class TaskDetailBean implements Parcelable {
 	public String installLocation;// 安装地点
 	public String taskTitle;// 任务标题
 	public String taskDescription;// 任务描述
-/*	public String taskContacts;// 任务联系人
-	public String contactsPhone;// 联系人手机
-*/	public String recipientsName;// 任务领取人
+	public String recipientsName;// 任务领取人
 	public String recipientPhone;// 领取人电话
 	public String taskAccessory;// 任务附件
 	public String equipment;// 设备
@@ -29,6 +26,7 @@ public class TaskDetailBean implements Parcelable {
 	public long saveTime;// 填写保存时间
 	public int taskState;// 任务状态//0:在处理任务  2:已完成任务
 	public int taskType;// 任务类别
+	
 
 	public TaskDetailBean() {
 	}
@@ -39,17 +37,13 @@ public class TaskDetailBean implements Parcelable {
 		installLocation = json.getString("AZDD");
 		taskTitle = json.getString("RWBT");
 		taskDescription = json.getString("RWMS");
-/*		taskContacts = json.getString("LXR");
-		contactsPhone = json.getString("LXRDH");*/
-		recipientsName = json.getString("AZDD");
-		recipientPhone = json.getString("AZDD");
-		taskAccessory = json.getString("AZDD");
-		equipment = json.getString("AZDD");
-		productType = json.getString("AZDD");
-		Log.i("fanjishuo____setFromJson",
-				Integer.parseInt(json.getString("RWZT")) + "");
+		recipientsName = json.getString("TXR");
+		recipientPhone = json.getString("TXRDH");
+		planStartTime = Utils.parseDate(json.getString("JHKSSJ"));
+		planEndTime = Utils.parseDate(json.getString("YJJSSJ"));
+		saveTime = Utils.parseDate(json.getString("TXSJ"));
 		switch (Integer.parseInt(json.getString("RWZT"))) {
-		case 0:// 待领取
+		case 0:
 			taskState = 0;// 在处理
 			break;
 		case 1:
@@ -59,7 +53,6 @@ public class TaskDetailBean implements Parcelable {
 			taskState = 2;// 已完成
 			break;
 		}
-		Log.i("fanjishuo____setFromJson", taskState + "taskState");
 	}
 
 	@Override
@@ -75,8 +68,6 @@ public class TaskDetailBean implements Parcelable {
 		dest.writeString(installLocation);
 		dest.writeString(taskTitle);
 		dest.writeString(taskDescription);
-/*		dest.writeString(taskContacts);
-		dest.writeString(contactsPhone);*/
 		dest.writeString(recipientsName);
 		dest.writeString(recipientPhone);
 		dest.writeString(taskAccessory);
@@ -106,8 +97,6 @@ public class TaskDetailBean implements Parcelable {
 			mBean.installLocation = source.readString();
 			mBean.taskTitle = source.readString();
 			mBean.taskDescription = source.readString();
-/*			mBean.taskContacts = source.readString();
-			mBean.contactsPhone = source.readString();*/
 			mBean.recipientsName = source.readString();
 			mBean.recipientPhone = source.readString();
 			mBean.taskAccessory = source.readString();
@@ -171,8 +160,6 @@ public class TaskDetailBean implements Parcelable {
 		json.put("CCBH", "");
 		json.put("ZCBH", "");
 		json.put("RWGL", "");
-		json.put("RWJD", "");
-		json.put("RWWD", "");
 		json.put("TXID", "1");
 		json.put("RZ_MKID", "");
 		json.put("LJID", "");
@@ -180,5 +167,4 @@ public class TaskDetailBean implements Parcelable {
 		json.put("JLID", "");
 		return json;
 	}
-
 }
