@@ -1,11 +1,20 @@
 package com.htyd.fan.om.taskmanage.fragment;
 
 import java.text.ParseException;
+import java.util.ArrayList;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.LoaderManager;
+import android.app.LoaderManager.LoaderCallbacks;
+import android.content.Context;
 import android.content.Intent;
+import android.content.Loader;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.view.LayoutInflater;
@@ -19,17 +28,26 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.htyd.fan.om.R;
+import com.htyd.fan.om.model.AffiliatedFileBean;
 import com.htyd.fan.om.model.TaskDetailBean;
 import com.htyd.fan.om.util.base.Utils;
+import com.htyd.fan.om.util.db.OMUserDatabaseHelper.TaskAccessoryCursor;
+import com.htyd.fan.om.util.db.OMUserDatabaseManager;
 import com.htyd.fan.om.util.fragment.DateTimePickerDialog;
 import com.htyd.fan.om.util.fragment.SelectLocationDialogFragment;
 import com.htyd.fan.om.util.fragment.SpendTimePickerDialog;
 import com.htyd.fan.om.util.fragment.UploadFileDialog;
+import com.htyd.fan.om.util.https.NetOperating;
+import com.htyd.fan.om.util.https.Urls;
+import com.htyd.fan.om.util.https.Utility;
+import com.htyd.fan.om.util.loaders.SQLiteCursorLoader;
 import com.htyd.fan.om.util.ui.UItoolKit;
 
 public class EditTaskFragment extends Fragment {
 
 	private static final String SELECTTASK = "selecttask";
+	private static final String TASKID = "taskid";
+	private static final int LOADERID = 0x15;
 /*	private static final int REQUESTPHOTO = 3;//照片
 	private static final int REQUESTRECORDING = 4;//录音
 */	
@@ -40,7 +58,10 @@ public class EditTaskFragment extends Fragment {
 	private TaskViewPanel mPanel;
 	protected TaskDetailBean mBean;
 	private long startTime;
-
+	protected ArrayList<AffiliatedFileBean> accessoryList;
+	private LoaderManager mLoaderManager;
+	private AccessoryLoaderCallback mCallback;
+	
 	public static Fragment newInstance(Parcelable mBean) {
 		Bundle args = new Bundle();
 		args.putParcelable(SELECTTASK, mBean);
@@ -53,7 +74,12 @@ public class EditTaskFragment extends Fragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
+		mLoaderManager = getActivity().getLoaderManager();
 		mBean = (TaskDetailBean) getArguments().get(SELECTTASK);
+		Bundle args = new Bundle();
+		args.putInt(TASKID, mBean.taskNetId);
+		mCallback = new AccessoryLoaderCallback();
+		mLoaderManager.initLoader(LOADERID, args, mCallback);
 	}
 
 	@Override
@@ -163,7 +189,8 @@ public class EditTaskFragment extends Fragment {
 				spendDialog.show(fm, null);
 				break;
 			case R.id.tv_task_accessory:
-				UploadFileDialog uploadDialog = (UploadFileDialog) UploadFileDialog.newInstance(null);
+				UploadFileDialog uploadDialog = (UploadFileDialog) UploadFileDialog
+						.newInstance(accessoryList, mBean.taskNetId, mBean.taskTitle);
 				uploadDialog.show(fm, null);
 				break;
 			}
@@ -183,12 +210,7 @@ public class EditTaskFragment extends Fragment {
 				long endTime = data.getLongExtra(SpendTimePickerDialog.ENDTIME,
 						0);
 				mPanel.taskPlanEndTime.setText(Utils.formatTime(endTime));
-			}/*else if (requestCode == REQUESTPHOTO) {
-				UItoolKit.showToastShort(getActivity(), data
-						.getStringExtra(CameraFragment.EXTRA_PHOTO_FILENAME));
-			} else if (requestCode == REQUESTRECORDING) {
-				UItoolKit.showToastShort(getActivity(),data.getStringArrayExtra(RecodingDialogFragment.FILEPATHARRAY)[0]);
-			}*/
+			}
 		}
 	};
 
@@ -277,4 +299,71 @@ public class EditTaskFragment extends Fragment {
 		}
 	}
 
+	private static class AccessoryLoader extends SQLiteCursorLoader {
+
+		private OMUserDatabaseManager mManager;
+		private int taskId;
+
+		public AccessoryLoader(Context context, int taskId) {
+			super(context);
+			mManager = OMUserDatabaseManager.getInstance(context);
+			this.taskId = taskId;
+		}
+
+		@Override
+		protected Cursor loadCursor() {
+			return mManager.queryAccessoryByTaskId(taskId);
+		}
+
+		@Override
+		protected Cursor loadFromNet() {
+			JSONObject param = new JSONObject();
+			String result = "";
+			try {
+				param.put("JLID", taskId);
+				result = NetOperating.getResultFromNet(getContext(), param,
+						Urls.FILE, "Operate=getWjdz");
+			} catch (JSONException e) {
+				e.printStackTrace();
+				return null;
+			} catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}
+			try {
+				Utility.handleAccessory(mManager, result,taskId);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}
+			return loadCursor();
+		}
+	}
+	
+	private class AccessoryLoaderCallback implements LoaderCallbacks<Cursor>{
+
+		@Override
+		public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+			return new AccessoryLoader(getActivity(),args.getInt(TASKID));
+		}
+
+		@Override
+		public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+			TaskAccessoryCursor cursor = (TaskAccessoryCursor) data;
+			if(cursor != null && cursor.moveToFirst()){
+				if(accessoryList == null){
+					accessoryList = new ArrayList<AffiliatedFileBean>();
+				}
+				do{
+					accessoryList.add(cursor.getAccessory());
+				}while(cursor.moveToNext());
+			}
+		}
+
+		@Override
+		public void onLoaderReset(Loader<Cursor> loader) {
+		}
+		
+	}
+	
 }

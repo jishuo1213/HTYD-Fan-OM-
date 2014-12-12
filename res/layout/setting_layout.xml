@@ -28,10 +28,36 @@
         />
     
     <TextView 
-        android:id="@+id/tv_custom_address"
+        android:id="@+id/tv_common_address"
         style="@style/style_normal_textview"
         android:layout_below="@id/setting"
+        android:layout_width="match_parent"
+        android:background="@color/skyblue"
+        android:layout_margin="5dp"
         android:text="管理常用地点"
+        />
+    
+    <TextView 
+        android:id="@+id/tv_sync_data"
+        style="@style/style_normal_textview"
+        android:layout_below="@id/tv_common_address"
+        android:layout_margin="5dp"
+        android:text="同步数据"
+        android:layout_alignRight="@id/tv_common_address"
+        android:layout_alignParentLeft="true"
+        android:background="@color/orange"
+        />
+    	
+    	<TextView 
+        android:id="@+id/tv_log_out"
+        style="@style/style_normal_textview"
+        android:layout_below="@id/tv_sync_data"
+        android:layout_margin="5dp"
+        android:text="退出登录"
+        android:layout_alignRight="@id/tv_common_address"
+        android:layout_alignParentLeft="true"
+        android:background="@color/red"
+        android:textColor="@color/white"
         />
     
 </RelativeLayout>

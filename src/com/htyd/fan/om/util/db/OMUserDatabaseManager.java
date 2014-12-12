@@ -85,7 +85,7 @@ public class OMUserDatabaseManager {
 		ContentValues cv = new ContentValues();
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_PATH, mBean.filePath);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_STATE, mBean.fileState);
-		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_TYPE, mBean.fileType);
+		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_TYPE, mBean.fileSource);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_TASKID, mBean.taskId);
 		return db.insert(SQLSentence.TABLE_TASK_ACCESSORY, null, cv);
 	}
@@ -95,8 +95,6 @@ public class OMUserDatabaseManager {
 		cv.put(SQLSentence.COLUMN_TASK_WORK_LOCATION, mBean.workLocation);
 		cv.put(SQLSentence.COLUMN_TASK_INSTALL_LOCATION, mBean.installLocation);
 		cv.put(SQLSentence.COLUMN_TASK_DESCRIPTION, mBean.taskDescription);
-/*		cv.put(SQLSentence.COLUMN_TASK_CONTACTS, mBean.taskContacts);
-		cv.put(SQLSentence.COLUMN_TASK_CONTACT_PHONE, mBean.contactsPhone);*/
 		cv.put(SQLSentence.COLUMN_TASK_RECIPIENT_NAME, mBean.recipientsName);
 		cv.put(SQLSentence.COLUMN_TASK_RECIPIENT_PHONE, mBean.recipientPhone);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY, mBean.taskAccessory);

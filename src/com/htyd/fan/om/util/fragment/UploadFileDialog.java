@@ -27,12 +27,16 @@ import com.htyd.fan.om.model.AffiliatedFileBean;
 import com.htyd.fan.om.taskmanage.adapter.TaskAccessoryAdapter;
 import com.htyd.fan.om.taskmanage.adapter.TaskAccessoryAdapter.UpLoadFileListener;
 import com.htyd.fan.om.util.base.PictureUtils;
+import com.htyd.fan.om.util.base.Preferences;
 import com.htyd.fan.om.util.https.HttpMultipartPost;
 import com.htyd.fan.om.util.ui.UItoolKit;
 
 public class UploadFileDialog extends DialogFragment implements UpLoadFileListener{
 
 	private static final String FILE = "file";
+	private static final String TASKID = "taskid";
+	private static final String TASKTITLE = "taskTitle";
+	
 	private static final int REQUESTPHOTO = 1;
 	private static final int REQUESTRECORDING = 2;
 
@@ -40,12 +44,14 @@ public class UploadFileDialog extends DialogFragment implements UpLoadFileListen
 	protected int state = 0;
 	private ListView mListView;
 
-	public static DialogFragment newInstance(ArrayList<AffiliatedFileBean> list) {
+	public static DialogFragment newInstance(ArrayList<AffiliatedFileBean> list,int taskNetId,String taskTitle) {
 		Bundle args = new Bundle();
 		if(list == null){
 			list = new ArrayList<AffiliatedFileBean>();
 		}
 		args.putParcelableArrayList(FILE, list);
+		args.putInt(TASKID, taskNetId);
+		args.putString(TASKTITLE, taskTitle);
 		DialogFragment fragment = new UploadFileDialog();
 		fragment.setArguments(args);
 		return fragment;
@@ -158,7 +164,10 @@ public class UploadFileDialog extends DialogFragment implements UpLoadFileListen
 	@Override
 	public void onUpLoadClick(AffiliatedFileBean mBean) {
 		HttpMultipartPost post = new HttpMultipartPost(getActivity(), mBean.filePath);
-		post.execute();
+		post.execute(Preferences.getUserinfo(getActivity(), "YHID"),
+				Preferences.getUserinfo(getActivity(), "YHMC"), getArguments()
+						.getInt(TASKID) + "",
+				getArguments().getString(TASKTITLE));
 	}
 
 	@Override

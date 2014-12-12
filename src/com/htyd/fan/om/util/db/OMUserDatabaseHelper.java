@@ -167,7 +167,7 @@ public class OMUserDatabaseHelper extends SQLiteOpenHelper {
 			AffiliatedFileBean mBean = new AffiliatedFileBean();
 			mBean.filePath = getString(getColumnIndex(SQLSentence.COLUMN_TASK_ACCESSORY_PATH));
 			mBean.fileState = getInt(getColumnIndex(SQLSentence.COLUMN_TASK_ACCESSORY_STATE));
-			mBean.fileType = getInt(getColumnIndex(SQLSentence.COLUMN_TASK_ACCESSORY_TYPE));
+			mBean.fileSource = getInt(getColumnIndex(SQLSentence.COLUMN_TASK_ACCESSORY_TYPE));
 			mBean.taskId = getInt(getColumnIndex(SQLSentence.COLUMN_TASK_ACCESSORY_TASKID));
 			return mBean;
 		}

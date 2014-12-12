@@ -8,6 +8,7 @@ import org.json.JSONTokener;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.htyd.fan.om.model.AffiliatedFileBean;
 import com.htyd.fan.om.model.AttendBean;
 import com.htyd.fan.om.model.CityBean;
 import com.htyd.fan.om.model.DistrictBean;
@@ -124,8 +125,8 @@ public class Utility {
 		return false;
 	}
 	
-	public static void handleAttend(OMUserDatabaseManager mManager, String response)
-			throws Exception {
+	public static void handleAttend(OMUserDatabaseManager mManager,
+			String response) throws Exception {
 		mManager.openDb(1);
 		if (!TextUtils.isEmpty(response)) {
 			AttendBean mBean = new AttendBean();
@@ -136,8 +137,25 @@ public class Utility {
 				mBean.setFromJson(array.getJSONObject(i));
 				mManager.insertAttendBean(mBean);
 			}
-		}else{
-		throw new Exception("错误");
+		} else {
+			throw new Exception("错误");
+		}
+	}
+	
+	public static void handleAccessory(OMUserDatabaseManager mManager,
+			String response,int taskId) throws Exception {
+		mManager.openDb(1);
+		if (!TextUtils.isEmpty(response)) {
+			AffiliatedFileBean mBean = new AffiliatedFileBean();
+			JSONObject resultJson = new JSONObject(response);
+			JSONArray array = (JSONArray) new JSONTokener(
+					resultJson.getString("Rows")).nextValue();
+			for (int i = 0; i < array.length(); i++) {
+				mBean.setFromJson(array.getJSONObject(i),taskId);
+				mManager.insertTaskAccessoryBean(mBean);
+			}
+		} else {
+			throw new Exception("错误");
 		}
 	}
 }

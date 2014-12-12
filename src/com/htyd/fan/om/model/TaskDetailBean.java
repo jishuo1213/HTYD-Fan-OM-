@@ -142,8 +142,6 @@ public class TaskDetailBean implements Parcelable {
 		json.put("XXDZ", getDetailAddress());
 		json.put("RWBT", taskTitle);
 		json.put("RWMS", taskDescription);
-		json.put("ZRR", "");
-		json.put("ZRRDH", "");
 		json.put("LXR", "");
 		json.put("LXRDH", "");
 		json.put("JHKSSJ", Utils.formatTime(planStartTime, "yyyy-MM-dd HH:mm:ss"));

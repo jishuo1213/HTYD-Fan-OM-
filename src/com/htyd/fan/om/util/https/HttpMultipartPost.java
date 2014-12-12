@@ -6,16 +6,20 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.htyd.fan.om.util.https.CustomMultipartEntity.ProgressListener;
+import com.htyd.fan.om.util.ui.UItoolKit;
 
 
 public class HttpMultipartPost extends AsyncTask<String, Integer, String> {
@@ -42,11 +46,10 @@ public class HttpMultipartPost extends AsyncTask<String, Integer, String> {
 	@Override
 	protected String doInBackground(String... params) {
 		String serverResponse = null;
-
-		HttpClient httpClient = new DefaultHttpClient();
+		
+		HttpClient httpClient = HttpHelper.getHttpClient(context);
 		HttpContext httpContext = new BasicHttpContext();
 		HttpPost httpPost = new HttpPost(Urls.UPLOADFILE);
-
 		try {
 			CustomMultipartEntity multipartContent = new CustomMultipartEntity(
 					new ProgressListener() {
@@ -57,10 +60,18 @@ public class HttpMultipartPost extends AsyncTask<String, Integer, String> {
 					});
 
 			// We use FileBody to transfer an image
-			multipartContent.addPart("data", new FileBody(new File(
+			multipartContent.addPart("image", new FileBody(new File(
 					filePath)));
+			StringBody sb1 = new StringBody(params[0]);
+			StringBody sb2 = new StringBody(params[1]);
+			StringBody sb3 = new StringBody(params[2]);
+			StringBody sb4 = new StringBody(params[3]);
+			multipartContent.addPart("yhid", sb1);
+			multipartContent.addPart("yhmc", sb2);
+			multipartContent.addPart("rwid", sb3);
+			multipartContent.addPart("rwbt", sb4);
 			totalSize = multipartContent.getContentLength();
-
+			
 			// Send it
 			httpPost.setEntity(multipartContent);
 			HttpResponse response = httpClient.execute(httpPost, httpContext);
@@ -80,7 +91,18 @@ public class HttpMultipartPost extends AsyncTask<String, Integer, String> {
 
 	@Override
 	protected void onPostExecute(String result) {
-		System.out.println("result: " + result);
+		Log.i("fanjishuo____onPostExecute", result);
+		try {
+			JSONObject json = new JSONObject(result);
+			if(json.getBoolean("RESULT")){
+				UItoolKit.showToastShort(context, "保存成功");
+			}else{
+				UItoolKit.showToastShort(context, "保存失败");
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
 		pd.dismiss();
 		this.cancel(false);
 	}

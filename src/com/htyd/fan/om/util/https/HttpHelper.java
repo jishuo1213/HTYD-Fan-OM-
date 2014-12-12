@@ -29,6 +29,8 @@ import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
+import com.htyd.fan.om.util.ui.UItoolKit;
+
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -94,6 +96,7 @@ public class HttpHelper {
 							return (resEntity == null) ? null : EntityUtils
 									.toString(resEntity, CHARSET_UTF8);
 						} else {
+							UItoolKit.showToastShort(context, "检查网络连接先");
 							return "false";
 						}
 					}
@@ -103,7 +106,7 @@ public class HttpHelper {
 		return strResult;
 	}
 
-	private static HttpClient getHttpClient(Context context) {
+	public static HttpClient getHttpClient(Context context) {
 		if (null == customerHttpClient) {
 			HttpParams params = new BasicHttpParams();
 			// 设置一些基本参数

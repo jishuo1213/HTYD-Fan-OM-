@@ -280,6 +280,7 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 				params.put("TXSJ_BEGIN", "");
 				params.put("TXSJ_END", "");
 				params.put("TXR", Preferences.getUserinfo(getContext(), "YHMC"));
+				params.put("LQR", Preferences.getUserinfo(getContext(), "YHID"));
 				params.put("RWGL", "");
 			} catch (JSONException e1) {
 				e1.printStackTrace();

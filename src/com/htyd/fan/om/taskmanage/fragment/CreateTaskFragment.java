@@ -331,7 +331,7 @@ public class CreateTaskFragment extends Fragment implements UpLoadFileListener{
 			String result = "";
 			try {
 				JSONObject param = params[0].toJson();
-				param.put("YHID", Preferences.getUserinfo(getActivity(), "YHID"));
+				param.put("LQR", Preferences.getUserinfo(getActivity(), "YHID"));
 				param.put("RWJD", longitude);
 				param.put("RWWD", latitiude);
 				result = NetOperating.getResultFromNet(getActivity(), param, Urls.TASKURL, "Operate=saveRwxx");
