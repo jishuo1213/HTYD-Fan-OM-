@@ -54,6 +54,7 @@ public class OMUserDatabaseManager {
 		cv.put(SQLSentence.COLUMN_TASK_WORK_LOCATION, mBean.workLocation);
 		cv.put(SQLSentence.COLUMN_TASK_INSTALL_LOCATION, mBean.installLocation);
 		cv.put(SQLSentence.COLUMN_TASK_DESCRIPTION, mBean.taskDescription);
+		cv.put(SQLSentence.COLUMN_TASK_TITLE, mBean.taskTitle);
 /*		cv.put(SQLSentence.COLUMN_TASK_CONTACTS, mBean.taskContacts);
 		cv.put(SQLSentence.COLUMN_TASK_CONTACT_PHONE, mBean.contactsPhone);*/
 		cv.put(SQLSentence.COLUMN_TASK_RECIPIENT_NAME, mBean.recipientsName);

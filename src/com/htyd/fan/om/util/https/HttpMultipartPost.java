@@ -50,6 +50,7 @@ public class HttpMultipartPost extends AsyncTask<String, Integer, String> {
 		HttpClient httpClient = HttpHelper.getHttpClient(context);
 		HttpContext httpContext = new BasicHttpContext();
 		HttpPost httpPost = new HttpPost(Urls.UPLOADFILE);
+		Log.i("fanjishuo_____doInBackground", Urls.UPLOADFILE);
 		try {
 			CustomMultipartEntity multipartContent = new CustomMultipartEntity(
 					new ProgressListener() {
@@ -60,12 +61,13 @@ public class HttpMultipartPost extends AsyncTask<String, Integer, String> {
 					});
 
 			// We use FileBody to transfer an image
-			multipartContent.addPart("image", new FileBody(new File(
-					filePath)));
+			Log.i("fanjishuo_____doInBackground", params[0]+params[1]+params[2]+params[3]);
 			StringBody sb1 = new StringBody(params[0]);
 			StringBody sb2 = new StringBody(params[1]);
 			StringBody sb3 = new StringBody(params[2]);
 			StringBody sb4 = new StringBody(params[3]);
+			multipartContent.addPart("image", new FileBody(new File(
+					filePath)));
 			multipartContent.addPart("yhid", sb1);
 			multipartContent.addPart("yhmc", sb2);
 			multipartContent.addPart("rwid", sb3);
@@ -91,7 +93,10 @@ public class HttpMultipartPost extends AsyncTask<String, Integer, String> {
 
 	@Override
 	protected void onPostExecute(String result) {
-		Log.i("fanjishuo____onPostExecute", result);
+		if(result == null || result.length() == 0){
+			UItoolKit.showToastShort(context, "网络异常");
+			return;
+		}
 		try {
 			JSONObject json = new JSONObject(result);
 			if(json.getBoolean("RESULT")){

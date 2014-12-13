@@ -11,7 +11,8 @@ public class AffiliatedFileBean implements Parcelable {
 	public String filePath;//文件路径
 	public int fileState;//文件状态 1：已上传 或 已下载 0：未上传 或 未下载
 	public int fileSource;//文件来源//0：本地创建的附件 1：从服务器获取的附件 
-	public int taskId;//任务id
+	public int taskId;//任务网络id
+	public String taskTitle;//任务标题
 	
 	@Override
 	public int describeContents() {

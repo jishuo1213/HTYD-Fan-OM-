@@ -18,7 +18,6 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -26,7 +25,6 @@ import com.htyd.fan.om.R;
 import com.htyd.fan.om.model.AffiliatedFileBean;
 import com.htyd.fan.om.taskmanage.adapter.TaskAccessoryAdapter;
 import com.htyd.fan.om.taskmanage.adapter.TaskAccessoryAdapter.UpLoadFileListener;
-import com.htyd.fan.om.util.base.PictureUtils;
 import com.htyd.fan.om.util.base.Preferences;
 import com.htyd.fan.om.util.https.HttpMultipartPost;
 import com.htyd.fan.om.util.ui.UItoolKit;
@@ -127,6 +125,12 @@ public class UploadFileDialog extends DialogFragment implements UpLoadFileListen
 		if (resultCode == Activity.RESULT_OK) {
 			if (requestCode == REQUESTPHOTO) {
 				AffiliatedFileBean mBean  = new AffiliatedFileBean();
+				if(listAccessory == null)
+					listAccessory = new ArrayList<AffiliatedFileBean>();
+				mBean.filePath = data.getStringExtra(CameraFragment.EXTRA_PHOTO_FILENAME);
+				mBean.fileSource = getArguments().getInt(TASKID);
+				mBean.taskId = 1;
+				mBean.fileState = 0;
 				listAccessory.add(mBean);
 				if(mListView.getAdapter() == null){
 					mListView.setAdapter(new TaskAccessoryAdapter(listAccessory, getActivity(), this));
@@ -155,24 +159,23 @@ public class UploadFileDialog extends DialogFragment implements UpLoadFileListen
 
 	@Override
 	public void onStop() {
-		for(int i = 0; i<listAccessory.size();i++){
+		/*for(int i = 0; i<listAccessory.size();i++){
 			PictureUtils.cleanImageView((ImageView) mListView.getChildAt(i).findViewById(R.id.img_accessory_file));
-		}
+		}*/
 		super.onStop();
 	}
 
 	@Override
 	public void onUpLoadClick(AffiliatedFileBean mBean) {
+		Log.i("fanjishuo____onUpLoadClick", mBean.filePath);
 		HttpMultipartPost post = new HttpMultipartPost(getActivity(), mBean.filePath);
 		post.execute(Preferences.getUserinfo(getActivity(), "YHID"),
-				Preferences.getUserinfo(getActivity(), "YHMC"), getArguments()
-						.getInt(TASKID) + "",
-				getArguments().getString(TASKTITLE));
+				Preferences.getUserinfo(getActivity(), "YHMC"), mBean.taskId+"",getArguments().getString(TASKTITLE));
 	}
 
 	@Override
 	public void onDeleteClick(AffiliatedFileBean mBean, int position) {
-		if (mBean.fileState == 0) {
+		if (mBean.fileSource == 0) {
 			listAccessory.remove(position);
 			TaskAccessoryAdapter mAdapter = (TaskAccessoryAdapter) mListView
 					.getAdapter();

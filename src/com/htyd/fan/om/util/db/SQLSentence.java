@@ -47,6 +47,7 @@ public class SQLSentence {
 	public static final String COLUMN_TASK_WORK_LOCATION = "worklocation";
 	public static final String COLUMN_TASK_INSTALL_LOCATION = "installlocation";
 	public static final String COLUMN_TASK_DESCRIPTION = "description";
+	public static final String COLUMN_TASK_TITLE = "task_title";
 	public static final String COLUMN_TASK_CONTACTS = "taskcontacts";
 	public static final String COLUMN_TASK_CONTACT_PHONE = "contactphone";
 	public static final String COLUMN_TASK_RECIPIENT_NAME = "recipientname";
@@ -62,7 +63,7 @@ public class SQLSentence {
 
 	public static final String CREATE_TABLE_TASK = "create table task ("
 			+ "_id integer primary key autoincrement, worklocation text ,installlocation text ,"
-			+ "description text ,taskcontacts text , contactphone text ,recipientname text ,"
+			+ "description text ,taskcontacts text , contactphone text ,recipientname text ,task_title text,"
 			+ "recipientphone text ,taskaccesspry text ,taskequipment text ,producttype text ,"
 			+ "planstarttime integer ,planendtime integer ,taskstate integer ,tasktype integer,task_id integer,createtime integer)";
 

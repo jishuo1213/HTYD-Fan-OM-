@@ -4,7 +4,9 @@ public class Urls {
 
 	public static final String LOCATIONURL = "http://www.weather.com.cn/data/list3/city";
 	
-	public static final String BASEURL = "http://192.168.1.188:8080/zdyw/";
+	//public static final String BASEURL = "http://192.168.1.188:8080/zdyw/";
+	
+	public static final String BASEURL = "http://192.168.1.38:8080/zdyw/";
 	
 	public static final String SAVEATTENDURL = BASEURL+"kqAction?";
 	

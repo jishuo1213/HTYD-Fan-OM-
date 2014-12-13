@@ -147,9 +147,8 @@ public class Utility {
 		mManager.openDb(1);
 		if (!TextUtils.isEmpty(response)) {
 			AffiliatedFileBean mBean = new AffiliatedFileBean();
-			JSONObject resultJson = new JSONObject(response);
 			JSONArray array = (JSONArray) new JSONTokener(
-					resultJson.getString("Rows")).nextValue();
+					response).nextValue();
 			for (int i = 0; i < array.length(); i++) {
 				mBean.setFromJson(array.getJSONObject(i),taskId);
 				mManager.insertTaskAccessoryBean(mBean);
