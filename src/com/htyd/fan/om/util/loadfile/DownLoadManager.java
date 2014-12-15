@@ -1,11 +1,11 @@
-package com.htyd.fan.om.util.base;
+package com.htyd.fan.om.util.loadfile;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import com.htyd.fan.om.util.base.DownThread.DataTransferListener;
+import com.htyd.fan.om.util.loadfile.DownThread.DataTransferListener;
 
 public class DownLoadManager {
 	
@@ -47,9 +47,9 @@ public class DownLoadManager {
 			RandomAccessFile currentPart = new RandomAccessFile(targetFile,"rw");
 			currentPart.seek(startPos);
 			if(i == threadNum - 1){
-				new DownThread(fileUrl,startPos, currentPartSize - moreByte, currentPart,listener,i).start();
+				new DownThread(fileUrl,startPos, currentPartSize - moreByte, currentPart,listener).start();
 			}else{
-				new DownThread(fileUrl,startPos, currentPartSize, currentPart,listener,i).start();
+				new DownThread(fileUrl,startPos, currentPartSize, currentPart,listener).start();
 			}
 		}
 }
@@ -65,7 +65,7 @@ public class DownLoadManager {
 			conn.setConnectTimeout(10000);
 			conn.setRequestMethod("GET");
 			conn.setRequestProperty("Accept", "image/jpeg,image/jpg");
-			conn.setRequestProperty("Accept-Language", "zh-CN,en-US");
+			conn.setRequestProperty("Accept-Language", "zh-CN");
 			conn.setRequestProperty("Charset", "UTF-8");
 			conn.setRequestProperty("Connection", "Keep-Alive");
 			fileSize = conn.getContentLength();
@@ -87,7 +87,7 @@ public class DownLoadManager {
 	private  DataTransferListener listener = new DataTransferListener() {
 		
 		@Override
-		public void OnDataTransfer(int length,int threadNum) {
+		public void OnDataTransfer(int length) {
 			downloadSum += length;
 		}
 	};

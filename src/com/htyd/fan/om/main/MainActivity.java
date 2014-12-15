@@ -7,6 +7,7 @@ import android.app.ActionBar;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -16,6 +17,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
 import android.view.ActionProvider;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,8 +28,11 @@ import com.htyd.fan.om.R;
 import com.htyd.fan.om.attendmanage.fragment.AttendCalendarFragment;
 import com.htyd.fan.om.main.fragment.SettingFragment;
 import com.htyd.fan.om.taskmanage.fragment.TaskListFragment;
+import com.htyd.fan.om.util.https.NetOperating;
+import com.htyd.fan.om.util.https.Urls;
 import com.htyd.fan.om.util.ui.AttendOverflowMenu;
 import com.htyd.fan.om.util.ui.TaskOvewflowMenu;
+import com.htyd.fan.om.util.ui.UItoolKit;
 
 public class MainActivity extends FragmentActivity {
 
@@ -39,6 +44,7 @@ public class MainActivity extends FragmentActivity {
 	private int currentPos;
 	private static Menu menu;
 	private ActionProvider firstProvider,thirdProvider;
+	private long firstBackKeyDown;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -145,7 +151,6 @@ public class MainActivity extends FragmentActivity {
 
 		public TabPanel() {
 			tabOneTextView = (TextView) findViewById(R.id.tv_tab_one);
-	//		tabTwoTextView = (TextView) findViewById(R.id.tv_tab_two);
 			tabThreeTextView = (TextView) findViewById(R.id.tv_tab_three);
 			tabFourTextView = (TextView) findViewById(R.id.tv_tab_four);
 		}
@@ -153,11 +158,9 @@ public class MainActivity extends FragmentActivity {
 		public void setTabTag() {
 			TabClickListener mClickListener = new TabClickListener();
 			tabOneTextView.setTag(0);
-	//		tabTwoTextView.setTag(1);
 			tabThreeTextView.setTag(1);
 			tabFourTextView.setTag(2);
 			tabOneTextView.setOnClickListener(mClickListener);
-	//		tabTwoTextView.setOnClickListener(mClickListener);
 			tabThreeTextView.setOnClickListener(mClickListener);
 			tabFourTextView.setOnClickListener(mClickListener);
 		}
@@ -234,6 +237,40 @@ public class MainActivity extends FragmentActivity {
 		case 3:
 			menuItem.setVisible(false);
 			break;
+		}
+	}
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		
+		switch (keyCode) {
+		case KeyEvent.KEYCODE_BACK:
+			long time = System.currentTimeMillis() - firstBackKeyDown;
+				if (time <= 1500) {
+					new  LogoutTask().execute();
+					this.finish();
+					return true;
+				} else {
+					firstBackKeyDown = System.currentTimeMillis();
+					UItoolKit.showToastShort(getBaseContext(), "再按一次退出");
+					return true;
+				}
+		default:
+			return super.onKeyDown(keyCode, event);
+		}
+	}
+	
+	private class LogoutTask extends AsyncTask<Void, Void, Void>{
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			try {
+				NetOperating.getResultFromNet(getBaseContext(), null, Urls.LOGINURL, "Operate=loginOut");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			cancel(false);
+			return null;
 		}
 	}
 }

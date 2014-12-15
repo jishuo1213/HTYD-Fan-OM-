@@ -29,8 +29,8 @@
         android:layout_marginTop="5dp"
         android:layout_toLeftOf="@id/ldepart_ine"
         android:layout_toRightOf="@id/tv_layout_time"
-        android:padding="5dp"
         android:hint="时间"
+        android:padding="5dp"
         android:textSize="15sp" />
 
     <TextView
@@ -50,8 +50,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/tv_attend_time"
         android:layout_toRightOf="@id/tv_layout_address"
-        android:padding="5dp"
         android:hint="点击选择签到位置"
+        android:padding="5dp"
         android:textSize="15sp" />
 
     <TextView
@@ -72,8 +72,8 @@
         android:layout_alignLeft="@id/tv_attend_address"
         android:layout_below="@id/tv_attend_address"
         android:layout_toRightOf="@id/tv_layout_state"
-        android:padding="5dp"
         android:hint="状态"
+        android:padding="5dp"
         android:textSize="15sp" />
 
     <TextView
@@ -104,28 +104,34 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_toRightOf="@id/ldepart_ine"
-        android:numColumns="7"
-        />
-    <View style="@style/h_line"
-        android:layout_below="@id/tv_month"
-        android:layout_toRightOf="@id/ldepart_ine"
+        android:numColumns="7" />
+
+    <View
+        style="@style/h_line"
         android:layout_height="1px"
-        android:background="@color/key_text"
+        android:layout_below="@id/tv_month"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        />
+        android:layout_toRightOf="@id/ldepart_ine"
+        android:background="@color/key_text" />
 
     <GridView
         android:id="@+id/grid_attend_calendar"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/grid_week_chinese"
+        android:layout_marginBottom="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:layout_marginBottom="10dp"
         android:layout_toRightOf="@id/ldepart_ine"
-        android:numColumns="7"
         android:cacheColorHint="#00000000"
-        />
+        android:numColumns="7" />
+
+    <View
+        style="@style/v_line"
+        android:layout_width="1px"
+        android:layout_alignBottom="@id/grid_attend_calendar"
+        android:layout_alignLeft="@id/grid_attend_calendar"
+        android:layout_below="@id/tv_month" />
 
 </RelativeLayout>

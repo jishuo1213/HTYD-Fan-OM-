@@ -1,4 +1,4 @@
-package com.htyd.fan.om.util.base;
+package com.htyd.fan.om.util.loadfile;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,20 +15,18 @@ public class DownThread extends Thread{
 	public int length;//该线程已下载的字节数
 	private String fileUrl;
 	private DataTransferListener listener;
-	private int threadNum;
 	
 	public interface DataTransferListener{
-		public void OnDataTransfer(int length,int threadNum);
+		public void OnDataTransfer(int length);
 	}
 	
 	public DownThread(String fileUrl, int startPos, int currentPartSize,
-			RandomAccessFile currentPart, DataTransferListener listener,int threadNum) {
+			RandomAccessFile currentPart, DataTransferListener listener) {
 		this.startPos = startPos;
 		this.currentPartSize = currentPartSize;
 		this.currentPart = currentPart;
 		this.fileUrl = fileUrl;
 		this.listener = listener;
-		this.threadNum = threadNum;
 	}
 	@Override
 	public void run() {
@@ -40,7 +38,7 @@ public class DownThread extends Thread{
 			 conn.setConnectTimeout(10000);
 			 conn.setRequestMethod("GET");
 			 conn.setRequestProperty("Accept", "image/jpeg,image/jpg");
-			 conn.setRequestProperty("Accept-Language", "zh-CN,en-US");
+			 conn.setRequestProperty("Accept-Language", "zh-CN");
 			 conn.setRequestProperty("Charset", "UTF-8");
 			 inputStream = conn.getInputStream();
 			 inputStream.skip(startPos);
@@ -49,7 +47,7 @@ public class DownThread extends Thread{
 			 while (length < currentPartSize && (hasRead = inputStream.read(buffer)) > 0){
 				 currentPart.write(buffer, 0, hasRead);
 				 length += hasRead;
-				 listener.OnDataTransfer(hasRead,threadNum);
+				 listener.OnDataTransfer(hasRead);
 			 }
 		} catch (MalformedURLException e) {
 			e.printStackTrace();

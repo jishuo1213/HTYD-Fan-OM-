@@ -86,8 +86,9 @@ public class OMUserDatabaseManager {
 		ContentValues cv = new ContentValues();
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_PATH, mBean.filePath);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_STATE, mBean.fileState);
-		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_TYPE, mBean.fileSource);
+		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_SOURCE, mBean.fileSource);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_TASKID, mBean.taskId);
+		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_NET_ID, mBean.netId);
 		return db.insert(SQLSentence.TABLE_TASK_ACCESSORY, null, cv);
 	}
 	/*-------------------------------------------数据库修改操作---------------------------------------------*/
@@ -114,7 +115,15 @@ public class OMUserDatabaseManager {
 	}
 	
 	public long detelteTaskAccessory(AffiliatedFileBean mBean) {
-		return db.delete(SQLSentence.TABLE_TASK_ACCESSORY, "task_id = ?",new String[] { String.valueOf(mBean.taskId) });
+		return db.delete(SQLSentence.TABLE_TASK_ACCESSORY,
+				SQLSentence.COLUMN_TASK_ACCESSORY_PATH + "= ?",
+				new String[] { String.valueOf(mBean.filePath) });
+	}
+	
+	public long detelteTaskAccessory(String path) {
+		return db.delete(SQLSentence.TABLE_TASK_ACCESSORY,
+				SQLSentence.COLUMN_TASK_ACCESSORY_PATH + "= ?",
+				new String[] { String.valueOf(path) });
 	}
 
 	/*-------------------------------------------数据库查询操作---------------------------------------------*/

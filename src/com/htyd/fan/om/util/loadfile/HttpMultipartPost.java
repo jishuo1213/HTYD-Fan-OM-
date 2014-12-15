@@ -1,4 +1,4 @@
-package com.htyd.fan.om.util.https;
+package com.htyd.fan.om.util.loadfile;
 
 import java.io.File;
 
@@ -15,10 +15,16 @@ import org.json.JSONObject;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.htyd.fan.om.util.https.CustomMultipartEntity.ProgressListener;
+import com.htyd.fan.om.model.AffiliatedFileBean;
+import com.htyd.fan.om.util.db.OMUserDatabaseManager;
+import com.htyd.fan.om.util.https.HttpHelper;
+import com.htyd.fan.om.util.https.Urls;
+import com.htyd.fan.om.util.loadfile.CustomMultipartEntity.ProgressListener;
 import com.htyd.fan.om.util.ui.UItoolKit;
 
 
@@ -28,10 +34,20 @@ public class HttpMultipartPost extends AsyncTask<String, Integer, String> {
 	private String filePath;
 	private ProgressDialog pd;
 	private long totalSize;
+	private AffiliatedFileBean mBean;
+	private UpLoadFinishListener listener;
+	private int position;
+	
+	public interface UpLoadFinishListener{
+		public void onUpLoadFinish(AffiliatedFileBean mBean,int position);
+	}
 
-	public HttpMultipartPost(Context context, String filePath) {
+	public HttpMultipartPost(Context context, String filePath,UpLoadFinishListener listener) {
 		this.context = context;
 		this.filePath = filePath;
+		this.listener = listener;
+		position = -1;
+	    mBean = new AffiliatedFileBean();
 	}
 
 	@Override
@@ -39,18 +55,27 @@ public class HttpMultipartPost extends AsyncTask<String, Integer, String> {
 		pd = new ProgressDialog(context);
 		pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 		pd.setMessage("Uploading Picture...");
-		pd.setCancelable(false);
+		pd.setCancelable(true);
+		pd.setOnCancelListener(loadCancelListener);
 		pd.show();
 	}
 
+	private OnCancelListener loadCancelListener = new OnCancelListener(){
+		@Override
+		public void onCancel(DialogInterface dialog) {
+			dialog.dismiss();
+			HttpMultipartPost.this.cancel(false);
+		}
+	};
+	
 	@Override
 	protected String doInBackground(String... params) {
 		String serverResponse = null;
-		
 		HttpClient httpClient = HttpHelper.getHttpClient(context);
 		HttpContext httpContext = new BasicHttpContext();
 		HttpPost httpPost = new HttpPost(Urls.UPLOADFILE);
 		Log.i("fanjishuo_____doInBackground", Urls.UPLOADFILE);
+		position = Integer.parseInt(params[4]);
 		try {
 			CustomMultipartEntity multipartContent = new CustomMultipartEntity(
 					new ProgressListener() {
@@ -68,6 +93,9 @@ public class HttpMultipartPost extends AsyncTask<String, Integer, String> {
 			StringBody sb4 = new StringBody(params[3]);
 			multipartContent.addPart("image", new FileBody(new File(
 					filePath)));
+			mBean.filePath = filePath;
+			mBean.fileSource = 0;
+			mBean.taskId = Integer.parseInt(params[2]);
 			multipartContent.addPart("yhid", sb1);
 			multipartContent.addPart("yhmc", sb2);
 			multipartContent.addPart("rwid", sb3);
@@ -101,6 +129,10 @@ public class HttpMultipartPost extends AsyncTask<String, Integer, String> {
 			JSONObject json = new JSONObject(result);
 			if(json.getBoolean("RESULT")){
 				UItoolKit.showToastShort(context, "保存成功");
+				mBean.fileState = 1;
+				mBean.netId = json.getInt("WJID");
+				OMUserDatabaseManager.getInstance(context).insertTaskAccessoryBean(mBean);
+				listener.onUpLoadFinish(mBean,position);
 			}else{
 				UItoolKit.showToastShort(context, "保存失败");
 			}

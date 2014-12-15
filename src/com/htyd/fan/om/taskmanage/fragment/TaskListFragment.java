@@ -227,9 +227,13 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 				mHolder = (ViewHolder) convertView.getTag();
 			}
 			TaskDetailBean mBean = (TaskDetailBean) getItem(position);
-			mHolder.taskDescrption.setText(mBean.taskDescription);
+			mHolder.taskDescrption.setText(mBean.taskTitle);
 			mHolder.taskCreateTime.setText(Utils.formatTime(mBean.saveTime));
-			mHolder.taskState.setText(mBean.taskState + "");
+			if (mBean.taskState == 0) {
+				mHolder.taskState.setText("在处理");
+			} else {
+				mHolder.taskState.setText("已完成");
+			}
 			return convertView;
 		}
 	}

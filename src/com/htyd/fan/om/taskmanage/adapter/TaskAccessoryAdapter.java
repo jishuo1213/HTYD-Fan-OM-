@@ -3,7 +3,6 @@ package com.htyd.fan.om.taskmanage.adapter;
 import java.util.List;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,12 +10,11 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.htyd.fan.om.R;
 import com.htyd.fan.om.model.AffiliatedFileBean;
-import com.htyd.fan.om.util.base.PictureUtils;
+import com.htyd.fan.om.util.ui.UItoolKit;
 
 public class TaskAccessoryAdapter extends BaseAdapter {
 
@@ -25,8 +23,9 @@ public class TaskAccessoryAdapter extends BaseAdapter {
 	private UpLoadFileListener mListener;
 	
 	public interface UpLoadFileListener{
-		public void onUpLoadClick(AffiliatedFileBean mBean);
+		public void onUpLoadClick(AffiliatedFileBean mBean,int position);
 		public void onDeleteClick(AffiliatedFileBean mBean,int position);
+		public void onPreviewImg(String path);
 	}
 	
 	public TaskAccessoryAdapter(List<AffiliatedFileBean> accessoryList,Context context,UpLoadFileListener listener) {
@@ -63,14 +62,32 @@ public class TaskAccessoryAdapter extends BaseAdapter {
 			mHolder = (ViewHolder) convertView.getTag();
 		}
 		final AffiliatedFileBean mBean = (AffiliatedFileBean) getItem(position);
-		mHolder.accessoryImg.setImageDrawable(PictureUtils.getScaledDrawable((Activity) context, mBean.filePath));
-		mHolder.accessoryName.setText("附件"+(position+1));
-		mHolder.accessoryState.setText(mBean.fileState+"");
+		mHolder.accessoryName.setText("附件" + (position + 1));
+		if (mBean.fileSource == 0) {//本地创建的附件
+			mHolder.accessoryState.setText(mBean.fileState == 0?"未上传":"已上传");
+			mHolder.upLoad.setText("上传");
+		}else{//网络上获取的附件
+			mHolder.accessoryState.setText(mBean.fileState == 0?"未下载":"已下载");
+			mHolder.upLoad.setText("下载");
+		}
+		mHolder.preViewImage.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				if(mBean.fileSource == 1 && mBean.fileState == 0){
+					UItoolKit.showToastShort(context, "附件还未下载，无法预览");
+					return;
+				}
+				mListener.onPreviewImg(mBean.filePath);
+			}
+		});
 		mHolder.upLoad.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
 				Log.i("fanjishuo____onClick", mBean.filePath+"11");
-				mListener.onUpLoadClick(mBean);
+				if(mBean.fileState == 1){
+					return;
+				}
+				mListener.onUpLoadClick(mBean,position);
 			}
 		});
 		mHolder.deleteFile.setOnClickListener(new OnClickListener(){
@@ -83,15 +100,13 @@ public class TaskAccessoryAdapter extends BaseAdapter {
 	}
 
 	private class ViewHolder {
-		public ImageView accessoryImg;
-		public TextView accessoryName,accessoryState,upLoad,deleteFile;
+		public TextView accessoryName,accessoryState,upLoad,deleteFile,preViewImage;
 		public ViewHolder(View v) {
-			accessoryImg = (ImageView) v.findViewById(R.id.img_accessory_file);
+			preViewImage = (TextView) v.findViewById(R.id.tv_preview);
 			accessoryName = (TextView) v.findViewById(R.id.tv_file_name);
 			accessoryState = (TextView) v.findViewById(R.id.tv_file_state);
 			upLoad = (TextView) v.findViewById(R.id.tv_upload);
 			deleteFile = (TextView) v.findViewById(R.id.tv_delete);
 		}
-		
 	}
 }

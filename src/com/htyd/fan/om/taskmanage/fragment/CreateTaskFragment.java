@@ -27,7 +27,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.htyd.fan.om.R;
@@ -38,7 +37,6 @@ import com.htyd.fan.om.model.OMLocationBean;
 import com.htyd.fan.om.model.TaskDetailBean;
 import com.htyd.fan.om.taskmanage.adapter.TaskAccessoryAdapter;
 import com.htyd.fan.om.taskmanage.adapter.TaskAccessoryAdapter.UpLoadFileListener;
-import com.htyd.fan.om.util.base.PictureUtils;
 import com.htyd.fan.om.util.base.Preferences;
 import com.htyd.fan.om.util.base.Utils;
 import com.htyd.fan.om.util.db.OMUserDatabaseManager;
@@ -48,13 +46,14 @@ import com.htyd.fan.om.util.fragment.DateTimePickerDialog;
 import com.htyd.fan.om.util.fragment.RecodingDialogFragment;
 import com.htyd.fan.om.util.fragment.SelectLocationDialogFragment;
 import com.htyd.fan.om.util.fragment.SpendTimePickerDialog;
-import com.htyd.fan.om.util.https.HttpMultipartPost;
 import com.htyd.fan.om.util.https.NetOperating;
 import com.htyd.fan.om.util.https.Urls;
+import com.htyd.fan.om.util.loadfile.HttpMultipartPost;
+import com.htyd.fan.om.util.loadfile.HttpMultipartPost.UpLoadFinishListener;
 import com.htyd.fan.om.util.ui.ListViewForScrollView;
 import com.htyd.fan.om.util.ui.UItoolKit;
 
-public class CreateTaskFragment extends Fragment implements UpLoadFileListener{
+public class CreateTaskFragment extends Fragment implements UpLoadFileListener,UpLoadFinishListener{
 
 	private static final int REQUESTPHOTO = 1;// 照片
 	private static final int REQUESTRECORDING = 2;// 录音
@@ -100,13 +99,6 @@ public class CreateTaskFragment extends Fragment implements UpLoadFileListener{
 	@Override
 	public void onStop() {
 		getActivity().unregisterReceiver(mLocationReceiver);
-		if(accessoryList == null || accessoryList.size() == 0){
-			super.onStop();
-			return;
-		}
-		for(int i = 0; i<accessoryList.size();i++){
-			PictureUtils.cleanImageView((ImageView) accessoryListView.getChildAt(i).findViewById(R.id.img_accessory_file));
-		}
 		super.onStop();
 	}
 
@@ -312,8 +304,8 @@ public class CreateTaskFragment extends Fragment implements UpLoadFileListener{
 		
 	};
 	@Override
-	public void onUpLoadClick(AffiliatedFileBean mBean) {
-		HttpMultipartPost post = new HttpMultipartPost(getActivity(), mBean.filePath);
+	public void onUpLoadClick(AffiliatedFileBean mBean,int position) {
+		HttpMultipartPost post = new HttpMultipartPost(getActivity(), mBean.filePath,this);
 		post.execute();
 	}
 
@@ -322,6 +314,10 @@ public class CreateTaskFragment extends Fragment implements UpLoadFileListener{
 		accessoryList.remove(position);
 		TaskAccessoryAdapter mAdapter = (TaskAccessoryAdapter)accessoryListView.getAdapter();
 		mAdapter.notifyDataSetChanged();
+	}
+	
+	@Override
+	public void onPreviewImg(String path) {
 	}
 	
 	private class SaveTask extends AsyncTask<TaskDetailBean, Void, Boolean>{
@@ -375,4 +371,9 @@ public class CreateTaskFragment extends Fragment implements UpLoadFileListener{
 	protected void stopTask(SaveTask task){
 		task.cancel(false);
 	}
+
+	@Override
+	public void onUpLoadFinish(AffiliatedFileBean mBean,int position) {
+	}
+
 }

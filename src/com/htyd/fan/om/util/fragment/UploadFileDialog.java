@@ -1,6 +1,10 @@
 package com.htyd.fan.om.util.fragment;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.UUID;
+
+import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -11,7 +15,9 @@ import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -26,10 +32,15 @@ import com.htyd.fan.om.model.AffiliatedFileBean;
 import com.htyd.fan.om.taskmanage.adapter.TaskAccessoryAdapter;
 import com.htyd.fan.om.taskmanage.adapter.TaskAccessoryAdapter.UpLoadFileListener;
 import com.htyd.fan.om.util.base.Preferences;
-import com.htyd.fan.om.util.https.HttpMultipartPost;
+import com.htyd.fan.om.util.db.OMUserDatabaseManager;
+import com.htyd.fan.om.util.https.NetOperating;
+import com.htyd.fan.om.util.https.Urls;
+import com.htyd.fan.om.util.loadfile.DownloadTask;
+import com.htyd.fan.om.util.loadfile.HttpMultipartPost;
+import com.htyd.fan.om.util.loadfile.HttpMultipartPost.UpLoadFinishListener;
 import com.htyd.fan.om.util.ui.UItoolKit;
 
-public class UploadFileDialog extends DialogFragment implements UpLoadFileListener{
+public class UploadFileDialog extends DialogFragment implements UpLoadFileListener,UpLoadFinishListener{
 
 	private static final String FILE = "file";
 	private static final String TASKID = "taskid";
@@ -128,8 +139,8 @@ public class UploadFileDialog extends DialogFragment implements UpLoadFileListen
 				if(listAccessory == null)
 					listAccessory = new ArrayList<AffiliatedFileBean>();
 				mBean.filePath = data.getStringExtra(CameraFragment.EXTRA_PHOTO_FILENAME);
-				mBean.fileSource = getArguments().getInt(TASKID);
-				mBean.taskId = 1;
+				mBean.fileSource = 0;
+				mBean.taskId = getArguments().getInt(TASKID);
 				mBean.fileState = 0;
 				listAccessory.add(mBean);
 				if(mListView.getAdapter() == null){
@@ -159,46 +170,101 @@ public class UploadFileDialog extends DialogFragment implements UpLoadFileListen
 
 	@Override
 	public void onStop() {
-		/*for(int i = 0; i<listAccessory.size();i++){
-			PictureUtils.cleanImageView((ImageView) mListView.getChildAt(i).findViewById(R.id.img_accessory_file));
-		}*/
 		super.onStop();
 	}
 
 	@Override
-	public void onUpLoadClick(AffiliatedFileBean mBean) {
+	public void onUpLoadClick(AffiliatedFileBean mBean,int position) {
 		Log.i("fanjishuo____onUpLoadClick", mBean.filePath);
-		HttpMultipartPost post = new HttpMultipartPost(getActivity(), mBean.filePath);
-		post.execute(Preferences.getUserinfo(getActivity(), "YHID"),
-				Preferences.getUserinfo(getActivity(), "YHMC"), mBean.taskId+"",getArguments().getString(TASKTITLE));
+		if (mBean.fileSource == 0 && mBean.fileState == 0) {
+			HttpMultipartPost post = new HttpMultipartPost(getActivity(),
+					mBean.filePath, this);
+			post.execute(Preferences.getUserinfo(getActivity(), "YHID"),
+					Preferences.getUserinfo(getActivity(), "YHMC"),
+					mBean.taskId + "", getArguments().getString(TASKTITLE),
+					position + "");
+		} else if (mBean.fileSource == 1 && mBean.fileState == 0) {
+			File sdCardDir = Environment.getExternalStorageDirectory();
+			String filename = UUID.randomUUID().toString() + ".jpg";
+			String targetFile = sdCardDir + "/" + "OmAccessory"+"/"+filename;
+			new DownloadTask(getActivity(), mBean.filePath).execute(targetFile);
+		} else {
+			UItoolKit.showToastShort(getActivity(), "该附件已经上传或下载，请预览");
+		}
 	}
 
 	@Override
 	public void onDeleteClick(AffiliatedFileBean mBean, int position) {
-		if (mBean.fileSource == 0) {
 			listAccessory.remove(position);
 			TaskAccessoryAdapter mAdapter = (TaskAccessoryAdapter) mListView
 					.getAdapter();
 			mAdapter.notifyDataSetChanged();
-			deleteAccessoryFromDb(mBean);
-		} else {
-			listAccessory.remove(position);
-			TaskAccessoryAdapter mAdapter = (TaskAccessoryAdapter) mListView
-					.getAdapter();
-			mAdapter.notifyDataSetChanged();
-			/**
-			 * 从网上删除
-			 */
-			deleteAccessoryFromDb(mBean);
+			if(mBean.fileSource == 0 && mBean.fileState == 0){
+				deleteAccessoryFromDb(mBean);
+				return;
+			}
 			deleteAccessoryFromNet(mBean);
+	}
+	
+	@Override
+	public void onPreviewImg(String path) {
+		FragmentManager fm = getActivity().getFragmentManager();
+		ImageFragment fragment = ImageFragment.newInstance(path);
+		fragment.show(fm, null);
+	}
+	
+	protected void deleteAccessoryFromDb(AffiliatedFileBean mBean){
+		OMUserDatabaseManager.getInstance(getActivity()).detelteTaskAccessory(mBean);
+		File file = new File(mBean.filePath);
+		if(file.exists()){
+			file.delete();
 		}
 	}
 	
-	private void deleteAccessoryFromDb(AffiliatedFileBean mBean){
+	private void deleteAccessoryFromNet(AffiliatedFileBean mBean) {
+		new DeleteAccessoryTask().execute(mBean);
+	}
+
+	@Override
+	public void onUpLoadFinish(AffiliatedFileBean mBean,int position) {
+		if(position == -1){
+			return;
+		}
+		listAccessory.set(position, mBean);
+		TaskAccessoryAdapter mAdapter = (TaskAccessoryAdapter)mListView.getAdapter();
+		mAdapter.notifyDataSetChanged();
+	}
+
+	private class DeleteAccessoryTask extends AsyncTask<AffiliatedFileBean, Void, Boolean>{
+
+		private AffiliatedFileBean mBean;
 		
+		@Override
+		protected void onPostExecute(Boolean result) {
+			if (result) {
+				deleteAccessoryFromDb(mBean);
+				UItoolKit.showToastShort(getActivity(), "删除成功");
+			} else {
+				UItoolKit.showToastShort(getActivity(), "删除失败，请重试");
+			}
+			this.cancel(false);
+		}
+
+		@Override
+		protected Boolean doInBackground(AffiliatedFileBean... params) {
+			JSONObject param = new JSONObject();
+			String result = "";
+			mBean = params[0];
+			try {
+				param.put("WJID", mBean.netId);
+				result = NetOperating.getResultFromNet(getActivity(), param,
+						Urls.FILE, "Operate=deleteWjxxByWjid");
+				return new JSONObject(result).getBoolean("RESULT");
+			} catch (Exception e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
 	}
 	
-	private void deleteAccessoryFromNet(AffiliatedFileBean mBean){
-		
-	}
 }

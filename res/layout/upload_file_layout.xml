@@ -7,7 +7,7 @@
     android:orientation="horizontal"
     tools:ignore="HardcodedText" >
 
-    <ImageView
+    <!-- <ImageView
         android:id="@+id/img_accessory_file"
         android:layout_width="45dp"
         android:layout_height="45dp"
@@ -15,8 +15,15 @@
         android:contentDescription="@null"
         android:scaleType="center"
         android:layout_gravity="center_vertical"
-        android:src="@drawable/icon_marka" />
+        android:src="@drawable/icon_marka" /> -->
 
+    <TextView
+        android:id="@+id/tv_preview"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:padding="2dp"
+        android:text="预览" />
     <TextView
         android:id="@+id/tv_file_name"
         android:layout_width="0dp"

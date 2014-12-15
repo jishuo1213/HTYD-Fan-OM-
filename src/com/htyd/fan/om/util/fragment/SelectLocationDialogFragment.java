@@ -194,17 +194,17 @@ public class SelectLocationDialogFragment extends DialogFragment {
 		} else if (p2.matcher(pBean.provinceCode).matches()) {
 			if (dBean.districtCode.endsWith("01")) {
 				sb.append(pBean.provinceName);
-				sb.append(" ");
+				sb.append("");
 				sb.append(cBean.cityName);
 				sb.append("市");
 				i.putExtra(LOCATION, sb.toString());
 			} else {
 				sb.append(((ProvinceBean) provinceSpinner.getSelectedItem()).provinceName);
-				sb.append(" ");
+				sb.append("");
 				sb.append(((CityBean) citySpinner.getSelectedItem()).cityName);
 				sb.append("市");
 				sb.append(((DistrictBean) districtSpinner.getSelectedItem()).districtName);
-				sb.append(" ");
+				sb.append("");
 				i.putExtra(LOCATION, sb.toString());
 			}
 		} else {

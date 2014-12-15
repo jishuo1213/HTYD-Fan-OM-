@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.util.Log;
 import android.view.Display;
 import android.widget.ImageView;
 
@@ -40,10 +41,11 @@ public class PictureUtils {
 	public static void cleanImageView(ImageView imageview) {
 		if (!(imageview.getDrawable() instanceof BitmapDrawable))
 			return;
-		BitmapDrawable b = (BitmapDrawable) imageview.getDrawable();
 		
 			try {
+				BitmapDrawable b = (BitmapDrawable) imageview.getDrawable();
 				b.getBitmap().recycle();
+				Log.i("fanjishuo____cleanImageView", "recycle");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

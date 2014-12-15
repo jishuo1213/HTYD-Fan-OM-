@@ -32,8 +32,9 @@ public class Utility {
 				for (String p : allProvinces) {
 					String[] array = p.split("\\|");
 					ProvinceBean mBean = new ProvinceBean();
-					mBean.provinceName = array[1];
 					mBean.provinceCode = array[0];
+					if(array.length >= 1)
+						mBean.provinceName = array[1];
 					// 将解析出来的数据存储到Province表
 					mManager.insertProvince(mBean);
 				}
@@ -81,7 +82,8 @@ public class Utility {
 					String[] array = c.split("\\|");
 					DistrictBean county = new DistrictBean();
 					county.districtCode = array[0];
-					county.districtName = array[1];
+					if(array.length >= 1)
+						county.districtName = array[1];
 					county.cityID = cityId;
 					// 将解析出来的数据存储到County表
 					mManager.insertDistrict(county);
@@ -145,11 +147,13 @@ public class Utility {
 	public static void handleAccessory(OMUserDatabaseManager mManager,
 			String response,int taskId) throws Exception {
 		mManager.openDb(1);
+		Log.i("fanjishuo_____handleAccessory", response);
 		if (!TextUtils.isEmpty(response)) {
 			AffiliatedFileBean mBean = new AffiliatedFileBean();
 			JSONArray array = (JSONArray) new JSONTokener(
 					response).nextValue();
 			for (int i = 0; i < array.length(); i++) {
+				Log.i("fanjishuo_____handleAccessory", array.length()+"");
 				mBean.setFromJson(array.getJSONObject(i),taskId);
 				mManager.insertTaskAccessoryBean(mBean);
 			}
