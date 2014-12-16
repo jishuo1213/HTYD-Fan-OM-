@@ -2,7 +2,6 @@ package com.htyd.fan.om.util.fragment;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.UUID;
 
 import org.json.JSONObject;
 
@@ -36,11 +35,13 @@ import com.htyd.fan.om.util.db.OMUserDatabaseManager;
 import com.htyd.fan.om.util.https.NetOperating;
 import com.htyd.fan.om.util.https.Urls;
 import com.htyd.fan.om.util.loadfile.DownloadTask;
+import com.htyd.fan.om.util.loadfile.DownloadTask.DownLoadFinishListener;
 import com.htyd.fan.om.util.loadfile.HttpMultipartPost;
 import com.htyd.fan.om.util.loadfile.HttpMultipartPost.UpLoadFinishListener;
 import com.htyd.fan.om.util.ui.UItoolKit;
 
-public class UploadFileDialog extends DialogFragment implements UpLoadFileListener,UpLoadFinishListener{
+public class UploadFileDialog extends DialogFragment implements
+		UpLoadFileListener, UpLoadFinishListener, DownLoadFinishListener {
 
 	private static final String FILE = "file";
 	private static final String TASKID = "taskid";
@@ -175,8 +176,8 @@ public class UploadFileDialog extends DialogFragment implements UpLoadFileListen
 
 	@Override
 	public void onUpLoadClick(AffiliatedFileBean mBean,int position) {
-		Log.i("fanjishuo____onUpLoadClick", mBean.filePath);
 		if (mBean.fileSource == 0 && mBean.fileState == 0) {
+			Log.i("fanjishuo____onUpLoadClick", mBean.filePath);
 			HttpMultipartPost post = new HttpMultipartPost(getActivity(),
 					mBean.filePath, this);
 			post.execute(Preferences.getUserinfo(getActivity(), "YHID"),
@@ -184,10 +185,10 @@ public class UploadFileDialog extends DialogFragment implements UpLoadFileListen
 					mBean.taskId + "", getArguments().getString(TASKTITLE),
 					position + "");
 		} else if (mBean.fileSource == 1 && mBean.fileState == 0) {
+			String [] array = mBean.filePath.split("\\\\" +Preferences.getUserinfo(getActivity(), "YHID") + "\\\\");
 			File sdCardDir = Environment.getExternalStorageDirectory();
-			String filename = UUID.randomUUID().toString() + ".jpg";
-			String targetFile = sdCardDir + "/" + "OmAccessory"+"/"+filename;
-			new DownloadTask(getActivity(), mBean.filePath).execute(targetFile);
+			String targetFile = sdCardDir + "/" + "OmAccessory"+"/"+array[1];
+			new DownloadTask(getActivity(), targetFile,this).execute(mBean);
 		} else {
 			UItoolKit.showToastShort(getActivity(), "该附件已经上传或下载，请预览");
 		}
@@ -234,6 +235,12 @@ public class UploadFileDialog extends DialogFragment implements UpLoadFileListen
 		TaskAccessoryAdapter mAdapter = (TaskAccessoryAdapter)mListView.getAdapter();
 		mAdapter.notifyDataSetChanged();
 	}
+	
+	@Override
+	public void onDownLoadFinish(AffiliatedFileBean mBean) {
+		TaskAccessoryAdapter mAdapter = (TaskAccessoryAdapter)mListView.getAdapter();
+		mAdapter.notifyDataSetChanged();
+	}
 
 	private class DeleteAccessoryTask extends AsyncTask<AffiliatedFileBean, Void, Boolean>{
 
@@ -266,5 +273,4 @@ public class UploadFileDialog extends DialogFragment implements UpLoadFileListen
 			}
 		}
 	}
-	
 }

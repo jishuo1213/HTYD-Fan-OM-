@@ -19,4 +19,5 @@ public class Urls {
 	public static final String UPLOADFILE = BASEURL+"uploadAction?Operate=upload";
 	
 	public static final String FILE = BASEURL + "wjAction?";
+	
 }

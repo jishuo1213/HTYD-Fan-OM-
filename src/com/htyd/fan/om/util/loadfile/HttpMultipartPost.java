@@ -81,6 +81,7 @@ public class HttpMultipartPost extends AsyncTask<String, Integer, String> {
 					new ProgressListener() {
 						@Override
 						public void transferred(long num) {
+							Log.i("fanjishuo_____upload", num+"");
 							publishProgress((int) ((num / (float) totalSize) * 100));
 						}
 					});

@@ -15,7 +15,6 @@
     <color name="gray_half">#b2888888</color>
     <color name="lucency">#00000000</color>
     <color name="translucency">#33000000</color>
-    <color name="result_view">#b0000000</color>
     <color name="grey">#808080</color>
     <color name="result_image_border">#ffffffff</color>
     <color name="result_points">#c000ff00</color>
@@ -23,10 +22,7 @@
     <color name="result_text">#ffffffff</color>
     <color name="status_text">#ffffffff</color>
     <color name="floralwhite">#FFFAF0</color>
-    <color name="viewfinder_frame">#ff000000</color>
     <color name="viewfinder_laser">#ffff0000</color>
-    <color name="viewfinder_mask">#60000000</color>
-    <color name="possible_result_points">#c0ffff00</color>
     <color name="intro_enable">#F2F2F2</color>
     <color name="intro_disenable">#CCCCCC</color>
     <color name="bgColor">#fafafa</color>
@@ -75,4 +71,11 @@
     <color name="lightblue">#ADD8E6</color>
     <color name="activity_bg_color">#fff5f5f5</color>
 
+    
+    <color name="viewfinder_frame">#2477ab</color>
+    <color name="viewfinder_mask">#60000000</color>
+    <color name="possible_result_points">#c0ffff00</color>
+    <color name="result_view">#b0000000</color>
+    
+    <color name="backColor">#2000</color>
 </resources>

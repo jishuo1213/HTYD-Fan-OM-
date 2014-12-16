@@ -1,8 +1,7 @@
 package com.htyd.fan.om.util.loadfile;
 
-import java.io.IOException;
-
-import com.htyd.fan.om.util.ui.UItoolKit;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -10,25 +9,37 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.os.AsyncTask;
 
-public class DownloadTask extends AsyncTask<String, Integer, Boolean> {
+import com.htyd.fan.om.model.AffiliatedFileBean;
+import com.htyd.fan.om.util.db.OMUserDatabaseManager;
+import com.htyd.fan.om.util.https.Urls;
+import com.htyd.fan.om.util.loadfile.DownLoadManager.DataTransferListener;
+import com.htyd.fan.om.util.ui.UItoolKit;
+
+public class DownloadTask extends AsyncTask<AffiliatedFileBean, Float, Boolean> {
 
 	private Context context;
 	private String filePath;
 	private ProgressDialog pd;
 	private DownLoadManager mManager;
+	private DownLoadFinishListener mListener;
+	private AffiliatedFileBean mBean;
 	
-	public DownloadTask(Context context, String filePath) {
+	public DownloadTask(Context context, String filePath,DownLoadFinishListener mListener) {
 		this.context = context;
 		this.filePath = filePath;
 		pd = new ProgressDialog(context);
 		mManager = DownLoadManager.getInstance();
+		this.mListener = mListener;
 	}
-
+	
+	public interface DownLoadFinishListener{
+		public void onDownLoadFinish(AffiliatedFileBean mBean);
+	}
 	
 	@Override
 	protected void onPreExecute() {
 		pd = new ProgressDialog(context);
-		pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+		pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		pd.setMessage("Downloading Picture...");
 		pd.setCancelable(true);
 		pd.setOnCancelListener(loadCancelListener);
@@ -44,30 +55,46 @@ public class DownloadTask extends AsyncTask<String, Integer, Boolean> {
 	};
 
 	@Override
-	protected Boolean doInBackground(String... params) {
-		try {
-			int allsize  = mManager.getFileSize(filePath);
-			mManager.download(filePath, params[0]);
-			while(!mManager.isComplete()){
-				publishProgress((mManager.getDownLoadNum() / allsize) * 100);
+	protected Boolean doInBackground(AffiliatedFileBean... params) {
+		
+		final long fileSize = params[0].fileSize;
+		mBean = params[0];
+		mManager.setListener(new DataTransferListener() {
+			@Override
+			public void OnDataTransfer(long length) {
+				publishProgress((length / (float)fileSize) * 100);
 			}
-		} catch (IOException e) {
+		});
+		JSONObject param = new JSONObject();
+		try {
+			param.put("WJID", mBean.netId);
+			param.put("WJDZ", mBean.filePath);
+		} catch (JSONException e) {
 			e.printStackTrace();
 			return false;
 		}
-		return true;
+		return mManager.downLoadFromNet(context, param, Urls.FILE,
+				"Operate=downLoad", filePath);
 	}
 
 	@Override
 	protected void onPostExecute(Boolean result) {
 		if(result){
 			UItoolKit.showToastShort(context, "下载成功");
+			mBean.fileState = 1;
+			mBean.filePath = filePath;
+			OMUserDatabaseManager.getInstance(context).updateTaskAccessoryBean(mBean);
+			mListener.onDownLoadFinish(mBean);
+		}else{
+			UItoolKit.showToastShort(context, "下载失败");
 		}
+		pd.dismiss();
 		this.cancel(false);
 	}
 	
 	@Override
-	protected void onProgressUpdate(Integer... values) {
-		pd.setProgress(values[0]);
+	protected void onProgressUpdate(Float... values) {
+		//pd.setProgress(values[0]);
+		pd.setMessage("Downloading Picture..."+values[0]+"%");
 	}
 }

@@ -419,7 +419,8 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 			mBean.time = selectDay.getTimeInMillis();
 			mBean.choseLocation = attendLocation.getText().toString();
 			mBean.month = selectDay.get(Calendar.MONTH);
-			startTask(mBean);
+			if(isVisible())
+				startTask(mBean);
 		}
 
 		@Override

@@ -52,6 +52,7 @@ import com.htyd.fan.om.util.loadfile.HttpMultipartPost;
 import com.htyd.fan.om.util.loadfile.HttpMultipartPost.UpLoadFinishListener;
 import com.htyd.fan.om.util.ui.ListViewForScrollView;
 import com.htyd.fan.om.util.ui.UItoolKit;
+import com.htyd.fan.om.util.zxing.CaptureActivity;
 
 public class CreateTaskFragment extends Fragment implements UpLoadFileListener,UpLoadFinishListener{
 
@@ -59,6 +60,7 @@ public class CreateTaskFragment extends Fragment implements UpLoadFileListener,U
 	private static final int REQUESTRECORDING = 2;// 录音
 	private static final int REQUESTSTARTDATE = 3;// 开始时间
 	private static final int REQUESTENDTIME = 4;// 结束时间
+	private static final int REQUESTZXING = 5;//条码扫描
 
 	private TaskViewPanel mPanel;
 	private TaskDetailBean mBean;
@@ -138,6 +140,9 @@ public class CreateTaskFragment extends Fragment implements UpLoadFileListener,U
 						.getStringExtra(CameraFragment.EXTRA_PHOTO_FILENAME));
 			} else if (requestCode == REQUESTRECORDING) {
 				UItoolKit.showToastShort(getActivity(),data.getStringArrayExtra(RecodingDialogFragment.FILEPATHARRAY)[0]);
+			}else if(requestCode == REQUESTZXING){
+				UItoolKit.showToastShort(getActivity(),data.getStringExtra("result"));
+				mPanel.taskEquipment.setText(data.getStringExtra("result"));
 			}
 		}
 	}
@@ -284,6 +289,9 @@ public class CreateTaskFragment extends Fragment implements UpLoadFileListener,U
 						REQUESTENDTIME);
 				spendDialog.show(fm, null);
 				break;
+			case R.id.tv_task_equipment:
+				Intent i = new Intent(getActivity(),CaptureActivity.class);
+				startActivityForResult(i, REQUESTZXING);
 			}
 		}
 	}

@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -180,4 +181,26 @@ public class LoginActivity extends Activity {
 	protected void stopTask(LoginTask task) {
 		task.cancel(false);
 	}
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		switch (keyCode) {
+		case KeyEvent.KEYCODE_BACK:
+			if (checkBox.isChecked()) {
+				Preferences.setAutoLogin(getBaseContext(), true);
+			} else {
+				Preferences.setAutoLogin(getBaseContext(), false);
+			}
+			if (checkRemberPwd.isChecked()) {
+				Preferences.setRememberPwd(getBaseContext(), true);
+			} else {
+				Preferences.setRememberPwd(getBaseContext(), false);
+			}
+			finish();
+			return true;
+		default:
+			return super.onKeyDown(keyCode, event);
+		}
+	}
+	
 }

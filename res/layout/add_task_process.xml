@@ -9,6 +9,7 @@
         android:id="@+id/content"
         style="@style/style_task_detail_textview"
         android:layout_height="wrap_content"
+        android:layout_margin="10dp"
         android:text="处理内容：" />
 
     <EditText
@@ -26,7 +27,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/edit_process_content"
-        android:layout_marginRight="10dp" >
+        android:layout_margin="10dp" >
 
         <TextView
             style="@style/style_task_detail_textview"
@@ -43,8 +44,19 @@
             android:hint="请选择开始处理时间"
             android:padding="5dp"
             android:textSize="15sp" />
+    </TableRow>
+    
+    <TableRow 
+         android:id="@+id/row2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/row"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp"
+        >
 
-        <TextView
+    <TextView
             style="@style/style_task_detail_textview"
             android:layout_height="wrap_content"
             android:gravity="bottom"
@@ -60,20 +72,20 @@
             android:padding="5dp"
             android:textSize="15sp" />
     </TableRow>
-
     <TextView
         android:id="@+id/tv_task_state"
         style="@style/style_task_detail_textview"
         android:layout_height="wrap_content"
-        android:layout_below="@id/row"
+        android:layout_below="@id/row2"
         android:gravity="bottom"
+        android:layout_marginLeft="10dp"
         android:text="任务状态：" />
 
     <RadioGroup
         android:id="@+id/radio_group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/row"
+        android:layout_below="@id/row2"
         android:orientation="horizontal"
         android:layout_toRightOf="@id/tv_task_state" >
 
@@ -88,7 +100,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="在处理"
-            android:textColor="@color/key_text" />
+            android:textColor="@color/key_text" 
+            android:checked="true"
+            />
     </RadioGroup>
 
     <View 
@@ -98,25 +112,5 @@
         android:layout_below="@id/radio_group"
         android:layout_centerHorizontal="true"
         />
- <!--    <Button 
-        android:id="@+id/btn_save_process"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="保存"
-        android:layout_toLeftOf="@id/no_use"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@id/radio_group"
-        android:layout_margin="5dp"
-        />
-    <Button 
-        android:id="@+id/btn_cancel_process"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:text="取消"
-        android:layout_below="@id/radio_group"
-        android:layout_toRightOf="@id/no_use"
-        android:layout_margin="5dp"
-        /> -->
     
 </RelativeLayout>

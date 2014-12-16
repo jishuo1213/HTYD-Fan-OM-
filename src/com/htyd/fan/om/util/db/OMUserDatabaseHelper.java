@@ -170,6 +170,8 @@ public class OMUserDatabaseHelper extends SQLiteOpenHelper {
 			mBean.fileState = getInt(getColumnIndex(SQLSentence.COLUMN_TASK_ACCESSORY_STATE));
 			mBean.fileSource = getInt(getColumnIndex(SQLSentence.COLUMN_TASK_ACCESSORY_SOURCE));
 			mBean.taskId = getInt(getColumnIndex(SQLSentence.COLUMN_TASK_ACCESSORY_TASKID));
+			mBean.netId = getInt(getColumnIndex(SQLSentence.COLUMN_TASK_ACCESSORY_NET_ID));
+			mBean.fileSize = getLong(getColumnIndex(SQLSentence.COLUMN_TASK_ACCESSORY_FILE_SIZE));
 			return mBean;
 		}
 	}

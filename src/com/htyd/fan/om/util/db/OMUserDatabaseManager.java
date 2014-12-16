@@ -89,6 +89,7 @@ public class OMUserDatabaseManager {
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_SOURCE, mBean.fileSource);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_TASKID, mBean.taskId);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_NET_ID, mBean.netId);
+		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_FILE_SIZE, mBean.fileSize);
 		return db.insert(SQLSentence.TABLE_TASK_ACCESSORY, null, cv);
 	}
 	/*-------------------------------------------数据库修改操作---------------------------------------------*/
@@ -108,6 +109,19 @@ public class OMUserDatabaseManager {
 		cv.put(SQLSentence.COLUMN_TASK_TYPE, mBean.taskType);
 		return db.update(SQLSentence.TABLE_TASK, cv, "_id = ?", new String [] {String.valueOf(mBean.taskLocalId)});
 	}
+	
+	public long updateTaskAccessoryBean(AffiliatedFileBean mBean) {
+		ContentValues cv = new ContentValues();
+		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_PATH, mBean.filePath);
+		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_STATE, mBean.fileState);
+		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_SOURCE, mBean.fileSource);
+		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_TASKID, mBean.taskId);
+		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_NET_ID, mBean.netId);
+		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_FILE_SIZE, mBean.fileSize);
+		return db.update(SQLSentence.TABLE_TASK_ACCESSORY, cv, SQLSentence.COLUMN_TASK_ACCESSORY_NET_ID+" = ?",
+				new String[] { String.valueOf(mBean.netId) });
+	}
+	
 	/*-------------------------------------------数据库删除操作---------------------------------------------*/
 	
 	public long deleteTask(TaskDetailBean mBean){

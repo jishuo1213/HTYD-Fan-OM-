@@ -29,12 +29,12 @@ import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
-import com.htyd.fan.om.util.ui.UItoolKit;
-
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
+
+import com.htyd.fan.om.util.ui.UItoolKit;
 
 public class HttpHelper {
 

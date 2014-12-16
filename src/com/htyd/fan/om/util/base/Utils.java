@@ -1,10 +1,12 @@
 package com.htyd.fan.om.util.base;
 
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import android.annotation.SuppressLint;
+import android.os.Environment;
 
 
 public class Utils {
@@ -46,5 +48,24 @@ public class Utils {
 		Calendar c = Calendar.getInstance();
 		c.setTimeInMillis(time);
 		return c.get(field);
+	}
+	
+	public static String getAccessoryPath() {
+		File sdCardDir = Environment.getExternalStorageDirectory();
+		
+		if (sdCardDir.exists()) {
+			File mPictureDir = new File(sdCardDir + "/" + "OmAccessory");
+			if (!mPictureDir.exists()) {
+				mPictureDir.mkdir();
+			}
+			return mPictureDir.getAbsolutePath();
+		} else {
+			File dir = Environment.getDataDirectory();
+			File mPictureDir = new File(dir + "/" + "OmAccessory");
+			if (!mPictureDir.exists()) {
+				mPictureDir.mkdir();
+			}
+			return mPictureDir.getAbsolutePath();
+		}	
 	}
 }

@@ -84,5 +84,4 @@ public class NetOperating {
 		}
 		return result;
 	}
-	
 }

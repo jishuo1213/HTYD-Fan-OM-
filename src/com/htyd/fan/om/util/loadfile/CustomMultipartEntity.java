@@ -33,6 +33,7 @@ public class CustomMultipartEntity extends MultipartEntity {
 	public void writeTo(OutputStream outstream) throws IOException {
 		super.writeTo(new CountingOutputStream(outstream, this.listener));
 	}
+	
 
 	public static interface ProgressListener {
 		void transferred(long num);

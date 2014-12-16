@@ -28,6 +28,7 @@ import com.htyd.fan.om.R;
 import com.htyd.fan.om.attendmanage.fragment.AttendCalendarFragment;
 import com.htyd.fan.om.main.fragment.SettingFragment;
 import com.htyd.fan.om.taskmanage.fragment.TaskListFragment;
+import com.htyd.fan.om.util.base.Utils;
 import com.htyd.fan.om.util.https.NetOperating;
 import com.htyd.fan.om.util.https.Urls;
 import com.htyd.fan.om.util.ui.AttendOverflowMenu;
@@ -124,6 +125,7 @@ public class MainActivity extends FragmentActivity {
 		mainViewPager.setAdapter(pageAdapter);
 		mainViewPager.setOnPageChangeListener(new PagerChangeListener());
 		tabPanel.setImg(0, true);
+		Utils.getAccessoryPath();
 	}
 
 	private class PagerChangeListener implements OnPageChangeListener {

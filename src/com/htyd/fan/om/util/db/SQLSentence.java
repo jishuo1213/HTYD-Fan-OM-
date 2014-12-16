@@ -87,8 +87,9 @@ public class SQLSentence {
 	public static final String COLUMN_TASK_ACCESSORY_STATE = "accessory_state";
 	public static final String COLUMN_TASK_ACCESSORY_SOURCE = "accessory_type";
 	public static final String COLUMN_TASK_ACCESSORY_NET_ID = "accessory_net_id";
+	public static final String COLUMN_TASK_ACCESSORY_FILE_SIZE = "file_size";
 
 	public static final String CREATE_TABLE_TASK_ACCESSORY = "create table taskaccessory ("
 			+ "_id integer primary key autoincrement, task_id integer references task(_id), accessory_path text"
-			+ ", accessory_state integer ,accessory_type integer,accessory_net_id integer)";
+			+ ", accessory_state integer ,accessory_type integer,accessory_net_id integer,file_size integer)";
 }
