@@ -93,7 +93,7 @@ public class HttpHelper {
 							}
 							HttpEntity resEntity = response.getEntity();
 							Log.i("fanjishuo____GetResponse", (resEntity == null)+"");
-							return (resEntity == null) ? null : EntityUtils
+							return (resEntity == null) ? "false" : EntityUtils
 									.toString(resEntity, CHARSET_UTF8);
 						} else {
 							UItoolKit.showToastShort(context, "检查网络连接先");

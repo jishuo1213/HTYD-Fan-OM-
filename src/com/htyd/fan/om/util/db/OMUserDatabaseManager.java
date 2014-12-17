@@ -10,6 +10,7 @@ import com.htyd.fan.om.model.AffiliatedFileBean;
 import com.htyd.fan.om.model.AttendBean;
 import com.htyd.fan.om.model.TaskDetailBean;
 import com.htyd.fan.om.model.TaskProcessBean;
+import com.htyd.fan.om.util.db.OMUserDatabaseHelper.TaskCursor;
 
 public class OMUserDatabaseManager {
 
@@ -145,8 +146,8 @@ public class OMUserDatabaseManager {
 		return mHelper.queryMonthAttend(monthNum);
 	}
 
-	public Cursor queryTaskCursorByState(int state) {
-		return mHelper.queryTaskByState(state);
+	public Cursor queryUserTask() {
+		return mHelper.queryUserTask();
 	}
 
 	public Cursor queryProcessByTaskId(int taskId) {
@@ -156,12 +157,33 @@ public class OMUserDatabaseManager {
 	public Cursor queryAccessoryByTaskId(int taskId) {
 		return mHelper.queryAccessoryByTaskId(taskId);
 	}
-
+	
+	public TaskDetailBean getSingleTask(int taskNetId){
+		TaskCursor cursor = mHelper.queryUserSingleTask(taskNetId);
+		return cursor.getTask();
+	}
+	/*--------------------------------------------------------------------------------------------------------*/
 	public void closeDb() {
 		if (db.isOpen()) {
 			db.close();
 			Log.v("fanjishuo____closedb", "close");
 		}
+	}
+	/**
+	 * 删除数据库表
+	 * @param tableName
+	 */
+	
+	public void clearFeedTable(String tableName) {
+		String sql = "DELETE FROM " + tableName + ";";
+		Log.i("fanjishuo____clearFeedTable", tableName+sql);
+		db.execSQL(sql);
+		revertSeq(tableName);
+	}
+
+	private void revertSeq(String tableName) {
+		String sql = "update sqlite_sequence set seq=0 where name='"+ tableName + "'";
+		db.execSQL(sql);
 	}
 
 	/**

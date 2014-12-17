@@ -10,6 +10,7 @@ import android.util.Log;
 import com.htyd.fan.om.model.AffiliatedFileBean;
 import com.htyd.fan.om.model.AttendBean;
 import com.htyd.fan.om.model.TaskDetailBean;
+import com.htyd.fan.om.model.TaskListBean;
 import com.htyd.fan.om.model.TaskProcessBean;
 import com.htyd.fan.om.util.base.Preferences;
 
@@ -52,18 +53,18 @@ public class OMUserDatabaseHelper extends SQLiteOpenHelper {
 		return new AttendCursor(wrapper);
 	}
 
-	public TaskCursor queryTaskByState(int state) {
-		if (state == -1) {
+	public TaskCursor queryUserTask() {
 			Cursor wrapper = getReadableDatabase().query(
 					SQLSentence.TABLE_TASK, null, null, null, null, null, null);
 			return new TaskCursor(wrapper);
-		}
-		Cursor wrapper = getReadableDatabase().query(SQLSentence.TABLE_TASK,
-				new String[] { SQLSentence.COLUMN_TASK_STATE },
-				SQLSentence.COLUMN_TASK_STATE + "= ?",
-				new String[] { String.valueOf(state) }, null, null, null);
-		return new TaskCursor(wrapper);
 	}
+	
+	public TaskCursor queryUserSingleTask(int taskNetId) {
+		Cursor wrapper = getReadableDatabase().query(SQLSentence.TABLE_TASK,
+				null, SQLSentence.COLUMN_TASK_NET_ID + "= ?",
+				new String[] { String.valueOf(taskNetId) }, null, null, null);
+		return new TaskCursor(wrapper);
+}
 
 	public TaskProcessCursor queryProcessByTaskId(int taskId) {
 		Cursor wrapper = getReadableDatabase().query(
@@ -122,8 +123,6 @@ public class OMUserDatabaseHelper extends SQLiteOpenHelper {
 			mBean.workLocation = getString(getColumnIndex(SQLSentence.COLUMN_TASK_WORK_LOCATION));
 			mBean.installLocation = getString(getColumnIndex(SQLSentence.COLUMN_TASK_INSTALL_LOCATION));
 			mBean.taskDescription = getString(getColumnIndex(SQLSentence.COLUMN_TASK_DESCRIPTION));
-/*			mBean.taskContacts = getString(getColumnIndex(SQLSentence.COLUMN_TASK_CONTACTS));
-			mBean.contactsPhone = getString(getColumnIndex(SQLSentence.COLUMN_TASK_CONTACT_PHONE));*/
 			mBean.recipientsName = getString(getColumnIndex(SQLSentence.COLUMN_TASK_RECIPIENT_NAME));
 			mBean.recipientPhone = getString(getColumnIndex(SQLSentence.COLUMN_TASK_RECIPIENT_PHONE));
 			mBean.taskAccessory = getString(getColumnIndex(SQLSentence.COLUMN_TASK_ACCESSORY));
@@ -136,6 +135,17 @@ public class OMUserDatabaseHelper extends SQLiteOpenHelper {
 			mBean.saveTime = getLong(getColumnIndex(SQLSentence.COLUMN_TASK_CREATE_TIME));
 			mBean.taskTitle = getString(getColumnIndex(SQLSentence.COLUMN_TASK_TITLE));
 			Log.i("fanjishuo____getTask", mBean.taskType + "");
+			return mBean;
+		}
+		
+		public TaskListBean getTaskListBean(){
+			if (isBeforeFirst() || isAfterLast())
+				return null;
+			TaskListBean mBean = new TaskListBean();
+			mBean.taskNetId = getInt(getColumnIndex(SQLSentence.COLUMN_TASK_NET_ID));
+			mBean.createTime = getLong(getColumnIndex(SQLSentence.COLUMN_TASK_CREATE_TIME));
+			mBean.taskTitle = getString(getColumnIndex(SQLSentence.COLUMN_TASK_TITLE));
+			mBean.taskState = getInt(getColumnIndex(SQLSentence.COLUMN_TASK_STATE));
 			return mBean;
 		}
 	}

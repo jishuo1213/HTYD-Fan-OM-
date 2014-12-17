@@ -77,7 +77,7 @@ public class SQLSentence {
 	public static final String COLUMN_TASKPROCESS_CREATE_TIME = "create_time";
 
 	public static final String CREATE_TABLE_TASK_PROCESS = "create table taskprocess ("
-			+ "_id integer primary key autoincrement, task_id integer references task(_id), task_start_time integer, task_end_time  integer, "
+			+ "_id integer primary key autoincrement, task_id integer references task(task_id), task_start_time integer, task_end_time  integer, "
 			+ " task_process_what text , task_state integer , create_time integer)";
 
 	public static final String TABLE_TASK_ACCESSORY = "taskaccessory";

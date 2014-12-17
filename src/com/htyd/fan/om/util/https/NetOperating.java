@@ -79,7 +79,7 @@ public class NetOperating {
 			result = HttpHelper.GetResponse(context, Url + operate, params);
 		}
 		Log.i("fanjishuo_____getResultFromNet", result);
-		if (result.equals("false") || result.length() == 0) {
+		if (result.equals("false") || result.length() == 0 || result.equals("[]")) {
 			throw new Exception("请求数据失败");
 		}
 		return result;
