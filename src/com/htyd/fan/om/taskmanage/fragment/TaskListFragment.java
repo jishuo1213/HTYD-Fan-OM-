@@ -46,6 +46,7 @@ import com.htyd.fan.om.util.https.Urls;
 import com.htyd.fan.om.util.https.Utility;
 import com.htyd.fan.om.util.loaders.SQLiteCursorLoader;
 import com.htyd.fan.om.util.ui.CustomChooserView.OnItemChooserListener;
+import com.htyd.fan.om.util.ui.UItoolKit;
 
 public class TaskListFragment extends Fragment implements OnItemChooserListener {
 
@@ -96,7 +97,7 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 		mPullRefreshListView.setOnRefreshListener(new OnRefreshListener <ListView>(){
 			@Override
 			public void onRefresh(PullToRefreshBase<ListView> refreshView) {
-				
+				UItoolKit.showToastShort(getActivity(), "刷新");
 			}
 		});
 		mListView = mPullRefreshListView.getRefreshableView();
