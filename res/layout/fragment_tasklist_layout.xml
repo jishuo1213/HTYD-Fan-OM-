@@ -57,13 +57,13 @@
             android:layout_margin="5dp"
             />
     </TableRow>
-
-    <ListView
+<com.handmark.pulltorefresh.library.PullToRefreshListView
         android:id="@+id/list_my_task"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:divider="@color/key_text"
+        android:smoothScrollbar="true" 
         android:dividerHeight="1px" />
 
 </LinearLayout>

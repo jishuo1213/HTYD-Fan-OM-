@@ -16,7 +16,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -31,6 +30,7 @@ import com.htyd.fan.om.model.AffiliatedFileBean;
 import com.htyd.fan.om.taskmanage.adapter.TaskAccessoryAdapter;
 import com.htyd.fan.om.taskmanage.adapter.TaskAccessoryAdapter.UpLoadFileListener;
 import com.htyd.fan.om.util.base.Preferences;
+import com.htyd.fan.om.util.base.Utils;
 import com.htyd.fan.om.util.db.OMUserDatabaseManager;
 import com.htyd.fan.om.util.https.NetOperating;
 import com.htyd.fan.om.util.https.Urls;
@@ -186,8 +186,8 @@ public class UploadFileDialog extends DialogFragment implements
 					position + "");
 		} else if (mBean.fileSource == 1 && mBean.fileState == 0) {
 			String [] array = mBean.filePath.split("\\\\" +Preferences.getUserinfo(getActivity(), "YHID") + "\\\\");
-			File sdCardDir = Environment.getExternalStorageDirectory();
-			String targetFile = sdCardDir + "/" + "OmAccessory"+"/"+array[1];
+			String sdCardDir = Utils.getAccessoryPath();
+			String targetFile = sdCardDir +"/"+array[1];
 			new DownloadTask(getActivity(), targetFile,this).execute(mBean);
 		} else {
 			UItoolKit.showToastShort(getActivity(), "该附件已经上传或下载，请预览");

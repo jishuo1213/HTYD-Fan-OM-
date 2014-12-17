@@ -86,8 +86,10 @@ public class DownLoadManager {
 			return false;
 		} finally {
 			try {
-				fos.close();
-				in.close();
+				if(fos != null)
+					fos.close();
+				if(in != null)
+					in.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 				return false;

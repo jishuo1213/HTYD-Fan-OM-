@@ -31,6 +31,9 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.htyd.fan.om.R;
 import com.htyd.fan.om.model.TaskDetailBean;
 import com.htyd.fan.om.taskmanage.TaskManageActivity;
@@ -60,6 +63,7 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 			completedAdapter;
 	private TaskCursorCallback mCallback;
 	private LoaderManager mLoadManager;
+	private PullToRefreshListView mPullRefreshListView;
 	boolean isLoaderFinish;
 
 	@Override
@@ -88,7 +92,14 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 	}
 
 	private void initView(View v) {
-		mListView = (ListView) v.findViewById(R.id.list_my_task);
+		mPullRefreshListView = (PullToRefreshListView) v.findViewById(R.id.list_my_task);
+		mPullRefreshListView.setOnRefreshListener(new OnRefreshListener <ListView>(){
+			@Override
+			public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+				
+			}
+		});
+		mListView = mPullRefreshListView.getRefreshableView();
 		if (mListView.getAdapter() == null) {
 			mListView.setAdapter(allTaskAdapter);
 		}

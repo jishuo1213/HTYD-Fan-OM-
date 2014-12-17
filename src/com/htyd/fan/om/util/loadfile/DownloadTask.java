@@ -97,4 +97,9 @@ public class DownloadTask extends AsyncTask<AffiliatedFileBean, Float, Boolean> 
 		//pd.setProgress(values[0]);
 		pd.setMessage("Downloading Picture..."+values[0]+"%");
 	}
+	@Override
+	protected void onCancelled(Boolean result) {
+		
+		super.onCancelled(result);
+	}
 }
