@@ -10,7 +10,6 @@ import android.content.DialogInterface.OnCancelListener;
 import android.os.AsyncTask;
 
 import com.htyd.fan.om.model.AffiliatedFileBean;
-import com.htyd.fan.om.util.db.OMUserDatabaseManager;
 import com.htyd.fan.om.util.https.Urls;
 import com.htyd.fan.om.util.loadfile.DownLoadManager.DataTransferListener;
 import com.htyd.fan.om.util.ui.UItoolKit;
@@ -83,7 +82,6 @@ public class DownloadTask extends AsyncTask<AffiliatedFileBean, Float, Boolean> 
 			UItoolKit.showToastShort(context, "下载成功");
 			mBean.fileState = 1;
 			mBean.filePath = filePath;
-			OMUserDatabaseManager.getInstance(context).updateTaskAccessoryBean(mBean);
 			mListener.onDownLoadFinish(mBean);
 		}else{
 			UItoolKit.showToastShort(context, "下载失败");
@@ -99,7 +97,6 @@ public class DownloadTask extends AsyncTask<AffiliatedFileBean, Float, Boolean> 
 	}
 	@Override
 	protected void onCancelled(Boolean result) {
-		
 		super.onCancelled(result);
 	}
 }

@@ -21,7 +21,6 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.htyd.fan.om.model.AffiliatedFileBean;
-import com.htyd.fan.om.util.db.OMUserDatabaseManager;
 import com.htyd.fan.om.util.https.HttpHelper;
 import com.htyd.fan.om.util.https.Urls;
 import com.htyd.fan.om.util.loadfile.CustomMultipartEntity.ProgressListener;
@@ -132,7 +131,6 @@ public class HttpMultipartPost extends AsyncTask<String, Integer, String> {
 				UItoolKit.showToastShort(context, "保存成功");
 				mBean.fileState = 1;
 				mBean.netId = json.getInt("WJID");
-				OMUserDatabaseManager.getInstance(context).insertTaskAccessoryBean(mBean);
 				listener.onUpLoadFinish(mBean,position);
 			}else{
 				UItoolKit.showToastShort(context, "保存失败");

@@ -144,6 +144,7 @@ public class UploadFileDialog extends DialogFragment implements
 				mBean.taskId = getArguments().getInt(TASKID);
 				mBean.fileState = 0;
 				listAccessory.add(mBean);
+				OMUserDatabaseManager.getInstance(getActivity()).insertTaskAccessoryBean(mBean);
 				if(mListView.getAdapter() == null){
 					mListView.setAdapter(new TaskAccessoryAdapter(listAccessory, getActivity(), this));
 				}else{
@@ -234,12 +235,14 @@ public class UploadFileDialog extends DialogFragment implements
 		listAccessory.set(position, mBean);
 		TaskAccessoryAdapter mAdapter = (TaskAccessoryAdapter)mListView.getAdapter();
 		mAdapter.notifyDataSetChanged();
+		OMUserDatabaseManager.getInstance(getActivity()).updateTaskAccessoryBean(mBean);
 	}
 	
 	@Override
 	public void onDownLoadFinish(AffiliatedFileBean mBean) {
 		TaskAccessoryAdapter mAdapter = (TaskAccessoryAdapter)mListView.getAdapter();
 		mAdapter.notifyDataSetChanged();
+		OMUserDatabaseManager.getInstance(getActivity()).updateTaskAccessoryBean(mBean);
 	}
 
 	private class DeleteAccessoryTask extends AsyncTask<AffiliatedFileBean, Void, Boolean>{
