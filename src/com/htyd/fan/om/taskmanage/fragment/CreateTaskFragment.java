@@ -1,8 +1,5 @@
 package com.htyd.fan.om.taskmanage.fragment;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -17,8 +14,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,33 +27,24 @@ import android.widget.TextView;
 import com.htyd.fan.om.R;
 import com.htyd.fan.om.map.LocationReceiver;
 import com.htyd.fan.om.map.OMLocationManager;
-import com.htyd.fan.om.model.AffiliatedFileBean;
 import com.htyd.fan.om.model.OMLocationBean;
 import com.htyd.fan.om.model.TaskDetailBean;
-import com.htyd.fan.om.taskmanage.adapter.TaskAccessoryAdapter;
-import com.htyd.fan.om.taskmanage.adapter.TaskAccessoryAdapter.UpLoadFileListener;
 import com.htyd.fan.om.util.base.Preferences;
 import com.htyd.fan.om.util.base.Utils;
 import com.htyd.fan.om.util.db.OMUserDatabaseManager;
-import com.htyd.fan.om.util.fragment.CameraActivity;
-import com.htyd.fan.om.util.fragment.CameraFragment;
 import com.htyd.fan.om.util.fragment.DateTimePickerDialog;
-import com.htyd.fan.om.util.fragment.RecodingDialogFragment;
 import com.htyd.fan.om.util.fragment.SelectLocationDialogFragment;
 import com.htyd.fan.om.util.fragment.SpendTimePickerDialog;
 import com.htyd.fan.om.util.https.NetOperating;
 import com.htyd.fan.om.util.https.Urls;
-import com.htyd.fan.om.util.loadfile.HttpMultipartPost;
-import com.htyd.fan.om.util.loadfile.HttpMultipartPost.UpLoadFinishListener;
-import com.htyd.fan.om.util.ui.ListViewForScrollView;
 import com.htyd.fan.om.util.ui.UItoolKit;
 import com.htyd.fan.om.util.zxing.CaptureActivity;
 
-public class CreateTaskFragment extends Fragment implements UpLoadFileListener,UpLoadFinishListener{
+public class CreateTaskFragment extends Fragment{
 
-	private static final int REQUESTPHOTO = 1;// 照片
+/*	private static final int REQUESTPHOTO = 1;// 照片
 	private static final int REQUESTRECORDING = 2;// 录音
-	private static final int REQUESTSTARTDATE = 3;// 开始时间
+*/	private static final int REQUESTSTARTDATE = 3;// 开始时间
 	private static final int REQUESTENDTIME = 4;// 结束时间
 	private static final int REQUESTZXING = 5;//条码扫描
 
@@ -67,8 +53,8 @@ public class CreateTaskFragment extends Fragment implements UpLoadFileListener,U
 	private SelectViewClickListener mListener;
 	private OMUserDatabaseManager mManager;
 	protected long startTime;
-	private List<AffiliatedFileBean> accessoryList;
-	protected ListViewForScrollView accessoryListView;
+//	private List<AffiliatedFileBean> accessoryList;
+//	protected ListViewForScrollView accessoryListView;
 	protected double latitiude, longitude;
 	
 	
@@ -122,7 +108,7 @@ public class CreateTaskFragment extends Fragment implements UpLoadFileListener,U
 				mPanel.taskNeedTime.setText( Utils.formatTime(data
 						.getLongExtra(SpendTimePickerDialog.ENDTIME, 0)));
 				
-			} else if (requestCode == REQUESTPHOTO) {
+			} /*else if (requestCode == REQUESTPHOTO) {
 				if(accessoryList == null){
 					accessoryList = new ArrayList<AffiliatedFileBean>();
 				}
@@ -140,7 +126,7 @@ public class CreateTaskFragment extends Fragment implements UpLoadFileListener,U
 						.getStringExtra(CameraFragment.EXTRA_PHOTO_FILENAME));
 			} else if (requestCode == REQUESTRECORDING) {
 				UItoolKit.showToastShort(getActivity(),data.getStringArrayExtra(RecodingDialogFragment.FILEPATHARRAY)[0]);
-			}else if(requestCode == REQUESTZXING){
+			}*/else if(requestCode == REQUESTZXING){
 				UItoolKit.showToastShort(getActivity(),data.getStringExtra("result"));
 				mPanel.taskEquipment.setText(data.getStringExtra("result"));
 			}
@@ -169,7 +155,7 @@ public class CreateTaskFragment extends Fragment implements UpLoadFileListener,U
 		}
 	}
 
-	@Override
+/*	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
 		getActivity().getMenuInflater()
@@ -194,23 +180,23 @@ public class CreateTaskFragment extends Fragment implements UpLoadFileListener,U
 		default:
 			return super.onContextItemSelected(item);
 		}
-	}
+	}*/
 
 	private void initView(View v) {
 		mPanel = new TaskViewPanel(v);
 		mPanel.setListener();
-		accessoryListView = (ListViewForScrollView) v.findViewById(R.id.list_accessory);
+//		accessoryListView = (ListViewForScrollView) v.findViewById(R.id.list_accessory);
 	}
 
 	private class TaskViewPanel {
 
 		private TextView taskWorkLocation, taskStartTime, taskNeedTime,
-				taskEquipment, taskType, addAccessory;
+				taskEquipment, taskType;
 		private EditText taskTitle, taskDescription, taskInstallLocation;
-				/*taskContact, taskContactPhone*/
+				/*taskContact, taskContactPhone, addAccessory*/
 
 		public TaskViewPanel(View v) {
-			addAccessory = (TextView) v.findViewById(R.id.tv_add_accessory);
+//			addAccessory = (TextView) v.findViewById(R.id.tv_add_accessory);
 			taskTitle = (EditText) v.findViewById(R.id.edit_task_title);
 			taskDescription = (EditText) v
 					.findViewById(R.id.edit_task_description);
@@ -256,8 +242,8 @@ public class CreateTaskFragment extends Fragment implements UpLoadFileListener,U
 			taskNeedTime.setOnClickListener(mListener);
 			taskEquipment.setOnClickListener(mListener);
 			taskType.setOnClickListener(mListener);
-			addAccessory.setOnClickListener(mListener);
-			registerForContextMenu(addAccessory);
+//			addAccessory.setOnClickListener(mListener);
+//			registerForContextMenu(addAccessory);
 		}
 	}
 
@@ -300,18 +286,17 @@ public class CreateTaskFragment extends Fragment implements UpLoadFileListener,U
 		@Override
 		protected void onNetWorkLocationReceived(Context context,
 				OMLocationBean loc) {
-			
-		}
-
-		@Override
-		protected void onGPSLocationReceived(Context context, OMLocationBean loc) {
 			latitiude = loc.latitude;
 			longitude = loc.longitude;
 			OMLocationManager.get(getActivity()).stopLocationUpdate();
 		}
+
+		@Override
+		protected void onGPSLocationReceived(Context context, OMLocationBean loc) {
+		}
 		
 	};
-	@Override
+/*	@Override
 	public void onUpLoadClick(AffiliatedFileBean mBean,int position) {
 		HttpMultipartPost post = new HttpMultipartPost(getActivity(), mBean.filePath,this);
 		post.execute();
@@ -320,13 +305,13 @@ public class CreateTaskFragment extends Fragment implements UpLoadFileListener,U
 	@Override
 	public void onDeleteClick(AffiliatedFileBean mBean, int position) {
 		accessoryList.remove(position);
-		TaskAccessoryAdapter mAdapter = (TaskAccessoryAdapter)accessoryListView.getAdapter();
-		mAdapter.notifyDataSetChanged();
-	}
+//		TaskAccessoryAdapter mAdapter = (TaskAccessoryAdapter)accessoryListView.getAdapter();
+//		mAdapter.notifyDataSetChanged();
+	}*/
 	
-	@Override
+/*	@Override
 	public void onPreviewImg(String path) {
-	}
+	}*/
 	
 	private class SaveTask extends AsyncTask<TaskDetailBean, Void, Boolean>{
 
@@ -380,8 +365,8 @@ public class CreateTaskFragment extends Fragment implements UpLoadFileListener,U
 		task.cancel(false);
 	}
 
-	@Override
+/*	@Override
 	public void onUpLoadFinish(AffiliatedFileBean mBean,int position) {
-	}
+	}*/
 
 }

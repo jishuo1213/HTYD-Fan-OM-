@@ -56,11 +56,8 @@ public class OMUserDatabaseManager {
 		cv.put(SQLSentence.COLUMN_TASK_INSTALL_LOCATION, mBean.installLocation);
 		cv.put(SQLSentence.COLUMN_TASK_DESCRIPTION, mBean.taskDescription);
 		cv.put(SQLSentence.COLUMN_TASK_TITLE, mBean.taskTitle);
-/*		cv.put(SQLSentence.COLUMN_TASK_CONTACTS, mBean.taskContacts);
-		cv.put(SQLSentence.COLUMN_TASK_CONTACT_PHONE, mBean.contactsPhone);*/
 		cv.put(SQLSentence.COLUMN_TASK_RECIPIENT_NAME, mBean.recipientsName);
 		cv.put(SQLSentence.COLUMN_TASK_RECIPIENT_PHONE, mBean.recipientPhone);
-		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY, mBean.taskAccessory);
 		cv.put(SQLSentence.COLUMN_TASK_EQUIPMENT, mBean.equipment);
 		cv.put(SQLSentence.COLUMN_TASK_PRODUCT_TYPE, mBean.productType);
 		cv.put(SQLSentence.COLUMN_TASK_PLAN_STARTTIME, mBean.planStartTime);
@@ -101,7 +98,6 @@ public class OMUserDatabaseManager {
 		cv.put(SQLSentence.COLUMN_TASK_DESCRIPTION, mBean.taskDescription);
 		cv.put(SQLSentence.COLUMN_TASK_RECIPIENT_NAME, mBean.recipientsName);
 		cv.put(SQLSentence.COLUMN_TASK_RECIPIENT_PHONE, mBean.recipientPhone);
-		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY, mBean.taskAccessory);
 		cv.put(SQLSentence.COLUMN_TASK_EQUIPMENT, mBean.equipment);
 		cv.put(SQLSentence.COLUMN_TASK_PRODUCT_TYPE, mBean.productType);
 		cv.put(SQLSentence.COLUMN_TASK_PLAN_STARTTIME, mBean.planStartTime);
@@ -121,6 +117,18 @@ public class OMUserDatabaseManager {
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_FILE_SIZE, mBean.fileSize);
 		return db.update(SQLSentence.TABLE_TASK_ACCESSORY, cv, SQLSentence.COLUMN_TASK_ACCESSORY_NET_ID+" = ?",
 				new String[] { String.valueOf(mBean.netId) });
+	}
+	
+	public long updateAccessoryBean(AffiliatedFileBean mBean) {
+		ContentValues cv = new ContentValues();
+		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_PATH, mBean.filePath);
+		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_STATE, mBean.fileState);
+		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_SOURCE, mBean.fileSource);
+		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_TASKID, mBean.taskId);
+		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_NET_ID, mBean.netId);
+		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_FILE_SIZE, mBean.fileSize);
+		return db.update(SQLSentence.TABLE_TASK_ACCESSORY, cv, SQLSentence.COLUMN_TASK_ACCESSORY_PATH+" = ?",
+				new String[] {mBean.filePath});
 	}
 	
 	/*-------------------------------------------数据库删除操作---------------------------------------------*/

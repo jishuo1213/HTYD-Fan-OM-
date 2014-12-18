@@ -235,7 +235,7 @@
             </TableRow>
         </TableLayout>
 
-        <TextView
+        <!-- <TextView
             android:id="@+id/tv_add_accessory"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -246,7 +246,7 @@
             android:gravity="center"
             android:hint="点击添加附件"
             android:textColor="@color/key_text"
-            android:textSize="18sp" />
+            android:textSize="18sp" /> -->
 
         <com.htyd.fan.om.util.ui.ListViewForScrollView
             android:id="@+id/list_accessory"

@@ -72,7 +72,7 @@ public class CaptureActivity extends Activity implements Callback {
     private void initControl() {
         viewfinderView = (ViewfinderView) findViewById(R.id.viewfinder_view);
         mTitle = (TextView) findViewById(R.id.details_textview_title);
-        mTitle.setText("扫一扫");
+        mTitle.setText("扫描设备条码");
         mGoHome = (ImageView) findViewById(R.id.details_imageview_gohome);
         mGoHome.setOnClickListener(new OnClickListener() {
             @Override

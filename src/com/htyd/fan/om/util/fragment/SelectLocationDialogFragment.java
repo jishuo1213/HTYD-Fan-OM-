@@ -273,15 +273,23 @@ public class SelectLocationDialogFragment extends DialogFragment {
 			switch (type) {
 			case 0:// 省
 				ProvinceBean mProvinceBean = (ProvinceBean) getItem(position);
-				mHolder.mTextView.setText(mProvinceBean.provinceName);
+				mHolder.mTextView.setText(mProvinceBean.provinceName+"\t"+mProvinceBean.provinceCode);
 				break;
 			case 1:// 市
 				CityBean mCityBean = (CityBean) getItem(position);
-				mHolder.mTextView.setText(mCityBean.cityName);
+				mHolder.mTextView.setText(mCityBean.cityName
+						+ "\t"
+						+ mCityBean.cityCode.substring(mCityBean.cityCode
+								.length() - 2));
 				break;
 			case 2:// 县
 				DistrictBean mDistrictBean = (DistrictBean) getItem(position);
-				mHolder.mTextView.setText(mDistrictBean.districtName);
+				mHolder.mTextView
+						.setText(mDistrictBean.districtName
+								+ "\t"
+								+ mDistrictBean.districtCode
+										.substring(mDistrictBean.districtCode
+												.length() - 2));
 				break;
 			}
 

@@ -36,7 +36,7 @@ import android.widget.TextView;
 import com.htyd.fan.om.R;
 import com.htyd.fan.om.model.TaskDetailBean;
 import com.htyd.fan.om.model.TaskProcessBean;
-import com.htyd.fan.om.taskmanage.fragment.EditTaskFragment.TaskViewPanel;
+import com.htyd.fan.om.taskmanage.TaskViewPanel;
 import com.htyd.fan.om.util.base.Utils;
 import com.htyd.fan.om.util.db.OMUserDatabaseHelper.TaskProcessCursor;
 import com.htyd.fan.om.util.db.OMUserDatabaseManager;

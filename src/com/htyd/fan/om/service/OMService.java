@@ -1,19 +1,19 @@
 package com.htyd.fan.om.service;
 
-import android.app.Service;
+import android.app.IntentService;
 import android.content.Intent;
-import android.os.IBinder;
 
-public class OMService extends Service {
+public class OMService extends IntentService {
 
 	
 	
+	public OMService() {
+		super("OMService");
+	}
+
 	@Override
-	public IBinder onBind(Intent intent) {
-		switch(intent.getAction()){
+	protected void onHandleIntent(Intent intent) {
 		
-		}
-		return null;
 	}
 
 }

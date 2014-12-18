@@ -60,9 +60,11 @@ public class OMUserDatabaseHelper extends SQLiteOpenHelper {
 	}
 	
 	public TaskCursor queryUserSingleTask(int taskNetId) {
+		Log.i("fanjishuo____queryUserSingleTask", "taskNetId"+taskNetId);
 		Cursor wrapper = getReadableDatabase().query(SQLSentence.TABLE_TASK,
 				null, SQLSentence.COLUMN_TASK_NET_ID + "= ?",
 				new String[] { String.valueOf(taskNetId) }, null, null, null);
+		Log.i("fanjishuo____queryUserSingleTask", "wrapper"+wrapper.getCount());
 		return new TaskCursor(wrapper);
 }
 
@@ -115,8 +117,10 @@ public class OMUserDatabaseHelper extends SQLiteOpenHelper {
 		}
 
 		public TaskDetailBean getTask() {
-			if (isBeforeFirst() || isAfterLast())
+			moveToFirst();
+			if (isBeforeFirst() || isAfterLast()){
 				return null;
+			}
 			TaskDetailBean mBean = new TaskDetailBean();
 			mBean.taskLocalId = getInt(getColumnIndex(SQLSentence.COLUMN_TASK_ID));
 			mBean.taskNetId = getInt(getColumnIndex(SQLSentence.COLUMN_TASK_NET_ID));
@@ -125,7 +129,6 @@ public class OMUserDatabaseHelper extends SQLiteOpenHelper {
 			mBean.taskDescription = getString(getColumnIndex(SQLSentence.COLUMN_TASK_DESCRIPTION));
 			mBean.recipientsName = getString(getColumnIndex(SQLSentence.COLUMN_TASK_RECIPIENT_NAME));
 			mBean.recipientPhone = getString(getColumnIndex(SQLSentence.COLUMN_TASK_RECIPIENT_PHONE));
-			mBean.taskAccessory = getString(getColumnIndex(SQLSentence.COLUMN_TASK_ACCESSORY));
 			mBean.equipment = getString(getColumnIndex(SQLSentence.COLUMN_TASK_EQUIPMENT));
 			mBean.productType = getString(getColumnIndex(SQLSentence.COLUMN_TASK_PRODUCT_TYPE));
 			mBean.planStartTime = getLong(getColumnIndex(SQLSentence.COLUMN_TASK_PLAN_STARTTIME));
@@ -134,7 +137,6 @@ public class OMUserDatabaseHelper extends SQLiteOpenHelper {
 			mBean.taskType = getInt(getColumnIndex(SQLSentence.COLUMN_TASK_TYPE));
 			mBean.saveTime = getLong(getColumnIndex(SQLSentence.COLUMN_TASK_CREATE_TIME));
 			mBean.taskTitle = getString(getColumnIndex(SQLSentence.COLUMN_TASK_TITLE));
-			Log.i("fanjishuo____getTask", mBean.taskType + "");
 			return mBean;
 		}
 		

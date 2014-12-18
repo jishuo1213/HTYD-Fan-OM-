@@ -1,6 +1,11 @@
 package com.htyd.fan.om.util.base;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -27,7 +32,7 @@ public class PictureUtils {
 			if (srcWidth > srcHeight) {
 				inSampleSize = Math.round(srcHeight / destHeight);
 			} else {
-				inSampleSize = Math.round(srcWidth / srcHeight);
+				inSampleSize = Math.round(srcWidth / destWidth);
 			}
 		}
 
@@ -35,7 +40,57 @@ public class PictureUtils {
 		options.inSampleSize = inSampleSize;
 
 		Bitmap bitmap = BitmapFactory.decodeFile(path, options);
+		Log.i("fanjishuo______getScaledDrawable", bitmap.getByteCount()+"");
 		return new BitmapDrawable(a.getResources(), bitmap);
+	}
+	
+	public static BitmapDrawable getScaledDrawable(Context c,int width,int height, String path) {
+		float destWidth = width;
+		float destHeight = height;
+
+		BitmapFactory.Options options = new BitmapFactory.Options();
+		options.inJustDecodeBounds = true;
+		BitmapFactory.decodeFile(path, options);
+
+		float srcWidth = options.outWidth;
+		float srcHeight = options.outHeight;
+
+		int inSampleSize = 1;
+		if (srcHeight > destHeight || srcWidth > destWidth) {
+			if (srcWidth > srcHeight) {
+				inSampleSize = Math.round(srcHeight / destHeight);
+			} else {
+				inSampleSize = Math.round(srcWidth / destWidth);
+			}
+		}
+
+		options = new BitmapFactory.Options();
+		options.inSampleSize = inSampleSize;
+
+		Bitmap bitmap = BitmapFactory.decodeFile(path, options);
+		Log.i("fanjishuo______getScaledDrawable", bitmap.getByteCount()+"");
+		return new BitmapDrawable(c.getResources(), bitmap);
+	}
+	
+	public static void compressBmpToFile(Bitmap bmp,File file){
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		int options = 80;//个人喜欢从80开始,
+		bmp.compress(Bitmap.CompressFormat.JPEG, options, baos);
+		while (baos.toByteArray().length / 1024 > 500) { 
+			baos.reset();
+			options -= 10;
+			if(options == 0)
+				break;
+			bmp.compress(Bitmap.CompressFormat.JPEG, options, baos);
+		}
+		try {
+			FileOutputStream fos = new FileOutputStream(file);
+			fos.write(baos.toByteArray());
+			fos.flush();
+			fos.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static void cleanImageView(ImageView imageview) {

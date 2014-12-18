@@ -409,6 +409,9 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 		@Override
 		protected void onNetWorkLocationReceived(Context context,
 				OMLocationBean loc) {
+			if(!isVisible()){
+				return;
+			}
 			AttendBean mBean = new AttendBean();
 			mBean.SetValueBean(loc);
 			if(!attendTime.getText().toString().equals(Utils.formatTime(loc.time, "yyyy年MM月dd日"))){
@@ -419,8 +422,7 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 			mBean.time = selectDay.getTimeInMillis();
 			mBean.choseLocation = attendLocation.getText().toString();
 			mBean.month = selectDay.get(Calendar.MONTH);
-			if(isVisible())
-				startTask(mBean);
+			startTask(mBean);
 		}
 
 		@Override

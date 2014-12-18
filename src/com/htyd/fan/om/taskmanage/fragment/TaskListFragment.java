@@ -186,8 +186,6 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 			case 2:
 				return completedNum;
 			case -1:
-				Log.i("fanjishuo___getcount",
-						(inProcessTaskNum  + completedNum) + "");
 				return inProcessTaskNum + completedNum;
 			}
 			return 0;
@@ -220,6 +218,7 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			ViewHolder mHolder;
+			Log.i("fanjishuo___taskListView", "getView");
 			if (convertView == null) {
 				convertView = getActivity().getLayoutInflater().inflate(
 						R.layout.task_item_layout, null);
@@ -243,7 +242,7 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 	private class ViewHolder {
 		public TextView taskDescrption, taskCreateTime, taskState;
 
-		// public ImageView taskStateIcon;
+//		 public ImageView taskStateIcon;
 		public ViewHolder(View v) {
 			taskDescrption = (TextView) v.findViewById(R.id.tv_task_descrption);
 			taskCreateTime = (TextView) v.findViewById(R.id.tv_task_createtime);

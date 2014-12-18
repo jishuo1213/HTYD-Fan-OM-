@@ -18,7 +18,6 @@ public class TaskDetailBean implements Parcelable {
 	public String taskDescription;// 任务描述
 	public String recipientsName;// 任务领取人
 	public String recipientPhone;// 领取人电话
-	public String taskAccessory;// 任务附件
 	public String equipment;// 设备
 	public String productType;// 产品类别
 	public long planStartTime;// 计划开始时间
@@ -70,7 +69,6 @@ public class TaskDetailBean implements Parcelable {
 		dest.writeString(taskDescription);
 		dest.writeString(recipientsName);
 		dest.writeString(recipientPhone);
-		dest.writeString(taskAccessory);
 		dest.writeString(equipment);
 		dest.writeString(productType);
 		dest.writeLong(planStartTime);
@@ -99,7 +97,6 @@ public class TaskDetailBean implements Parcelable {
 			mBean.taskDescription = source.readString();
 			mBean.recipientsName = source.readString();
 			mBean.recipientPhone = source.readString();
-			mBean.taskAccessory = source.readString();
 			mBean.equipment = source.readString();
 			mBean.productType = source.readString();
 			mBean.planStartTime = source.readLong();
@@ -125,7 +122,6 @@ public class TaskDetailBean implements Parcelable {
 				&& getDetailAddress().equals(mBean.getDetailAddress())
 				&& taskTitle.equals(mBean.taskTitle)
 				&& taskDescription.equals(mBean.taskDescription)
-				&& taskAccessory.equals(mBean.taskAccessory)
 				&& equipment.equals(mBean.equipment)
 				&& productType.equals(mBean.productType)
 				&& planStartTime == mBean.planStartTime

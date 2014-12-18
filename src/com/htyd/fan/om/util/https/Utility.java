@@ -18,6 +18,12 @@ import com.htyd.fan.om.model.TaskProcessBean;
 import com.htyd.fan.om.util.db.OMDatabaseManager;
 import com.htyd.fan.om.util.db.OMUserDatabaseManager;
 
+/**
+ * 解析服务器返回的数据并保存存到数据库的类
+ * @author fan
+ *
+ */
+
 public class Utility {
 
 	/**
@@ -94,6 +100,13 @@ public class Utility {
 		return false;
 	}
 	
+	/**
+	 * 解析返回的任务数据
+	 * @param mManager
+	 * @param response
+	 * @return
+	 * @throws JSONException
+	 */
 	public static  boolean handleTaskResponse(OMUserDatabaseManager mManager,
 			String response) throws JSONException {
 		mManager.openDb(1);
@@ -111,6 +124,14 @@ public class Utility {
 		return false;
 	}
 	
+	/**
+	 * 解析返回的任务处理数据
+	 * @param mManager
+	 * @param response
+	 * @return
+	 * @throws JSONException
+	 */
+	
 	public static boolean handleTaskProcessResponse(OMUserDatabaseManager mManager,
 			String response) throws JSONException {
 		mManager.openDb(1);
@@ -126,6 +147,13 @@ public class Utility {
 			}
 		return false;
 	}
+	
+	/**
+	 * 解析返回的签到数据
+	 * @param mManager
+	 * @param response
+	 * @throws Exception
+	 */
 	
 	public static void handleAttend(OMUserDatabaseManager mManager,
 			String response) throws Exception {
@@ -144,16 +172,22 @@ public class Utility {
 		}
 	}
 	
+	/**
+	 * 解析返回的附件列表数据
+	 * @param mManager
+	 * @param response
+	 * @param taskId
+	 * @throws Exception
+	 */
+	
 	public static void handleAccessory(OMUserDatabaseManager mManager,
 			String response,int taskId) throws Exception {
 		mManager.openDb(1);
-		Log.i("fanjishuo_____handleAccessory", response);
 		if (!TextUtils.isEmpty(response)) {
 			AffiliatedFileBean mBean = new AffiliatedFileBean();
 			JSONArray array = (JSONArray) new JSONTokener(
 					response).nextValue();
 			for (int i = 0; i < array.length(); i++) {
-				Log.i("fanjishuo_____handleAccessory", array.length()+"");
 				mBean.setFromJson(array.getJSONObject(i),taskId);
 				mManager.insertTaskAccessoryBean(mBean);
 			}

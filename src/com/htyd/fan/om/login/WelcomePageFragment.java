@@ -51,8 +51,14 @@ public class WelcomePageFragment extends Fragment {
 
 		@Override
 		protected void onPostExecute(String result) {
-
-			if (result.length() == 0) {
+			JSONObject resultJson = null;
+			
+			try {
+				resultJson = new JSONObject(result);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			if (result.length() == 0 || resultJson.has("MESSAGE")) {
 				UItoolKit.showToastShort(getActivity(), "登录出错，请重新登录");
 				Intent i = new Intent(getActivity(), LoginActivity.class);
 				startActivity(i);
@@ -61,14 +67,7 @@ public class WelcomePageFragment extends Fragment {
 				return;
 			}
 
-			JSONObject resultJson = null;
-			try {
-				resultJson = new JSONObject(result);
-				Preferences.setUserInfo(getActivity(), result);
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-			if (resultJson.has("MESSAGE")) {
+			/*if (resultJson.has("MESSAGE")) {
 				try {
 					UItoolKit.showToastShort(getActivity(),
 							resultJson.getString("MESSAGE") + "请重新登录");
@@ -80,7 +79,8 @@ public class WelcomePageFragment extends Fragment {
 				getActivity().finish();
 				stopTask(this);
 				return;
-			}
+			}*/
+			Preferences.setUserInfo(getActivity(), result);
 			try {
 				Preferences.setUserId(getActivity(),
 						resultJson.getString("YHID"));

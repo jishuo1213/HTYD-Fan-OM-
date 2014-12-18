@@ -235,7 +235,7 @@ public class UploadFileDialog extends DialogFragment implements
 		listAccessory.set(position, mBean);
 		TaskAccessoryAdapter mAdapter = (TaskAccessoryAdapter)mListView.getAdapter();
 		mAdapter.notifyDataSetChanged();
-		OMUserDatabaseManager.getInstance(getActivity()).updateTaskAccessoryBean(mBean);
+		OMUserDatabaseManager.getInstance(getActivity()).updateAccessoryBean(mBean);
 	}
 	
 	@Override
