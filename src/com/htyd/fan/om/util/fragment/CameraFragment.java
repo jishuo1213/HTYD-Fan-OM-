@@ -20,7 +20,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -145,7 +144,6 @@ public class CameraFragment extends Fragment implements OnTouchListener {
 					bos = new BufferedOutputStream(new FileOutputStream(pic));
 					bos.write(data);
 				} catch (FileNotFoundException e) {
-					Log.i("fanjishuo____", "FileNotFoundException");
 					success = false;
 					e.printStackTrace();
 				} catch (IOException e) {
@@ -160,13 +158,10 @@ public class CameraFragment extends Fragment implements OnTouchListener {
 							e.printStackTrace();
 						}
 				}
-				Log.i("fanjishuo____takepicture", "save at " + filename
-						+ success);
 				if (success) {
 					Intent i = new Intent();
 					i.putExtra(EXTRA_PHOTO_FILENAME, pic.getAbsolutePath());
 					getActivity().setResult(Activity.RESULT_OK, i);
-					Log.i("fanjishuo____takepicture", "save at " + filename);
 				} else {
 					getActivity().setResult(Activity.RESULT_CANCELED);
 				}
@@ -198,7 +193,6 @@ public class CameraFragment extends Fragment implements OnTouchListener {
 					Intent i = new Intent();
 					i.putExtra(EXTRA_PHOTO_FILENAME, filename);
 					getActivity().setResult(Activity.RESULT_OK, i);
-					Log.i("fanjishuo____takepicture", "save at " + filename);
 				} else {
 					getActivity().setResult(Activity.RESULT_CANCELED);
 				}

@@ -9,7 +9,6 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,7 +58,15 @@ public class WelcomePageFragment extends Fragment {
 				e.printStackTrace();
 			}
 			if (result.length() == 0 || resultJson.has("MESSAGE")) {
-				UItoolKit.showToastShort(getActivity(), "登录出错，请重新登录");
+				if(resultJson != null && resultJson.has("MESSAGE")){
+					try {
+						UItoolKit.showToastShort(getActivity(), resultJson.getString("MESSAGE") + "请重新登录");
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
+				}else{
+					UItoolKit.showToastShort(getActivity(), "登录出错，请重新登录");
+				}
 				Intent i = new Intent(getActivity(), LoginActivity.class);
 				startActivity(i);
 				getActivity().finish();
@@ -87,7 +94,6 @@ public class WelcomePageFragment extends Fragment {
 				Preferences.setUserName(getActivity(),
 						resultJson.getString("YHMC"));
 			} catch (NumberFormatException | JSONException e) {
-				Log.d("fanjishuo___AutoLoginTask", "catch e");
 				e.printStackTrace();
 			}
 			Intent i = new Intent(getActivity(), MainActivity.class);

@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.location.LocationManager;
-import android.util.Log;
 
 import com.baidu.location.BDLocation;
 import com.htyd.fan.om.model.OMLocationBean;
@@ -18,10 +17,8 @@ public class LocationReceiver extends BroadcastReceiver {
 				.getParcelableExtra(LocationManager.KEY_LOCATION_CHANGED);
 		if (loc != null) {
 			if (loc.result == BDLocation.TypeGpsLocation) {
-				Log.i("fanjishuo____onReceive", "GPS_PROVIDER");
 				onGPSLocationReceived(context, loc);
 			} else if (loc.result == BDLocation.TypeNetWorkLocation) {
-				Log.i("fanjishuo____onReceive", "NETWORK_PROVIDER");
 				onNetWorkLocationReceived(context, loc);
 			} else {
 				UItoolKit.showToastShort(context, "网络连接失败");

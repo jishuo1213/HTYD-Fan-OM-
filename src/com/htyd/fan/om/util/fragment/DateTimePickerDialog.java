@@ -13,7 +13,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -25,7 +24,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.htyd.fan.om.R;
-import com.htyd.fan.om.util.base.Utils;
 
 public class DateTimePickerDialog extends DialogFragment {
 
@@ -202,9 +200,7 @@ public class DateTimePickerDialog extends DialogFragment {
 				break;
 			case R.id.spinner_hour:
 				mDate.set(Calendar.HOUR_OF_DAY, position);
-				Log.i("fanjishuo_____select", mDate.get(Calendar.HOUR_OF_DAY)+"");
 //				mDate.set(Calendar.MINUTE, 0);
-				Log.i("fanjishuo___select", Utils.formatTime(mDate.getTimeInMillis()));
 	//			setSpinner(mDate, 4);
 				break;
 			case R.id.spinner_minute:

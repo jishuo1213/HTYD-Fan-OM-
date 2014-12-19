@@ -57,14 +57,14 @@ public class Utils {
 		File sdCardDir = Environment.getExternalStorageDirectory();
 		
 		if (sdCardDir.exists()) {
-			File mPictureDir = new File(sdCardDir + "/" + "OmAccessory");
+			File mPictureDir = new File(sdCardDir + File.separator + "OmAccessory");
 			if (!mPictureDir.exists()) {
 				mPictureDir.mkdir();
 			}
 			return mPictureDir.getAbsolutePath();
 		} else {
 			File dir = Environment.getDataDirectory();
-			File mPictureDir = new File(dir + "/" + "OmAccessory");
+			File mPictureDir = new File(dir + File.separator  + "OmAccessory"+File.separator );
 			if (!mPictureDir.exists()) {
 				mPictureDir.mkdir();
 			}

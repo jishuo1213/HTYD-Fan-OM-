@@ -5,7 +5,6 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
-import android.util.Log;
 import android.view.MenuItem;
 
 import com.baidu.mapapi.SDKInitializer;
@@ -49,7 +48,6 @@ public class AttentManagerActivity extends SimpleFragmentActivity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()){
 		case android.R.id.home:
-			Log.i("fanjishuo_____onOptionsItemSelected", "android.R.id.home");
 			if(NavUtils.getParentActivityName(this) != null){
 				NavUtils.navigateUpFromSameTask(this);
 			}

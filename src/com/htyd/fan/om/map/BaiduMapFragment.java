@@ -6,7 +6,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -168,9 +167,6 @@ public class BaiduMapFragment extends Fragment {
 		@Override
 		protected void onNetWorkLocationReceived(Context context,
 				final OMLocationBean loc) {
-			Log.i("fanjishuo_____onNetWorkLocationReceived",
-					"loc.getLatitude()" + loc.latitude
-							+ "loc.getLongitude()" + loc.longitude);
 			if (progressLayout.isShown()) {
 				progressLayout.setVisibility(View.GONE);
 			}

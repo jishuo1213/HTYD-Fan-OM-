@@ -13,7 +13,6 @@ import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,6 +29,7 @@ import com.htyd.fan.om.map.OMLocationManager;
 import com.htyd.fan.om.model.OMLocationBean;
 import com.htyd.fan.om.model.TaskDetailBean;
 import com.htyd.fan.om.util.base.Preferences;
+import com.htyd.fan.om.util.base.ThreadPool;
 import com.htyd.fan.om.util.base.Utils;
 import com.htyd.fan.om.util.db.OMUserDatabaseManager;
 import com.htyd.fan.om.util.fragment.DateTimePickerDialog;
@@ -333,7 +333,6 @@ public class CreateTaskFragment extends Fragment{
 			}
 			try {
 				JSONObject json = new JSONObject(result);
-				Log.i("fanjishuo___doInBackground", result+"result");
 				if(json.has("RWID"))
 					mBean.taskNetId = Integer.parseInt(json.getString("RWID"));
 				return json.getBoolean("RESULT");
@@ -348,7 +347,12 @@ public class CreateTaskFragment extends Fragment{
 			if(result){
 				mBean.saveTime = System.currentTimeMillis();
 				mManager.openDb(1);
-				mManager.insertTaskBean(mBean);
+				ThreadPool.runMethod(new Runnable() {
+					@Override
+					public void run() {
+						mManager.insertTaskBean(mBean);
+					}
+				});
 				UItoolKit.showToastShort(getActivity(), "保存成功!");
 				getActivity().finish();
 			}else{

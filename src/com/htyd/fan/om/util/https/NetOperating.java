@@ -8,7 +8,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.htyd.fan.om.model.AttendBean;
 
@@ -57,7 +56,6 @@ public class NetOperating {
 		String result = "";
 		result = HttpHelper.GetResponse(context, Urls.LOGINURL
 				+ "Operate=login", params);
-		Log.i("fanjishuo____login", result);
 		if (result.equals("false") || result.length() == 0) {
 			return false;
 		}
@@ -78,7 +76,6 @@ public class NetOperating {
 					param.toString());
 			result = HttpHelper.GetResponse(context, Url + operate, params);
 		}
-		Log.i("fanjishuo_____getResultFromNet", result);
 		if (result.equals("false") || result.length() == 0 || result.equals("[]")) {
 			throw new Exception("请求数据失败");
 		}

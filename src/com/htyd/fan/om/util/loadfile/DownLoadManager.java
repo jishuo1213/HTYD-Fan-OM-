@@ -21,7 +21,7 @@ import org.json.JSONObject;
 
 import android.content.Context;
 
-import com.htyd.fan.om.util.https.HttpHelper;
+import com.htyd.fan.om.main.OMApp;
 
 
 public class DownLoadManager {
@@ -60,7 +60,7 @@ public class DownLoadManager {
 			urlEncoded = new UrlEncodedFormEntity(params, HTTP.UTF_8);
 			HttpPost httpPost = new HttpPost(Url + operate);
 			httpPost.setEntity(urlEncoded);
-			HttpClient client = HttpHelper.getHttpClient(context);
+			HttpClient client = OMApp.getInstance().getHttpClient();
 			HttpResponse response = client.execute(httpPost);
 			int res = response.getStatusLine().getStatusCode();
 			if(res != HttpStatus.SC_OK){

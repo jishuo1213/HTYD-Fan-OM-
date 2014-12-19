@@ -1,6 +1,5 @@
 package com.htyd.fan.om.taskmanage.fragment;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 
 import org.json.JSONException;
@@ -15,6 +14,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.text.Editable;
@@ -31,6 +31,7 @@ import com.htyd.fan.om.R;
 import com.htyd.fan.om.model.AffiliatedFileBean;
 import com.htyd.fan.om.model.TaskDetailBean;
 import com.htyd.fan.om.taskmanage.TaskViewPanel;
+import com.htyd.fan.om.util.base.ThreadPool;
 import com.htyd.fan.om.util.base.Utils;
 import com.htyd.fan.om.util.db.OMUserDatabaseHelper.TaskAccessoryCursor;
 import com.htyd.fan.om.util.db.OMUserDatabaseManager;
@@ -116,19 +117,19 @@ public class EditTaskFragment extends Fragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.save_or_receive:
-			TaskDetailBean tempBean = null;
-			try {
-				tempBean = mPanel.getTaskBean();
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
+			final TaskDetailBean tempBean;
+			tempBean = mPanel.getTaskBean();
 			if (tempBean.equals(mBean)) {
 				UItoolKit.showToastShort(getActivity(), "保存成功");
 				return true;
 			}
-			/*
-			 * 保存至网络逻辑 AsycTask
-			 */
+			ThreadPool.runMethod(new Runnable() {
+				@Override
+				public void run() {
+					OMUserDatabaseManager.getInstance(getActivity()).updateTask(tempBean);
+				}
+			});
+			new UpdateTask().execute(tempBean);
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -231,6 +232,7 @@ public class EditTaskFragment extends Fragment {
 
 		@Override
 		protected Cursor loadCursor() {
+			mManager.openDb(0);
 			return mManager.queryAccessoryByTaskId(taskId);
 		}
 
@@ -282,6 +284,42 @@ public class EditTaskFragment extends Fragment {
 		@Override
 		public void onLoaderReset(Loader<Cursor> loader) {
 		}
+	}
+	private class UpdateTask extends AsyncTask<TaskDetailBean, Void, Boolean>{
+
+		private TaskDetailBean mBean;
 		
+		@Override
+		protected void onPostExecute(Boolean result) {
+			if(result){
+				UItoolKit.showToastShort(getActivity(), "保存成功");
+				getActivity().finish();
+			}else{
+				UItoolKit.showToastShort(getActivity(), "保存任务失败");
+			}
+		}
+
+		@Override
+		protected Boolean doInBackground(TaskDetailBean... params) {
+			JSONObject param = new JSONObject();
+			mBean = params[0];
+			String result = "";
+			try {
+				param = mBean.toEditJson();
+				result = NetOperating.getResultFromNet(getActivity(), param, Urls.TASKURL, "Operate=updateRwbj");
+			} catch (JSONException e) {
+				e.printStackTrace();
+				return false;
+			} catch (Exception e) {
+				e.printStackTrace();
+				return false;
+			}
+			try {
+				return new JSONObject(result).getBoolean("RESULT");
+			} catch (JSONException e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
 	}
 }

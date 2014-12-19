@@ -66,7 +66,7 @@ public class TaskProcessBean implements Parcelable {
 		json.put("KSSJ", Utils.formatTime(startTime, "yyyy-MM-dd HH:mm:ss"));
 		json.put("JSSJ", Utils.formatTime(endTime, "yyyy-MM-dd HH:mm:ss"));
 		json.put("CLNR", processContent);
-		json.put("WCBZ", taskState + "");
+		json.put("WCBZ", taskState==0?1:2);
 		json.put("TXSJ", Utils.formatTime(createTime, "yyyy-MM-dd HH:mm:ss"));
 		json.put("TXR", "");
 		json.put("TXRDH", "");

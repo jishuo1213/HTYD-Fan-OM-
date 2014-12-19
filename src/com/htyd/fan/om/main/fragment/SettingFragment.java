@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.htyd.fan.om.R;
 import com.htyd.fan.om.login.LoginActivity;
 import com.htyd.fan.om.util.base.Preferences;
+import com.htyd.fan.om.util.db.OMUserDatabaseManager;
 
 public class SettingFragment extends Fragment {
 
@@ -46,6 +47,7 @@ public class SettingFragment extends Fragment {
 			case R.id.tv_log_out:
 				Intent i = new Intent(getActivity(),LoginActivity.class);
 				startActivity(i);
+				OMUserDatabaseManager.getInstance(getActivity()).logoutDb();
 				getActivity().finish();
 				break;
 			}

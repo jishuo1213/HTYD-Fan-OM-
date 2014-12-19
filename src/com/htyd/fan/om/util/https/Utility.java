@@ -6,7 +6,6 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.htyd.fan.om.model.AffiliatedFileBean;
 import com.htyd.fan.om.model.AttendBean;
@@ -117,7 +116,6 @@ public class Utility {
 			for(int i = 0;i<array.length();i++){
 				mBean.setFromJson(array.getJSONObject(i));
 				mManager.insertTaskBean(mBean);
-				Log.i("fanjishuo____handleTaskResponse", mBean.taskTitle);
 			}
 				return true;
 			}

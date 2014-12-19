@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.database.CursorWrapper;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import com.htyd.fan.om.model.AffiliatedFileBean;
 import com.htyd.fan.om.model.AttendBean;
@@ -33,7 +32,6 @@ public class OMUserDatabaseHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		Log.i("fanjishuo____onCreate", db.getPath());
 		db.execSQL(SQLSentence.CREATE_TABLE_CHECK);
 		db.execSQL(SQLSentence.CREATE_TABLE_TASK);
 		db.execSQL(SQLSentence.CREATE_TABLE_TASK_PROCESS);
@@ -49,7 +47,6 @@ public class OMUserDatabaseHelper extends SQLiteOpenHelper {
 				null,
 				SQLSentence.COLUMN_MONTH + "= ?",
 				new String[] { String.valueOf(monthNum) }, null, null, null);
-		Log.i("fanjishuo____queryMonthAttend", "monthNum"+monthNum+wrapper.getCount());
 		return new AttendCursor(wrapper);
 	}
 
@@ -60,11 +57,9 @@ public class OMUserDatabaseHelper extends SQLiteOpenHelper {
 	}
 	
 	public TaskCursor queryUserSingleTask(int taskNetId) {
-		Log.i("fanjishuo____queryUserSingleTask", "taskNetId"+taskNetId);
 		Cursor wrapper = getReadableDatabase().query(SQLSentence.TABLE_TASK,
 				null, SQLSentence.COLUMN_TASK_NET_ID + "= ?",
 				new String[] { String.valueOf(taskNetId) }, null, null, null);
-		Log.i("fanjishuo____queryUserSingleTask", "wrapper"+wrapper.getCount());
 		return new TaskCursor(wrapper);
 }
 
@@ -186,5 +181,10 @@ public class OMUserDatabaseHelper extends SQLiteOpenHelper {
 			mBean.fileSize = getLong(getColumnIndex(SQLSentence.COLUMN_TASK_ACCESSORY_FILE_SIZE));
 			return mBean;
 		}
+	}
+	
+	public void logout(){
+		sHelper.close();
+		sHelper = null;
 	}
 }

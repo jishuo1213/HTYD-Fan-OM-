@@ -5,7 +5,6 @@ import org.json.JSONObject;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 public class AffiliatedFileBean implements Parcelable {
 
@@ -58,6 +57,5 @@ public class AffiliatedFileBean implements Parcelable {
 		this.taskId = taskId;
 		netId = Integer.parseInt(json.getString("WJID"));
 		fileSize = Long.parseLong(json.getString("WJDX"));
-		Log.i("fanjishuo____setFromJson", fileSize+"");
 	}
 }

@@ -19,7 +19,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -66,7 +65,7 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 			completedAdapter;
 	private TaskCursorCallback mCallback;
 	private LoaderManager mLoadManager;
-	private PullToRefreshListView mPullRefreshListView;
+	protected PullToRefreshListView mPullRefreshListView;
 	boolean isLoaderFinish;
 
 	@Override
@@ -218,7 +217,6 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			ViewHolder mHolder;
-			Log.i("fanjishuo___taskListView", "getView");
 			if (convertView == null) {
 				convertView = getActivity().getLayoutInflater().inflate(
 						R.layout.task_item_layout, null);

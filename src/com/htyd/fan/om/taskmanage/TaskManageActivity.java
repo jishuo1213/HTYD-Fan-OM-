@@ -10,7 +10,6 @@ import android.content.Loader;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.NavUtils;
-import android.util.Log;
 import android.view.MenuItem;
 
 import com.htyd.fan.om.R;
@@ -106,7 +105,6 @@ public class TaskManageActivity extends SingleFragmentActivity {
 			resposHandler.post(new Runnable() {
 				@Override
 				public void run() {
-					Log.i("fanjishuo____onLoadFinished", (data == null)+"");
 					showFragment(data);
 				}
 			});

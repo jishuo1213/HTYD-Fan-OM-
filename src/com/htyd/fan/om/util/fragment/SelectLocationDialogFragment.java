@@ -21,7 +21,6 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -72,7 +71,6 @@ public class SelectLocationDialogFragment extends DialogFragment {
 		Bundle args = new Bundle();
 		args.putInt(PARENTID, 0);
 		args.putString(PARENTCODE, null);
-		Log.i("fanjishuo___onCreate", "onCreate");
 		mLoaderManager.initLoader(0, args, mCallBack);
 	}
 
@@ -128,8 +126,6 @@ public class SelectLocationDialogFragment extends DialogFragment {
 				Bundle args = new Bundle();
 				args.putInt(PARENTID, mBean.id);
 				args.putString(PARENTCODE, mBean.provinceCode);
-				Log.i("fanjishuo___onProvinceItemSelected", mBean.provinceName
-						+ "mBean.provinceCode" + mBean.provinceCode);
 				if (mLoaderManager.getLoader(1) != null) {
 					mLoaderManager.restartLoader(1, args, mCallBack);
 				} else {
@@ -150,8 +146,6 @@ public class SelectLocationDialogFragment extends DialogFragment {
 				Bundle args = new Bundle();
 				args.putInt(PARENTID, mBean.Id);
 				args.putString(PARENTCODE, mBean.cityCode);
-				Log.i("fanjishuo___onCityItemSelected", mBean.cityName
-						+ "mBean.cityCode" + mBean.cityCode);
 				if (mLoaderManager.getLoader(2) != null) {
 					mLoaderManager.restartLoader(2, args, mCallBack);
 				} else {
@@ -168,7 +162,7 @@ public class SelectLocationDialogFragment extends DialogFragment {
 	
 
 	protected void sendResult(int reusltCode) {
-		if (getTargetFragment() == null && mListener == null) {
+		if (getTargetFragment() == null && mListener == null ) {
 			return;
 		}
 		StringBuilder sb = new StringBuilder();
@@ -178,7 +172,6 @@ public class SelectLocationDialogFragment extends DialogFragment {
 		ProvinceBean pBean = (ProvinceBean) provinceSpinner.getSelectedItem();
 		CityBean cBean = (CityBean) citySpinner.getSelectedItem();
 		DistrictBean dBean = (DistrictBean) districtSpinner.getSelectedItem();
-		Log.i("fanjishuo_____sendResult", pBean.provinceName+pBean.provinceCode);
 		if (p.matcher(pBean.provinceCode).matches()) {
 			if (dBean.districtCode.endsWith("01")) {
 				sb.append(cBean.cityName);

@@ -3,7 +3,6 @@ package com.htyd.fan.om.util.loaders;
 import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.database.Cursor;
-import android.util.Log;
 
 public abstract class SQLiteCursorLoader extends AsyncTaskLoader<Cursor> {
 
@@ -20,10 +19,8 @@ public abstract class SQLiteCursorLoader extends AsyncTaskLoader<Cursor> {
 	public Cursor loadInBackground() {
 		Cursor cursor = loadCursor();
 		if (cursor != null && cursor.getCount() > 0) {
-			Log.i("fanjishuo____loadInBackground", "cursor != null");
 			cursor.getCount();
 		}else{
-			Log.i("fanjishuo____loadInBackground", "cursor = null loadFromNet");
 			cursor = loadFromNet();
 			if(cursor != null)
 				cursor.getCount();

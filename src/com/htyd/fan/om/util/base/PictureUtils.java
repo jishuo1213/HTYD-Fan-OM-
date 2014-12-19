@@ -9,7 +9,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
-import android.util.Log;
 import android.view.Display;
 import android.widget.ImageView;
 
@@ -40,7 +39,6 @@ public class PictureUtils {
 		options.inSampleSize = inSampleSize;
 
 		Bitmap bitmap = BitmapFactory.decodeFile(path, options);
-		Log.i("fanjishuo______getScaledDrawable", bitmap.getByteCount()+"");
 		return new BitmapDrawable(a.getResources(), bitmap);
 	}
 	
@@ -68,7 +66,6 @@ public class PictureUtils {
 		options.inSampleSize = inSampleSize;
 
 		Bitmap bitmap = BitmapFactory.decodeFile(path, options);
-		Log.i("fanjishuo______getScaledDrawable", bitmap.getByteCount()+"");
 		return new BitmapDrawable(c.getResources(), bitmap);
 	}
 	
@@ -100,7 +97,6 @@ public class PictureUtils {
 			try {
 				BitmapDrawable b = (BitmapDrawable) imageview.getDrawable();
 				b.getBitmap().recycle();
-				Log.i("fanjishuo____cleanImageView", "recycle");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

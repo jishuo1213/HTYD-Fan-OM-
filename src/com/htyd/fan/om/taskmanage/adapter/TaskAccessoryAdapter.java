@@ -4,7 +4,6 @@ import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -83,7 +82,6 @@ public class TaskAccessoryAdapter extends BaseAdapter {
 		mHolder.upLoad.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				Log.i("fanjishuo____onClick", mBean.filePath+"11");
 				if(mBean.fileState == 1){
 					return;
 				}

@@ -27,7 +27,8 @@ public class OMUserDatabaseManager {
 
 	public synchronized static OMUserDatabaseManager getInstance(Context context) {
 		if (sManager == null) {
-			return new OMUserDatabaseManager(context.getApplicationContext());
+			Log.e("fanjishuo______getInstance", "new db manager");
+			sManager = new OMUserDatabaseManager(context.getApplicationContext());
 		}
 		return sManager;
 	}
@@ -45,7 +46,6 @@ public class OMUserDatabaseManager {
 		cv.put(SQLSentence.COLUMN_TIME, mBean.time);
 		cv.put(SQLSentence.COLUMN_CHOOSE_LOCATION, mBean.choseLocation);
 		cv.put(SQLSentence.COLUMN_ATTEND_STATE,mBean.state);
-		Log.i("fanjishuo___insertAttendBean", mBean.toString());
 		return db.insert(SQLSentence.TABLE_CHECK, null, cv);
 	}
 
@@ -104,7 +104,10 @@ public class OMUserDatabaseManager {
 		cv.put(SQLSentence.COLUMN_TASK_PLAN_ENDTIME, mBean.planEndTime);
 		cv.put(SQLSentence.COLUMN_TASK_STATE, mBean.taskState);
 		cv.put(SQLSentence.COLUMN_TASK_TYPE, mBean.taskType);
-		return db.update(SQLSentence.TABLE_TASK, cv, "_id = ?", new String [] {String.valueOf(mBean.taskLocalId)});
+		openDb(1);
+		return db.update(SQLSentence.TABLE_TASK, cv,
+				SQLSentence.COLUMN_TASK_NET_ID + "= ?",
+				new String[] { String.valueOf(mBean.taskNetId) });
 	}
 	
 	public long updateTaskAccessoryBean(AffiliatedFileBean mBean) {
@@ -115,6 +118,7 @@ public class OMUserDatabaseManager {
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_TASKID, mBean.taskId);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_NET_ID, mBean.netId);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_FILE_SIZE, mBean.fileSize);
+		openDb(1);
 		return db.update(SQLSentence.TABLE_TASK_ACCESSORY, cv, SQLSentence.COLUMN_TASK_ACCESSORY_NET_ID+" = ?",
 				new String[] { String.valueOf(mBean.netId) });
 	}
@@ -127,6 +131,7 @@ public class OMUserDatabaseManager {
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_TASKID, mBean.taskId);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_NET_ID, mBean.netId);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_FILE_SIZE, mBean.fileSize);
+		openDb(1);
 		return db.update(SQLSentence.TABLE_TASK_ACCESSORY, cv, SQLSentence.COLUMN_TASK_ACCESSORY_PATH+" = ?",
 				new String[] {mBean.filePath});
 	}
@@ -134,16 +139,19 @@ public class OMUserDatabaseManager {
 	/*-------------------------------------------数据库删除操作---------------------------------------------*/
 	
 	public long deleteTask(TaskDetailBean mBean){
+		openDb(1);
 		return db.delete(SQLSentence.TABLE_TASK, "_id = ?", new String [] {String.valueOf(mBean.taskLocalId)});
 	}
 	
 	public long detelteTaskAccessory(AffiliatedFileBean mBean) {
+		openDb(1);
 		return db.delete(SQLSentence.TABLE_TASK_ACCESSORY,
 				SQLSentence.COLUMN_TASK_ACCESSORY_PATH + "= ?",
 				new String[] { String.valueOf(mBean.filePath) });
 	}
 	
 	public long detelteTaskAccessory(String path) {
+		openDb(1);
 		return db.delete(SQLSentence.TABLE_TASK_ACCESSORY,
 				SQLSentence.COLUMN_TASK_ACCESSORY_PATH + "= ?",
 				new String[] { String.valueOf(path) });
@@ -167,16 +175,11 @@ public class OMUserDatabaseManager {
 	}
 	
 	public TaskDetailBean getSingleTask(int taskNetId){
+		openDb(0);
 		TaskCursor cursor = mHelper.queryUserSingleTask(taskNetId);
 		return cursor.getTask();
 	}
 	/*--------------------------------------------------------------------------------------------------------*/
-	public void closeDb() {
-		if (db.isOpen()) {
-			db.close();
-			Log.v("fanjishuo____closedb", "close");
-		}
-	}
 	/**
 	 * 删除数据库表
 	 * @param tableName
@@ -184,7 +187,7 @@ public class OMUserDatabaseManager {
 	
 	public void clearFeedTable(String tableName) {
 		String sql = "DELETE FROM " + tableName + ";";
-		Log.i("fanjishuo____clearFeedTable", tableName+sql);
+		openDb(1);
 		db.execSQL(sql);
 		revertSeq(tableName);
 	}
@@ -194,6 +197,11 @@ public class OMUserDatabaseManager {
 		db.execSQL(sql);
 	}
 
+	public void logoutDb(){
+		mHelper.logout();
+		closeDb();
+		sManager = null;
+	}
 	/**
 	 * 打开数据库 0：read 1：write
 	 * 
@@ -205,12 +213,22 @@ public class OMUserDatabaseManager {
 		if (state == 1) {
 			if (db.isReadOnly() || !db.isOpen()) {
 				db = mHelper.getWritableDatabase();
-				Log.v("fanjishuo____opendb", "writeable");
+				Log.d("fanjishuo____openDb", "open");
 			}
 		}
 		if (!db.isOpen()) {
-			Log.v("fanjishuo_____opendb", "readable");
 			db = mHelper.getReadableDatabase();
+			Log.d("fanjishuo____openDb", "open");
+		}
+	}
+	
+	/**
+	 * 关闭数据库
+	 */
+	public void closeDb() {
+		if (db.isOpen()) {
+			db.close();
+			Log.d("fanjishuo____closeDb", "close");
 		}
 	}
 }

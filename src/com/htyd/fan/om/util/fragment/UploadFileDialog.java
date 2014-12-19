@@ -2,6 +2,7 @@ package com.htyd.fan.om.util.fragment;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.UUID;
 
 import org.json.JSONObject;
 
@@ -14,8 +15,10 @@ import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -46,6 +49,7 @@ public class UploadFileDialog extends DialogFragment implements
 	private static final String FILE = "file";
 	private static final String TASKID = "taskid";
 	private static final String TASKTITLE = "taskTitle";
+	private static final String IMGPATH = "imagepath";
 	
 	private static final int REQUESTPHOTO = 1;
 	private static final int REQUESTRECORDING = 2;
@@ -53,6 +57,7 @@ public class UploadFileDialog extends DialogFragment implements
 	protected ArrayList<AffiliatedFileBean> listAccessory;
 	protected int state = 0;
 	private ListView mListView;
+	private Uri imageFileUri;
 
 	public static DialogFragment newInstance(ArrayList<AffiliatedFileBean> list,int taskNetId,String taskTitle) {
 		Bundle args = new Bundle();
@@ -73,8 +78,23 @@ public class UploadFileDialog extends DialogFragment implements
 		super.onCreate(savedInstanceState);
 		listAccessory = (ArrayList<AffiliatedFileBean>) getArguments()
 				.get(FILE);
+		if(savedInstanceState != null){
+			imageFileUri = (Uri) savedInstanceState.get(IMGPATH); 
+		}
 	}
 
+	@Override
+	public void onResume() {
+		
+		super.onResume();
+	}
+	
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putParcelable(IMGPATH, imageFileUri);
+	}
+	
 	@SuppressLint("InflateParams")
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -95,7 +115,10 @@ public class UploadFileDialog extends DialogFragment implements
 		createAccessory.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				Intent i = new Intent(getActivity(), CameraActivity.class);
+				Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+				imageFileUri = getOutputPictureFileUri();
+				Log.i("fanjishuo_____imageFileUri", (imageFileUri == null)+"");
+				i.putExtra(MediaStore.EXTRA_OUTPUT, imageFileUri);
 				startActivityForResult(i, REQUESTPHOTO);
 			}
 		});
@@ -113,10 +136,11 @@ public class UploadFileDialog extends DialogFragment implements
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		Log.i("fanjishuo_____onContextItemSelected", "takephoto");
 		switch (item.getItemId()) {
 		case R.id.menu_take_photo:
-			Intent i = new Intent(getActivity(), CameraActivity.class);
+			Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+			imageFileUri = getOutputPictureFileUri();
+			i.putExtra(MediaStore.EXTRA_OUTPUT, imageFileUri);
 			startActivityForResult(i, REQUESTPHOTO);
 			return true;
 		case R.id.menu_select_file:
@@ -139,11 +163,12 @@ public class UploadFileDialog extends DialogFragment implements
 				AffiliatedFileBean mBean  = new AffiliatedFileBean();
 				if(listAccessory == null)
 					listAccessory = new ArrayList<AffiliatedFileBean>();
-				mBean.filePath = data.getStringExtra(CameraFragment.EXTRA_PHOTO_FILENAME);
+				mBean.filePath = imageFileUri.getPath();
 				mBean.fileSource = 0;
 				mBean.taskId = getArguments().getInt(TASKID);
 				mBean.fileState = 0;
 				listAccessory.add(mBean);
+				OMUserDatabaseManager.getInstance(getActivity()).openDb(1);
 				OMUserDatabaseManager.getInstance(getActivity()).insertTaskAccessoryBean(mBean);
 				if(mListView.getAdapter() == null){
 					mListView.setAdapter(new TaskAccessoryAdapter(listAccessory, getActivity(), this));
@@ -151,8 +176,6 @@ public class UploadFileDialog extends DialogFragment implements
 					TaskAccessoryAdapter mAdapter = (TaskAccessoryAdapter) mListView.getAdapter();
 					mAdapter.notifyDataSetChanged();
 				}
-				UItoolKit.showToastShort(getActivity(), data
-						.getStringExtra(CameraFragment.EXTRA_PHOTO_FILENAME));
 			} else if (requestCode == REQUESTRECORDING) {
 				UItoolKit.showToastShort(getActivity(),data.getStringArrayExtra(RecodingDialogFragment.FILEPATHARRAY)[0]);
 			}
@@ -178,13 +201,13 @@ public class UploadFileDialog extends DialogFragment implements
 	@Override
 	public void onUpLoadClick(AffiliatedFileBean mBean,int position) {
 		if (mBean.fileSource == 0 && mBean.fileState == 0) {
-			Log.i("fanjishuo____onUpLoadClick", mBean.filePath);
 			HttpMultipartPost post = new HttpMultipartPost(getActivity(),
 					mBean.filePath, this);
 			post.execute(Preferences.getUserinfo(getActivity(), "YHID"),
 					Preferences.getUserinfo(getActivity(), "YHMC"),
 					mBean.taskId + "", getArguments().getString(TASKTITLE),
 					position + "");
+			Log.i("fanjishuo_____onUpLoadClick", Preferences.getUserinfo(getActivity(), "YHMC"));
 		} else if (mBean.fileSource == 1 && mBean.fileState == 0) {
 			String [] array = mBean.filePath.split("\\\\" +Preferences.getUserinfo(getActivity(), "YHID") + "\\\\");
 			String sdCardDir = Utils.getAccessoryPath();
@@ -275,5 +298,11 @@ public class UploadFileDialog extends DialogFragment implements
 				return false;
 			}
 		}
+	}
+	private  Uri getOutputPictureFileUri() {
+		String  filename = UUID.randomUUID().toString() + ".jpg";
+		File file = new File(Utils.getAccessoryPath()+File.separator+filename);
+		Log.i("fanjishuo____getOutputPictureFileUri", file.getAbsolutePath());
+		return Uri.fromFile(file);
 	}
 }

@@ -22,7 +22,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,6 +42,7 @@ import com.htyd.fan.om.model.AttendBean;
 import com.htyd.fan.om.model.DateBean;
 import com.htyd.fan.om.model.OMLocationBean;
 import com.htyd.fan.om.util.base.Preferences;
+import com.htyd.fan.om.util.base.ThreadPool;
 import com.htyd.fan.om.util.base.Utils;
 import com.htyd.fan.om.util.db.OMUserDatabaseHelper.AttendCursor;
 import com.htyd.fan.om.util.db.OMUserDatabaseManager;
@@ -353,7 +353,6 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 					pos = Utils.getCalendarField(tempBean.time, Calendar.DATE) - 1;
 					attendMap.put(pos, tempBean);
 					setGridView(tempBean,firstDayPosition+pos);
-					Log.i("fanjishuo____onLoadFinished", 111+"");
 					monthList.get(firstDayPosition+pos).attendState = tempBean.state;
 				} while (attendCursor.moveToNext());
 				isFinish = true;
@@ -446,7 +445,6 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 						Preferences.getUserinfo(getActivity(), "YHID"));
 				result = NetOperating.getResultFromNet(getActivity(), param,
 						Urls.SAVEATTENDURL, "Operate=saveKqxx");
-				Log.i("fanjishuo_________doInBackground", result + "");
 			} catch (JSONException e) {
 				e.printStackTrace();
 				return "FALSE";
@@ -474,8 +472,12 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 		protected void onPostExecute(String result) {
 			if (result.equals("TRUE")) {
 				OMUserDatabaseManager.getInstance(getActivity()).openDb(1);
-				OMUserDatabaseManager.getInstance(getActivity())
-						.insertAttendBean(mBean);
+				ThreadPool.runMethod(new Runnable() {
+					@Override
+					public void run() {
+						OMUserDatabaseManager.getInstance(getActivity()).insertAttendBean(mBean);
+					}
+				});
 				if (mBean.state == 1) {
 					UItoolKit.showToastShort(getActivity(), "签到成功");
 				} else {

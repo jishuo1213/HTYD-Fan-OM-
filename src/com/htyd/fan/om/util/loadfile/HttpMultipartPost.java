@@ -18,10 +18,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.os.AsyncTask;
-import android.util.Log;
 
+import com.htyd.fan.om.main.OMApp;
 import com.htyd.fan.om.model.AffiliatedFileBean;
-import com.htyd.fan.om.util.https.HttpHelper;
 import com.htyd.fan.om.util.https.Urls;
 import com.htyd.fan.om.util.loadfile.CustomMultipartEntity.ProgressListener;
 import com.htyd.fan.om.util.ui.UItoolKit;
@@ -70,27 +69,26 @@ public class HttpMultipartPost extends AsyncTask<String, Integer, String> {
 	@Override
 	protected String doInBackground(String... params) {
 		String serverResponse = null;
-		HttpClient httpClient = HttpHelper.getHttpClient(context);
+		HttpClient httpClient = OMApp.getInstance().getHttpClient();
 		HttpContext httpContext = new BasicHttpContext();
 		HttpPost httpPost = new HttpPost(Urls.UPLOADFILE);
-		Log.i("fanjishuo_____doInBackground", Urls.UPLOADFILE);
 		position = Integer.parseInt(params[4]);
 		try {
 			CustomMultipartEntity multipartContent = new CustomMultipartEntity(
 					new ProgressListener() {
 						@Override
 						public void transferred(long num) {
-							Log.i("fanjishuo_____upload", num+"");
 							publishProgress((int) ((num / (float) totalSize) * 100));
 						}
 					});
 
 			// We use FileBody to transfer an image
-			Log.i("fanjishuo_____doInBackground", params[0]+params[1]+params[2]+params[3]);
 			StringBody sb1 = new StringBody(params[0]);
 			StringBody sb2 = new StringBody(params[1]);
 			StringBody sb3 = new StringBody(params[2]);
 			StringBody sb4 = new StringBody(params[3]);
+			StringBody sb5 = new StringBody("");
+			
 			multipartContent.addPart("image", new FileBody(new File(
 					filePath)));
 			mBean.filePath = filePath;
@@ -100,6 +98,7 @@ public class HttpMultipartPost extends AsyncTask<String, Integer, String> {
 			multipartContent.addPart("yhmc", sb2);
 			multipartContent.addPart("rwid", sb3);
 			multipartContent.addPart("rwbt", sb4);
+			multipartContent.addPart("rz_mkid", sb5);
 			totalSize = multipartContent.getContentLength();
 			
 			// Send it

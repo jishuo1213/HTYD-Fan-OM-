@@ -18,7 +18,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -27,6 +26,7 @@ import android.widget.TextView;
 import com.htyd.fan.om.R;
 import com.htyd.fan.om.model.TaskProcessBean;
 import com.htyd.fan.om.util.base.Preferences;
+import com.htyd.fan.om.util.base.ThreadPool;
 import com.htyd.fan.om.util.base.Utils;
 import com.htyd.fan.om.util.db.OMUserDatabaseManager;
 import com.htyd.fan.om.util.fragment.DateTimePickerDialog;
@@ -200,7 +200,6 @@ public class CreateProcessDialog extends DialogFragment {
 		mBean.startTime = startTime;
 		mBean.endTime = endTime;
 		mBean.taskid = getArguments().getInt(TASKID);
-		Log.i("fanjishuo____sendReult", mBean.taskid+"");
 		if (done.isChecked()) {
 			mBean.taskState = 2;
 		} else {
@@ -232,14 +231,19 @@ public class CreateProcessDialog extends DialogFragment {
 				e.printStackTrace();
 				return false;
 			}
-			Log.i("fanjishuo_____doInBackground", (params[0] == null) + "");
 			return parseResult(result);
 		}
 
 		@Override
 		protected void onPostExecute(Boolean result) {
 			if (result) {
-			    OMUserDatabaseManager.getInstance(getActivity()).insertTaskProcessBean(mBean);
+				ThreadPool.runMethod(new Runnable() {
+					@Override
+					public void run() {
+						OMUserDatabaseManager.getInstance(getActivity()).openDb(1);
+						OMUserDatabaseManager.getInstance(getActivity()).insertTaskProcessBean(mBean);
+					}
+				});
 				UItoolKit.showToastShort(getActivity(), "保存成功");
 				Intent i = new Intent();
 				i.putExtra(PROCESSBEAN, mBean);

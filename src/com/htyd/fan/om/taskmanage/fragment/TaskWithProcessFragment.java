@@ -16,9 +16,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.util.Log;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -33,6 +34,9 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.htyd.fan.om.R;
 import com.htyd.fan.om.model.TaskDetailBean;
 import com.htyd.fan.om.model.TaskProcessBean;
@@ -40,10 +44,12 @@ import com.htyd.fan.om.taskmanage.TaskViewPanel;
 import com.htyd.fan.om.util.base.Utils;
 import com.htyd.fan.om.util.db.OMUserDatabaseHelper.TaskProcessCursor;
 import com.htyd.fan.om.util.db.OMUserDatabaseManager;
+import com.htyd.fan.om.util.db.SQLSentence;
 import com.htyd.fan.om.util.https.NetOperating;
 import com.htyd.fan.om.util.https.Urls;
 import com.htyd.fan.om.util.https.Utility;
 import com.htyd.fan.om.util.loaders.SQLiteCursorLoader;
+import com.htyd.fan.om.util.ui.UItoolKit;
 
 public class TaskWithProcessFragment extends Fragment {
 
@@ -58,6 +64,7 @@ public class TaskWithProcessFragment extends Fragment {
 	protected ProcessAdapter mAdapter;
 	private TaskProcessCursorCallback mCallback;
 	private LoaderManager mManager;
+	private PullToRefreshListView mPullRefreshListView;
 
 	public static Fragment newInstance(Parcelable mBean) {
 		Bundle bundle = new Bundle();
@@ -97,6 +104,10 @@ public class TaskWithProcessFragment extends Fragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_create_task_process:
+			if(mBean.taskState == 2){
+				UItoolKit.showToastShort(getActivity(), "任务已经完成，不能继续创建处理项");
+				return true;
+			}
 			FragmentManager fm = getActivity().getFragmentManager();
 			CreateProcessDialog dialog = (CreateProcessDialog) CreateProcessDialog.newInstance(null, false,mBean.taskNetId);
 			dialog.setTargetFragment(TaskWithProcessFragment.this,
@@ -110,7 +121,17 @@ public class TaskWithProcessFragment extends Fragment {
 
 	private void initView(View v) {
 		mPanel = new TaskViewPanel(v);
-		processListView = (ListView) v.findViewById(R.id.list_task_process);
+		mPullRefreshListView = (PullToRefreshListView) v.findViewById(R.id.list_task_process);
+		processListView = mPullRefreshListView.getRefreshableView();
+		mPullRefreshListView.setOnRefreshListener(new OnRefreshListener<ListView>() {
+			@Override
+			public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+				String label = DateUtils.formatDateTime(getActivity(), System.currentTimeMillis(),
+						DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_ABBREV_ALL);
+				refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);
+				new RefreshProcessTask().execute(mBean.taskNetId);
+			}
+		});
 		Button emptyView = (Button) v
 				.findViewById(R.id.btn_create_task_process);
 		emptyView.setText("新建任务处理");
@@ -130,13 +151,18 @@ public class TaskWithProcessFragment extends Fragment {
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (resultCode == Activity.RESULT_OK) {
 			if (requestCode == REQUEST_PROCESS) {
-				listProcess.add((TaskProcessBean) data
-						.getParcelableExtra(CreateProcessDialog.PROCESSBEAN));
+				TaskProcessBean proBean = (TaskProcessBean) data.getParcelableExtra(CreateProcessDialog.PROCESSBEAN);
+				listProcess.add(proBean);
 				if (processListView.getAdapter() == null) {
 					mAdapter = new ProcessAdapter();
 					processListView.setAdapter(mAdapter);
 				} else {
 					mAdapter.notifyDataSetChanged();
+				}
+				if(proBean.taskState == 2){
+					mPanel.taskState.setText("已完成");
+					mBean.taskState = 2;
+					OMUserDatabaseManager.getInstance(getActivity()).updateTask(mBean);
 				}
 			}
 		}
@@ -200,7 +226,11 @@ public class TaskWithProcessFragment extends Fragment {
 			mHolder.processContent.setText(mBean.processContent);
 			mHolder.processCreateTime.setText(Utils
 					.formatTime(mBean.createTime));
-			mHolder.taskState.setText(mBean.taskState + "");
+			if (mBean.taskState == 0) {
+				mHolder.taskState.setText("在处理");
+			} else {
+				mHolder.taskState.setText("已完成");
+			}
 			mHolder.taskNum.setText((position + 1) + "");
 			return convertView;
 		}
@@ -237,7 +267,6 @@ public class TaskWithProcessFragment extends Fragment {
 
 		@Override
 		protected Cursor loadFromNet() {
-			mManager.openDb(1);
 			JSONObject param = new JSONObject();
 			String result = "";
 			try {
@@ -266,10 +295,13 @@ public class TaskWithProcessFragment extends Fragment {
 
 		@Override
 		public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-			listProcess = new ArrayList<TaskProcessBean>();
+			if(listProcess == null)
+				listProcess = new ArrayList<TaskProcessBean>();
+			else{
+				listProcess.clear();
+			}
 			TaskProcessCursor cursor = (TaskProcessCursor) data;
 			if (cursor != null && cursor.moveToFirst()) {
-				Log.i("fanjishuo_____onLoadFinished", cursor.getCount()+"");
 				do {
 					listProcess.add(cursor.getTaskProcess());
 				} while (cursor.moveToNext());
@@ -283,6 +315,52 @@ public class TaskWithProcessFragment extends Fragment {
 		@Override
 		public void onLoaderReset(Loader<Cursor> loader) {
 		}
+	}
+	
+	private class RefreshProcessTask extends AsyncTask<Integer, Void, Boolean>{
+		
+		private OMUserDatabaseManager mDbManger;
+		
+		public RefreshProcessTask() {
+			mDbManger = OMUserDatabaseManager.getInstance(getActivity());
+		}
 
+		@Override
+		protected void onPostExecute(Boolean result) {
+			if (result) {
+				Bundle args = new Bundle();
+				args.putInt(TASKID, mBean.taskNetId);
+				mManager.restartLoader(0, args, mCallback);
+				UItoolKit.showToastShort(getActivity(), "刷新成功");
+			} else {
+				UItoolKit.showToastShort(getActivity(), "刷新失败");
+			}
+			mPullRefreshListView.onRefreshComplete();
+			cancel(false);
+		}
+
+		@Override
+		protected Boolean doInBackground(Integer... params) {
+			String result = "";
+			JSONObject param = new JSONObject();
+			try {
+				param.put("CLID", "");
+				param.put("RWID", params[0]);
+				result = NetOperating.getResultFromNet(getActivity(), param, Urls.TASKPROCESSURL, "Operate=getAllRwclxx");
+			} catch (JSONException e) {
+				e.printStackTrace();
+				return false;
+			} catch (Exception e) {
+				e.printStackTrace();
+				return false;
+			}
+			mDbManger.clearFeedTable(SQLSentence.TABLE_TASK_PROCESS);
+			try {
+				return Utility.handleTaskProcessResponse(mDbManger, result);
+			} catch (JSONException e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
 	}
 }

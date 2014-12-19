@@ -9,7 +9,6 @@ import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -98,7 +97,6 @@ public class AttendManageFragment extends Fragment {
 			try {
 				result = NetOperating.saveAttendToSever(getActivity(),
 						mBean);
-				Log.i("fanjishuo_________doInBackground", result + "");
 			} catch (JSONException e) {
 				e.printStackTrace();
 				return false;

@@ -30,7 +30,6 @@ import android.media.MediaRecorder;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
@@ -140,8 +139,7 @@ public class RecodingDialogFragment extends DialogFragment {
 				}
 				if (!isSaveFile && filePath.length() > 0) {
 					File file = new File(filePath);
-					boolean success = file.delete();
-					Log.d("fanjishuo____deletefile", success + "");
+					file.delete();
 					filePath = "";
 				}
 				isSaveFile = false;

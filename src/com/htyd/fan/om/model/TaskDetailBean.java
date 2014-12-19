@@ -161,4 +161,31 @@ public class TaskDetailBean implements Parcelable {
 		json.put("JLID", "");
 		return json;
 	}
+	
+	public JSONObject toEditJson() throws JSONException{
+		JSONObject json = new JSONObject();
+		json.put("RWID", taskNetId);
+		json.put("GZDD", workLocation);
+		json.put("AZDD", installLocation);
+		json.put("XXDZ", getDetailAddress());
+		json.put("RWBT", taskTitle);
+		json.put("RWMS", taskDescription);
+		json.put("LXR", "");
+		json.put("LXRDH", "");
+		json.put("JHKSSJ", Utils.formatTime(planStartTime, "yyyy-MM-dd HH:mm:ss"));
+		json.put("YJJSSJ", Utils.formatTime(planEndTime, "yyyy-MM-dd HH:mm:ss"));
+		json.put("TXR", recipientsName);
+		json.put("TXRDH", recipientPhone);
+		json.put("TXSJ", Utils.formatTime(saveTime, "yyyy-MM-dd HH:mm:ss"));
+		json.put("TXFS", "shouji");
+		json.put("SBCJ", "");
+		json.put("CPLX", "");
+		json.put("LJDZ", "");
+		json.put("CCBH", "");
+		json.put("ZCBH", "");
+		json.put("RWGL", "");
+		json.put("ZRR", "");
+		json.put("ZRRDH", "");
+		return json;
+	}
 }

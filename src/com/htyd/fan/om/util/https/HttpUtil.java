@@ -7,7 +7,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import android.text.TextUtils;
-import android.util.Log;
 
 public class HttpUtil {
 	
@@ -15,8 +14,6 @@ public class HttpUtil {
 				HttpURLConnection connection = null;
 				try {
 					URL url = new URL(address);
-					Log.i("fanjishuo____sendHttpRequest", address);
-					Log.i("fanjishuo____sendHttpRequest", url.toString());
 					connection = (HttpURLConnection) url.openConnection();
 					connection.setRequestMethod("GET");
 					connection.setConnectTimeout(8000);
@@ -29,13 +26,11 @@ public class HttpUtil {
 						response.append(line);
 					}
 					if(TextUtils.isEmpty(response)){
-						Log.i("fanjishuo___sendHttpRequest", "isEmpty(response)");
 						return null;
 					}else{
 						return response.toString();
 					}
 				} catch (Exception e) {
-					Log.i("fanjishuo___sendHttpRequest", e.getLocalizedMessage());
 					return null;
 				} finally {
 					if (connection != null) {

@@ -1,7 +1,6 @@
 package com.htyd.fan.om.taskmanage;
 
-import java.text.ParseException;
-
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -18,6 +17,7 @@ public class TaskViewPanel {
 			taskEquipment, taskProductType, taskState, taskType, taskRecipient,
 			taskRecipientPhone;
 	private int taskId;
+	private long saveTime;
 
 	public TaskViewPanel(View v) {
 		taskLocation = (TextView) v.findViewById(R.id.tv_task_location);
@@ -52,10 +52,16 @@ public class TaskViewPanel {
 		taskEquipment.setText(mBean.equipment);
 		taskProductType.setText(mBean.productType);
 		taskState.setText(mBean.taskState + "");
+		if (mBean.taskState == 0) {
+			taskState.setText("在处理");
+		} else {
+			taskState.setText("已完成");
+		}
 		taskType.setText(mBean.taskType + "");
 		taskRecipient.setText(mBean.recipientsName);
 		taskRecipientPhone.setText(mBean.recipientPhone);
 		taskId = mBean.taskNetId;
+		saveTime = mBean.saveTime;
 	}
 
 	public void setViewEnable() {
@@ -74,7 +80,7 @@ public class TaskViewPanel {
 		taskDescription.setFocusable(false);
 	}
 
-	public TaskDetailBean getTaskBean() throws ParseException {
+	public TaskDetailBean getTaskBean() {
 		TaskDetailBean taskBean = new TaskDetailBean();
 		taskBean.taskNetId = taskId;
 		taskBean.workLocation = taskLocation.getText().toString();
@@ -87,10 +93,16 @@ public class TaskViewPanel {
 				.toString(), "yyyy年MM月dd日 HH:mm:ss");
 		taskBean.equipment = taskEquipment.getText().toString();
 		taskBean.productType = taskProductType.getText().toString();
-		taskBean.taskState = Integer.parseInt(taskState.getText().toString());
+		String stateStr = taskState.getText().toString();
+		if (TextUtils.equals(stateStr, "在处理")) {
+			taskBean.taskState = 0;
+		} else {
+			taskBean.taskState = 2;
+		}
 		taskBean.taskType = Integer.parseInt(taskType.getText().toString());
 		taskBean.recipientsName = taskRecipient.getText().toString();
 		taskBean.recipientPhone = taskRecipientPhone.getText().toString();
+		taskBean.saveTime = this.saveTime;
 		return taskBean;
 	}
 }
