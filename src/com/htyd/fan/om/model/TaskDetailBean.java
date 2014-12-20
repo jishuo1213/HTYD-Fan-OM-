@@ -155,7 +155,7 @@ public class TaskDetailBean implements Parcelable {
 		json.put("ZCBH", "");
 		json.put("RWGL", "");
 		json.put("TXID", "1");
-		json.put("RZ_MKID", "");
+		json.put("RZ_MKID", 11);
 		json.put("LJID", "");
 		json.put("CLLJ", "");
 		json.put("JLID", "");
@@ -186,6 +186,7 @@ public class TaskDetailBean implements Parcelable {
 		json.put("RWGL", "");
 		json.put("ZRR", "");
 		json.put("ZRRDH", "");
+		json.put("RZ_MKID", 11);
 		return json;
 	}
 }

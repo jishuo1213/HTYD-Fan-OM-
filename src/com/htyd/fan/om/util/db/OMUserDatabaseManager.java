@@ -174,6 +174,10 @@ public class OMUserDatabaseManager {
 		return mHelper.queryAccessoryByTaskId(taskId);
 	}
 	
+	public Cursor queryUnLoadAccessory(){
+		return mHelper.queryUnLoadFile();
+	}
+	
 	public TaskDetailBean getSingleTask(int taskNetId){
 		openDb(0);
 		TaskCursor cursor = mHelper.queryUserSingleTask(taskNetId);

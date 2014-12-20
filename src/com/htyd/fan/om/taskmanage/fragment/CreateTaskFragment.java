@@ -335,6 +335,8 @@ public class CreateTaskFragment extends Fragment{
 				JSONObject json = new JSONObject(result);
 				if(json.has("RWID"))
 					mBean.taskNetId = Integer.parseInt(json.getString("RWID"));
+				if(json.has("TXSJ"))
+					mBean.saveTime = Utils.parseDate(json.getString("TXSJ"));
 				return json.getBoolean("RESULT");
 			} catch (JSONException e) {
 				e.printStackTrace();

@@ -97,7 +97,7 @@ public class AttendBean implements Parcelable {
 		json.put("QDWZ", getAddress());
 		json.put("QDJD", longitude);
 		json.put("QDWD", latitude);
-		json.put("RZ_MKID", "");
+		json.put("RZ_MKID",12);
 		return json;
 	}
 	

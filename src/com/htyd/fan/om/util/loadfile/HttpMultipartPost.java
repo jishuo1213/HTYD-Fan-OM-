@@ -1,6 +1,7 @@
 package com.htyd.fan.om.util.loadfile;
 
 import java.io.File;
+import java.nio.charset.Charset;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -83,11 +84,11 @@ public class HttpMultipartPost extends AsyncTask<String, Integer, String> {
 					});
 
 			// We use FileBody to transfer an image
-			StringBody sb1 = new StringBody(params[0]);
-			StringBody sb2 = new StringBody(params[1]);
-			StringBody sb3 = new StringBody(params[2]);
-			StringBody sb4 = new StringBody(params[3]);
-			StringBody sb5 = new StringBody("");
+			StringBody sb1 = new StringBody(params[0],Charset.defaultCharset());
+			StringBody sb2 = new StringBody(params[1],Charset.defaultCharset());
+			StringBody sb3 = new StringBody(params[2],Charset.defaultCharset());
+			StringBody sb4 = new StringBody(params[3],Charset.defaultCharset());
+			StringBody sb5 = new StringBody("11");
 			
 			multipartContent.addPart("image", new FileBody(new File(
 					filePath)));

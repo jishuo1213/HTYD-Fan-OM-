@@ -290,6 +290,7 @@ public class UploadFileDialog extends DialogFragment implements
 			mBean = params[0];
 			try {
 				param.put("WJID", mBean.netId);
+				param.put("RZ_MKID", 11);
 				result = NetOperating.getResultFromNet(getActivity(), param,
 						Urls.FILE, "Operate=deleteWjxxByWjid");
 				return new JSONObject(result).getBoolean("RESULT");

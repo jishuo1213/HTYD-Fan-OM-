@@ -79,6 +79,15 @@ public class OMUserDatabaseHelper extends SQLiteOpenHelper {
 		return new TaskAccessoryCursor(wrapper);
 	}
 
+	public TaskAccessoryCursor queryUnLoadFile(){
+		Cursor wrapper = getReadableDatabase().query(
+				SQLSentence.TABLE_TASK_ACCESSORY, null,
+				SQLSentence.COLUMN_TASK_ACCESSORY_SOURCE+ "= ?"
+				+" and "+SQLSentence.COLUMN_TASK_ACCESSORY_STATE + "=?",
+				new String[] { String.valueOf(0),String.valueOf(0) }, null, null, null);
+		return new TaskAccessoryCursor(wrapper);
+	}
+	
 	public static class AttendCursor extends CursorWrapper {
 
 		public AttendCursor(Cursor cursor) {
