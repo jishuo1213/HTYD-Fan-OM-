@@ -1,5 +1,7 @@
 package com.htyd.fan.om.util.https;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -10,6 +12,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
+import org.apache.http.ParseException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
@@ -42,8 +45,7 @@ public class HttpHelper {
 	 */
 
 	public static String GetResponse(final Context context, final String url,
-			final NameValuePair... nameValuePairs) throws InterruptedException,
-			ExecutionException {
+			final NameValuePair... nameValuePairs)throws InterruptedException, ExecutionException{
 		String strResult;
 
 		strResult = "";
@@ -85,6 +87,56 @@ public class HttpHelper {
 				});
 		new Thread(task).start();
 		strResult = task.get();
+		return strResult;
+	}
+	
+	public static String GetResponsenew(Context context, String url,
+			NameValuePair... nameValuePairs) {
+		String strResult;
+		strResult = "";
+		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		if (nameValuePairs != null) {
+			for (int i = 0; i < nameValuePairs.length; i++) {
+				params.add(nameValuePairs[i]);
+			}
+		}
+		UrlEncodedFormEntity urlEncoded = null;
+		try {
+			urlEncoded = new UrlEncodedFormEntity(params, CHARSET_UTF8);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			strResult = "false";
+		}
+
+		HttpPost httpPost = new HttpPost(url);
+		httpPost.setEntity(urlEncoded);
+
+		if (isNetWorkAvailable(context) == true) {
+			HttpClient client = OMApp.getInstance().getHttpClient();// >>>
+			HttpResponse response = null;
+			try {
+				response = client.execute(httpPost);
+			} catch (IOException e) {
+				e.printStackTrace();
+				strResult = "false";
+			}// >>>
+			int res = response.getStatusLine().getStatusCode();
+			if (res != HttpStatus.SC_OK) {
+				// throw new RuntimeException("请求失败");
+				strResult = "false";
+			}
+			HttpEntity resEntity = response.getEntity();
+			try {
+				strResult = (resEntity == null) ? "false" : EntityUtils
+						.toString(resEntity, CHARSET_UTF8);
+			} catch (ParseException | IOException e) {
+				e.printStackTrace();
+				strResult = "false";
+			}
+		} else {
+			UItoolKit.showToastShort(context, "检查网络连接先");
+			strResult = "false";
+		}
 		return strResult;
 	}
 

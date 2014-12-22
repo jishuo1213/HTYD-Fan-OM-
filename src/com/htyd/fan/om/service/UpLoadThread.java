@@ -16,16 +16,27 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
+import android.os.Bundle;
+import android.os.Handler;
+
 import com.htyd.fan.om.main.OMApp;
 import com.htyd.fan.om.util.https.Urls;
 
 public class UpLoadThread extends Thread {
 
+	public static final int MESSAGEWHAT = 0x1213;
+	public static final String SERVERRES = "result";
+	public static final String FILEPATH = "filepath";
+	public static final String THREADNUM = "threadnum";
+	
 	private String filePath;
-
-	public UpLoadThread(String filePath) {
-		this.filePath = filePath;
+	private Handler handler;
+	private int num;
+	
+	
+	public UpLoadThread() {
 	}
+	
 	@Override
 	public void run() {
 		String serverResponse = null;
@@ -35,6 +46,8 @@ public class UpLoadThread extends Thread {
 		
 		MultipartEntity multipartEntity = new MultipartEntity();
 		StringBody sb1;
+		Bundle bundle = new Bundle();
+		bundle.putInt(THREADNUM, num);
 		try {
 			sb1 = new StringBody("",Charset.defaultCharset());
 			StringBody sb2 = new StringBody("",Charset.defaultCharset());
@@ -54,11 +67,23 @@ public class UpLoadThread extends Thread {
 			serverResponse = EntityUtils.toString(response.getEntity());
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
+			bundle.putString(SERVERRES, "");
+			handler.obtainMessage(MESSAGEWHAT,bundle).sendToTarget();
 		} catch (ClientProtocolException e) {
 			e.printStackTrace();
+			bundle.putString(SERVERRES, "");
+			handler.obtainMessage(MESSAGEWHAT,bundle).sendToTarget();
 		} catch (IOException e) {
 			e.printStackTrace();
+			bundle.putString(SERVERRES, "");
+			handler.obtainMessage(MESSAGEWHAT,bundle).sendToTarget();
 		}
-		
+		bundle.putString(SERVERRES, serverResponse);
+		handler.obtainMessage(MESSAGEWHAT, bundle).sendToTarget();
+	}
+	public void setParam(String filePath,Handler handler,int num){
+		this.filePath = filePath;
+		this.handler = handler;
+		this.num = num;
 	}
 }

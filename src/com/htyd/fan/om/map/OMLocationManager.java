@@ -40,6 +40,7 @@ public class OMLocationManager {
 			lco.setScanSpan(10000);
 			lco.setIsNeedAddress(true);
 			lco.setLocationMode(LocationMode.Hight_Accuracy);
+			lco.setTimeOut(10000);
 			mLocClient.setLocOption(lco);
 			return;
 		}

@@ -22,7 +22,7 @@ import android.util.Log;
 public class OMApp extends Application {
 	
 
-	private  HttpClient omHttpClient;
+	private  static HttpClient omHttpClient;
 	private static OMApp sOMApp;
 	
 	public static OMApp getInstance(){
@@ -33,6 +33,7 @@ public class OMApp extends Application {
 	public void onCreate() {
 		super.onCreate();
 		sOMApp = this;
+		Log.i("fanjishuo___omapponcreate", "oncreate");
 		initOmHttpClient();
 	}
 	
