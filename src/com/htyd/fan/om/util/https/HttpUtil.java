@@ -7,6 +7,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 public class HttpUtil {
 	
@@ -26,8 +27,12 @@ public class HttpUtil {
 						response.append(line);
 					}
 					if(TextUtils.isEmpty(response)){
+						Log.d("fanjishuo____sendHttpRequest","URL:" + address);
+						Log.d("fanjishuo____sendHttpRequest", "result:"+response.toString()+"empty");
 						return null;
 					}else{
+						Log.d("fanjishuo____sendHttpRequest","URL:" + address);
+						Log.d("fanjishuo____sendHttpRequest", "result:"+response.toString());
 						return response.toString();
 					}
 				} catch (Exception e) {

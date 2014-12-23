@@ -13,6 +13,7 @@ import com.htyd.fan.om.R;
 import com.htyd.fan.om.login.LoginActivity;
 import com.htyd.fan.om.util.base.Preferences;
 import com.htyd.fan.om.util.db.OMUserDatabaseManager;
+import com.htyd.fan.om.util.fragment.CommonAddressDialog;
 
 public class SettingFragment extends Fragment {
 
@@ -41,6 +42,8 @@ public class SettingFragment extends Fragment {
 		public void onClick(View v) {
 			switch(v.getId()){
 			case R.id.tv_common_address:
+				CommonAddressDialog dialog = new CommonAddressDialog();
+				dialog.show(getActivity().getFragmentManager(), null);
 				break;
 			case R.id.tv_sync_data:
 				break;

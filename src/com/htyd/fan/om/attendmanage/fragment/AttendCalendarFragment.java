@@ -24,6 +24,7 @@ import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -32,6 +33,8 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.PopupMenu;
+import android.widget.PopupMenu.OnMenuItemClickListener;
 import android.widget.TextView;
 
 import com.htyd.fan.om.R;
@@ -46,6 +49,8 @@ import com.htyd.fan.om.util.base.ThreadPool;
 import com.htyd.fan.om.util.base.Utils;
 import com.htyd.fan.om.util.db.OMUserDatabaseHelper.AttendCursor;
 import com.htyd.fan.om.util.db.OMUserDatabaseManager;
+import com.htyd.fan.om.util.fragment.AddressListDialog;
+import com.htyd.fan.om.util.fragment.AddressListDialog.ChooseAddressListener;
 import com.htyd.fan.om.util.fragment.SelectLocationDialogFragment;
 import com.htyd.fan.om.util.fragment.SelectLocationDialogFragment.SelectLocationListener;
 import com.htyd.fan.om.util.https.NetOperating;
@@ -55,7 +60,7 @@ import com.htyd.fan.om.util.loaders.SQLiteCursorLoader;
 import com.htyd.fan.om.util.ui.TextViewWithBorder;
 import com.htyd.fan.om.util.ui.UItoolKit;
 
-public class AttendCalendarFragment extends Fragment implements SelectLocationListener {
+public class AttendCalendarFragment extends Fragment implements SelectLocationListener, ChooseAddressListener {
 
 	private static final String MONTHNUM = "monthnum";
 	private static final int ATTENDLOADERID = 12;
@@ -71,6 +76,7 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 	private boolean isFinish;// 数据是否加载完成
 	protected SparseArray<AttendBean> attendMap;//签到的Map, 0 - 当前天------ 0 为1号
 	protected Calendar selectDay;
+	protected PopupMenu popupMenu;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -140,6 +146,26 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 		signButton = (Button) v.findViewById(R.id.btn_add_attend);
 		signButton.setOnClickListener(mListener);
 		attendLocation.setOnClickListener(mListener);
+		popupMenu = new PopupMenu(getActivity(), attendLocation);
+		popupMenu.inflate(R.menu.select_address_menu);
+		popupMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				switch (item.getItemId()) {
+				case R.id.menu_select_common:
+					AddressListDialog dialogList = new AddressListDialog(AttendCalendarFragment.this);
+					dialogList.show(getActivity().getFragmentManager(), null);
+					return true;
+				case R.id.menu_select_all:
+					SelectLocationDialogFragment dialog = new SelectLocationDialogFragment();
+					dialog.setListener(AttendCalendarFragment.this);
+					dialog.show(getActivity().getFragmentManager(), null);
+					return true;
+				default:
+					return true;
+				}
+			}
+		});
 	}
 	
 	private void initMap(int count){
@@ -164,9 +190,7 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 				OMLocationManager.get(getActivity()).startLocationUpdate();
 				break;
 			case  R.id.tv_attend_address:
-				SelectLocationDialogFragment dialog = new SelectLocationDialogFragment();
-				dialog.setListener(AttendCalendarFragment.this);
-				dialog.show(getActivity().getFragmentManager(), null);
+				popupMenu.show();
 				break;
 			}
 		}
@@ -512,5 +536,10 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 	@Override
 	public void OnSelectLocation(String location) {
 		attendLocation.setText(location);
+	}
+
+	@Override
+	public void onAddressChoose(String address) {
+		attendLocation.setText(address);
 	}
 }

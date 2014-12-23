@@ -21,6 +21,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.PopupMenu;
+import android.widget.PopupMenu.OnMenuItemClickListener;
 import android.widget.TextView;
 
 import com.htyd.fan.om.R;
@@ -32,6 +34,8 @@ import com.htyd.fan.om.util.base.Preferences;
 import com.htyd.fan.om.util.base.ThreadPool;
 import com.htyd.fan.om.util.base.Utils;
 import com.htyd.fan.om.util.db.OMUserDatabaseManager;
+import com.htyd.fan.om.util.fragment.AddressListDialog;
+import com.htyd.fan.om.util.fragment.AddressListDialog.ChooseAddressListener;
 import com.htyd.fan.om.util.fragment.DateTimePickerDialog;
 import com.htyd.fan.om.util.fragment.SelectLocationDialogFragment;
 import com.htyd.fan.om.util.fragment.SpendTimePickerDialog;
@@ -40,7 +44,7 @@ import com.htyd.fan.om.util.https.Urls;
 import com.htyd.fan.om.util.ui.UItoolKit;
 import com.htyd.fan.om.util.zxing.CaptureActivity;
 
-public class CreateTaskFragment extends Fragment{
+public class CreateTaskFragment extends Fragment implements ChooseAddressListener{
 
 /*	private static final int REQUESTPHOTO = 1;// 照片
 	private static final int REQUESTRECORDING = 2;// 录音
@@ -56,7 +60,7 @@ public class CreateTaskFragment extends Fragment{
 //	private List<AffiliatedFileBean> accessoryList;
 //	protected ListViewForScrollView accessoryListView;
 	protected double latitiude, longitude;
-	
+	protected PopupMenu popupMenu;
 	
 	
 	@Override
@@ -108,25 +112,7 @@ public class CreateTaskFragment extends Fragment{
 				mPanel.taskNeedTime.setText( Utils.formatTime(data
 						.getLongExtra(SpendTimePickerDialog.ENDTIME, 0)));
 				
-			} /*else if (requestCode == REQUESTPHOTO) {
-				if(accessoryList == null){
-					accessoryList = new ArrayList<AffiliatedFileBean>();
-				}
-				AffiliatedFileBean mBean = new AffiliatedFileBean();
-				mBean.filePath = data.getStringExtra(CameraFragment.EXTRA_PHOTO_FILENAME);
-				mBean.fileState = 0;
-				accessoryList.add(mBean);
-				if(accessoryListView.getAdapter() == null){
-					accessoryListView.setAdapter(new TaskAccessoryAdapter(accessoryList,getActivity(),this));
-				}else{
-					TaskAccessoryAdapter mAdapter = (TaskAccessoryAdapter)accessoryListView.getAdapter();
-					mAdapter.notifyDataSetChanged();
-				}
-				UItoolKit.showToastShort(getActivity(), data
-						.getStringExtra(CameraFragment.EXTRA_PHOTO_FILENAME));
-			} else if (requestCode == REQUESTRECORDING) {
-				UItoolKit.showToastShort(getActivity(),data.getStringArrayExtra(RecodingDialogFragment.FILEPATHARRAY)[0]);
-			}*/else if(requestCode == REQUESTZXING){
+			}else if(requestCode == REQUESTZXING){
 				UItoolKit.showToastShort(getActivity(),data.getStringExtra("result"));
 				mPanel.taskEquipment.setText(data.getStringExtra("result"));
 			}
@@ -155,36 +141,30 @@ public class CreateTaskFragment extends Fragment{
 		}
 	}
 
-/*	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v,
-			ContextMenuInfo menuInfo) {
-		getActivity().getMenuInflater()
-				.inflate(R.menu.add_accessory_menu, menu);
-	}
-
-	@Override
-	public boolean onContextItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.menu_take_photo:
-			Intent i = new Intent(getActivity(), CameraActivity.class);
-			startActivityForResult(i, REQUESTPHOTO);
-			return true;
-		case R.id.menu_select_file:
-			return true;
-		case R.id.menu_recoring:
-			FragmentManager fm = getActivity().getFragmentManager();
-			RecodingDialogFragment dialog = new RecodingDialogFragment();
-			dialog.setTargetFragment(CreateTaskFragment.this, REQUESTRECORDING);
-			dialog.show(fm, null);
-			return true;
-		default:
-			return super.onContextItemSelected(item);
-		}
-	}*/
-
 	private void initView(View v) {
 		mPanel = new TaskViewPanel(v);
 		mPanel.setListener();
+		popupMenu = new PopupMenu(getActivity(), mPanel.taskWorkLocation);
+		popupMenu.inflate(R.menu.select_address_menu);
+		popupMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				switch (item.getItemId()) {
+				case R.id.menu_select_common:
+					AddressListDialog dialogList = new AddressListDialog(CreateTaskFragment.this);
+					dialogList.show(getActivity().getFragmentManager(), null);
+					return true;
+				case R.id.menu_select_all:
+					FragmentManager fm = getActivity().getFragmentManager();
+					SelectLocationDialogFragment locationDialog = new SelectLocationDialogFragment();
+					locationDialog.setTargetFragment(CreateTaskFragment.this, 0);
+					locationDialog.show(fm, null);
+					return true;
+				default:
+					return true;
+				}
+			}
+		});
 //		accessoryListView = (ListViewForScrollView) v.findViewById(R.id.list_accessory);
 	}
 
@@ -253,9 +233,7 @@ public class CreateTaskFragment extends Fragment{
 			FragmentManager fm = getActivity().getFragmentManager();
 			switch (v.getId()) {
 			case R.id.tv_work_location:
-				SelectLocationDialogFragment locationDialog = new SelectLocationDialogFragment();
-				locationDialog.setTargetFragment(CreateTaskFragment.this, 0);
-				locationDialog.show(fm, null);
+				popupMenu.show();
 				break;
 			case R.id.tv_start_time:
 				DateTimePickerDialog dateDialog = (DateTimePickerDialog) DateTimePickerDialog
@@ -371,8 +349,8 @@ public class CreateTaskFragment extends Fragment{
 		task.cancel(false);
 	}
 
-/*	@Override
-	public void onUpLoadFinish(AffiliatedFileBean mBean,int position) {
-	}*/
-
+	@Override
+	public void onAddressChoose(String address) {
+		mPanel.taskWorkLocation.setText(address);
+	}
 }

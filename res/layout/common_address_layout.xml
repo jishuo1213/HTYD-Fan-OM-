@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/activity_bg_color"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/tv_add_address"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="添加常用地点"
+        android:drawableLeft="@drawable/add"
+        android:padding="5dp"
+        android:drawablePadding="5dp"
+        android:gravity="center_vertical"
+        tools:ignore="HardcodedText" />
+
+    <ListView 
+        android:id="@+id/list_address"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:divider="@color/key_text"
+        android:dividerHeight="1px"
+        />
+    
+    
+</LinearLayout>

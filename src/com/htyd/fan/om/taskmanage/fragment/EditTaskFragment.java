@@ -26,6 +26,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
+import android.widget.PopupMenu.OnMenuItemClickListener;
 
 import com.htyd.fan.om.R;
 import com.htyd.fan.om.model.AffiliatedFileBean;
@@ -35,6 +37,8 @@ import com.htyd.fan.om.util.base.ThreadPool;
 import com.htyd.fan.om.util.base.Utils;
 import com.htyd.fan.om.util.db.OMUserDatabaseHelper.TaskAccessoryCursor;
 import com.htyd.fan.om.util.db.OMUserDatabaseManager;
+import com.htyd.fan.om.util.fragment.AddressListDialog;
+import com.htyd.fan.om.util.fragment.AddressListDialog.ChooseAddressListener;
 import com.htyd.fan.om.util.fragment.DateTimePickerDialog;
 import com.htyd.fan.om.util.fragment.SelectLocationDialogFragment;
 import com.htyd.fan.om.util.fragment.SpendTimePickerDialog;
@@ -46,7 +50,7 @@ import com.htyd.fan.om.util.loaders.SQLiteCursorLoader;
 import com.htyd.fan.om.util.ui.UItoolKit;
 import com.htyd.fan.om.util.zxing.CaptureActivity;
 
-public class EditTaskFragment extends Fragment {
+public class EditTaskFragment extends Fragment implements ChooseAddressListener {
 
 	private static final String SELECTTASK = "selecttask";
 	private static final String TASKID = "taskid";
@@ -63,6 +67,7 @@ public class EditTaskFragment extends Fragment {
 	protected ArrayList<AffiliatedFileBean> accessoryList;
 	private LoaderManager mLoaderManager;
 	private AccessoryLoaderCallback mCallback;
+	protected PopupMenu popupMenu;
 	
 	public static Fragment newInstance(Parcelable mBean) {
 		Bundle args = new Bundle();
@@ -104,6 +109,28 @@ public class EditTaskFragment extends Fragment {
 		mPanel.taskAccessory.setOnClickListener(dialogClickListener);
 		mPanel.taskEquipment.setOnClickListener(dialogClickListener);
 		mPanel.taskInstallLocation.addTextChangedListener(installLocationWatcher);
+		popupMenu = new PopupMenu(getActivity(), mPanel.taskLocation);
+		popupMenu.inflate(R.menu.select_address_menu);
+		popupMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				switch (item.getItemId()) {
+				case R.id.menu_select_common:
+					AddressListDialog dialogList = new AddressListDialog(EditTaskFragment.this);
+					dialogList.show(getActivity().getFragmentManager(), null);
+					return true;
+				case R.id.menu_select_all:
+					FragmentManager fm = getActivity().getFragmentManager();
+					SelectLocationDialogFragment locationDialog = new SelectLocationDialogFragment();
+					locationDialog.setTargetFragment(EditTaskFragment.this,
+							REQUESTLOCATION);
+					locationDialog.show(fm, null);
+					return true;
+				default:
+					return true;
+				}
+			}
+		});
 		getActivity().getActionBar().setTitle("编辑任务");
 	}
 
@@ -159,10 +186,7 @@ public class EditTaskFragment extends Fragment {
 			FragmentManager fm = getActivity().getFragmentManager();
 			switch (v.getId()) {
 			case R.id.tv_task_location:
-				SelectLocationDialogFragment locationDialog = new SelectLocationDialogFragment();
-				locationDialog.setTargetFragment(EditTaskFragment.this,
-						REQUESTLOCATION);
-				locationDialog.show(fm, null);
+				popupMenu.show();
 				break;
 			case R.id.edit_task_plan_starttime:
 				DateTimePickerDialog dateDialog = (DateTimePickerDialog) DateTimePickerDialog
@@ -321,5 +345,10 @@ public class EditTaskFragment extends Fragment {
 				return false;
 			}
 		}
+	}
+	@Override
+	public void onAddressChoose(String address) {
+		mPanel.taskLocation.setText(address);
+		mPanel.taskAddress.setText(address + mPanel.taskInstallLocation.getText().toString());
 	}
 }
