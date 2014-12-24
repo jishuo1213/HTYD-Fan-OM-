@@ -123,6 +123,11 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 			i.putExtra(TASKTYPE, -1);
 			startActivity(i);
 			break;
+		case 3:
+			Intent intent = new Intent(getActivity(), TaskManageActivity.class);
+			intent.putExtra(TASKTYPE, 12);
+			startActivity(intent);
+			break;
 		}
 	}
 

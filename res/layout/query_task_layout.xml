@@ -3,11 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    tools:ignore="HardcodedText" >
 
     <TableRow
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" 
+        android:layout_height="wrap_content"
         tools:ignore="HardcodedText" >
 
         <TextView
@@ -19,8 +20,7 @@
             android:padding="5dp"
             android:text="近三天"
             android:textColor="@color/key_text"
-            android:textSize="15sp"
-            />
+            android:textSize="15sp" />
 
         <TextView
             android:id="@+id/tv_task_one_week"
@@ -29,7 +29,7 @@
             android:layout_margin="5dp"
             android:background="@color/orange"
             android:padding="5dp"
-            android:text="近一周"
+            android:text="本周"
             android:textColor="@color/key_text"
             android:textSize="15sp" />
 
@@ -40,9 +40,54 @@
             android:layout_margin="5dp"
             android:background="@color/green"
             android:padding="5dp"
-            android:text="近一个月"
+            android:text="本月"
             android:textColor="@color/key_text"
             android:textSize="15sp" />
     </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+        <TextView
+            style="@style/style_task_detail_textview"
+            android:layout_height="wrap_content"
+            android:gravity="bottom"
+            android:text="任务创建时间：" />
+
+        <com.htyd.fan.om.util.ui.TextViewWithBottomLine
+            android:id="@+id/tv_task_create_start_time"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:hint="选择任务创建时间"
+            android:padding="5dp"
+            android:textSize="15sp" />
+
+        <TextView
+            style="@style/style_task_detail_textview"
+            android:layout_height="wrap_content"
+            android:gravity="left|center_vertical"
+            android:text="—" />
+
+        <com.htyd.fan.om.util.ui.TextViewWithBottomLine
+            android:id="@+id/tv_task_create_end_time"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:hint="选择任务创建时间"
+            android:padding="5dp"
+            android:textSize="15sp" />
+    </TableRow>
+
+    <ListView
+        android:id="@+id/list_query_task"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:divider="@color/key_text"
+        android:dividerHeight="1px" />
 
 </LinearLayout>

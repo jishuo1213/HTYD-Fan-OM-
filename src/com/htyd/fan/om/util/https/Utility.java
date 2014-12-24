@@ -1,5 +1,7 @@
 package com.htyd.fan.om.util.https;
 
+import java.util.ArrayList;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -121,6 +123,23 @@ public class Utility {
 			}
 		return false;
 	}
+	
+	public static boolean handleTaskResponse(String response,
+			ArrayList<TaskDetailBean> taskList) throws JSONException {
+		if (!TextUtils.isEmpty(response)) {
+			JSONObject resultJson = new JSONObject(response);
+			JSONArray array = (JSONArray) new JSONTokener(
+					resultJson.getString("Rows")).nextValue();
+			for (int i = 0; i < array.length(); i++) {
+				TaskDetailBean mBean = new TaskDetailBean();
+				mBean.setFromJson(array.getJSONObject(i));
+				taskList.add(mBean);
+			}
+			return true;
+		}
+		return false;
+	}
+	
 	
 	/**
 	 * 解析返回的任务处理数据

@@ -16,6 +16,7 @@ import com.htyd.fan.om.R;
 import com.htyd.fan.om.model.TaskDetailBean;
 import com.htyd.fan.om.taskmanage.fragment.CreateTaskFragment;
 import com.htyd.fan.om.taskmanage.fragment.EditTaskFragment;
+import com.htyd.fan.om.taskmanage.fragment.QueryTaskFragment;
 import com.htyd.fan.om.taskmanage.fragment.TaskListFragment;
 import com.htyd.fan.om.taskmanage.fragment.TaskWithProcessFragment;
 import com.htyd.fan.om.util.base.SingleFragmentActivity;
@@ -120,6 +121,8 @@ public class TaskManageActivity extends SingleFragmentActivity {
 	protected Fragment createFragment() {
 		if (getIntent().getIntExtra(TaskListFragment.TASKTYPE, -1) == -1) {
 			return new CreateTaskFragment();
+		}else if(getIntent().getIntExtra(TaskListFragment.TASKTYPE, -1) == 12){
+			return new QueryTaskFragment();
 		} else {
 			initLoader();
 			return new Fragment();

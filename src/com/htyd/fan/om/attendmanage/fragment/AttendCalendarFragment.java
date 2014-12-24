@@ -265,10 +265,16 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 		int week = 0;
 		c.add(Calendar.DATE, -(c.get(Calendar.DAY_OF_WEEK) - 1));
 		c.add(Calendar.DATE, -(weeks - 1) * 7);
-		while (c.get(Calendar.MONTH) <= currentMonth
-				&& c.get(Calendar.YEAR) == currentYear) {
-			c.add(Calendar.DATE, 7);
-			week++;
+		if (c.get(Calendar.YEAR) < currentYear) {
+			while (c.get(Calendar.MONTH) % 11 <= currentMonth) {
+				c.add(Calendar.DATE, 7);
+				week++;
+			}
+		} else {
+			while (c.get(Calendar.MONTH) <= currentMonth && c.get(Calendar.YEAR) == currentYear) {
+				c.add(Calendar.DATE, 7);
+				week++;
+			}
 		}
 		c.add(Calendar.DATE, -week * 7);
 		int size = week * 7;
