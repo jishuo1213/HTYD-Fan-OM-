@@ -4,8 +4,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.Instrumentation;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +15,8 @@ import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,6 +34,7 @@ import com.htyd.fan.om.map.LocationReceiver;
 import com.htyd.fan.om.map.OMLocationManager;
 import com.htyd.fan.om.model.OMLocationBean;
 import com.htyd.fan.om.model.TaskDetailBean;
+import com.htyd.fan.om.model.CommonDataBean;
 import com.htyd.fan.om.util.base.Preferences;
 import com.htyd.fan.om.util.base.ThreadPool;
 import com.htyd.fan.om.util.base.Utils;
@@ -39,6 +44,7 @@ import com.htyd.fan.om.util.fragment.AddressListDialog.ChooseAddressListener;
 import com.htyd.fan.om.util.fragment.DateTimePickerDialog;
 import com.htyd.fan.om.util.fragment.SelectLocationDialogFragment;
 import com.htyd.fan.om.util.fragment.SpendTimePickerDialog;
+import com.htyd.fan.om.util.fragment.TaskTypeDialogFragment;
 import com.htyd.fan.om.util.https.NetOperating;
 import com.htyd.fan.om.util.https.Urls;
 import com.htyd.fan.om.util.ui.UItoolKit;
@@ -51,6 +57,7 @@ public class CreateTaskFragment extends Fragment implements ChooseAddressListene
 */	private static final int REQUESTSTARTDATE = 3;// 开始时间
 	private static final int REQUESTENDTIME = 4;// 结束时间
 	private static final int REQUESTZXING = 5;//条码扫描
+	private static final int REQUESTTYPE = 0x06;//任务类型
 
 	private TaskViewPanel mPanel;
 	private TaskDetailBean mBean;
@@ -61,7 +68,21 @@ public class CreateTaskFragment extends Fragment implements ChooseAddressListene
 //	protected ListViewForScrollView accessoryListView;
 	protected double latitiude, longitude;
 	protected PopupMenu popupMenu;
+	protected SaveTaskListener saveListener;
 	
+	public interface SaveTaskListener {
+		public void onSaveSuccess();
+	}
+	
+	public static Fragment newInstance(SaveTaskListener saveListener){
+		CreateTaskFragment fragment = new CreateTaskFragment();
+		fragment.setSaveListener(saveListener);
+		return fragment;
+	}
+
+	public void setSaveListener(SaveTaskListener saveListener) {
+		this.saveListener = saveListener;
+	}
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -70,7 +91,6 @@ public class CreateTaskFragment extends Fragment implements ChooseAddressListene
 		mBean = new TaskDetailBean();
 		mListener = new SelectViewClickListener();
 		mManager = OMUserDatabaseManager.getInstance(getActivity());
-		OMLocationManager.get(getActivity()).startLocationUpdate();
 	}
 
 	@Override
@@ -81,6 +101,12 @@ public class CreateTaskFragment extends Fragment implements ChooseAddressListene
 		initView(v);
 		return v;
 	}
+	
+	@Override
+		public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		OMLocationManager.get(getActivity()).startLocationUpdate();
+		}
 	
 	@Override
 	public void onStart() {
@@ -115,6 +141,9 @@ public class CreateTaskFragment extends Fragment implements ChooseAddressListene
 			}else if(requestCode == REQUESTZXING){
 				UItoolKit.showToastShort(getActivity(),data.getStringExtra("result"));
 				mPanel.taskEquipment.setText(data.getStringExtra("result"));
+			}else if(requestCode == REQUESTTYPE){
+				CommonDataBean mBean = data.getParcelableExtra(TaskTypeDialogFragment.TYPENAME);
+				mPanel.taskType.setText(mBean.typeName);
 			}
 		}
 	}
@@ -166,6 +195,7 @@ public class CreateTaskFragment extends Fragment implements ChooseAddressListene
 			}
 		});
 //		accessoryListView = (ListViewForScrollView) v.findViewById(R.id.list_accessory);
+		getActivity().getActionBar().setTitle("新建任务");
 	}
 
 	private class TaskViewPanel {
@@ -213,7 +243,7 @@ public class CreateTaskFragment extends Fragment implements ChooseAddressListene
 			mBean.recipientsName = Preferences.getUserinfo(getActivity(), "YHMC");
 			mBean.recipientPhone = Preferences.getUserinfo(getActivity(), "SHOUJ");
 			mBean.taskState = 0;
-			mBean.taskType = 1;
+			mBean.taskType = taskType.getText().toString();
 		}
 
 		public void setListener() {
@@ -256,6 +286,12 @@ public class CreateTaskFragment extends Fragment implements ChooseAddressListene
 			case R.id.tv_task_equipment:
 				Intent i = new Intent(getActivity(),CaptureActivity.class);
 				startActivityForResult(i, REQUESTZXING);
+				break;
+			case R.id.tv_task_type:
+				DialogFragment dialog = TaskTypeDialogFragment.newInstance("任务类别");
+				dialog.setTargetFragment(CreateTaskFragment.this, REQUESTTYPE);
+				dialog.show(getFragmentManager(), null);
+				break;
 			}
 		}
 	}
@@ -325,7 +361,6 @@ public class CreateTaskFragment extends Fragment implements ChooseAddressListene
 		@Override
 		protected void onPostExecute(Boolean result) {
 			if(result){
-				mBean.saveTime = System.currentTimeMillis();
 				mManager.openDb(1);
 				ThreadPool.runMethod(new Runnable() {
 					@Override
@@ -334,7 +369,8 @@ public class CreateTaskFragment extends Fragment implements ChooseAddressListene
 					}
 				});
 				UItoolKit.showToastShort(getActivity(), "保存成功!");
-				getActivity().finish();
+				back();
+				saveListener.onSaveSuccess();
 			}else{
 				UItoolKit.showToastShort(getActivity(), "保存至网络失败");
 			}
@@ -352,5 +388,20 @@ public class CreateTaskFragment extends Fragment implements ChooseAddressListene
 	@Override
 	public void onAddressChoose(String address) {
 		mPanel.taskWorkLocation.setText(address);
+	}
+	
+	protected void back() {
+		ThreadPool.runMethod(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					Instrumentation inst = new Instrumentation();
+					inst.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK);
+					getFragmentManager().beginTransaction().remove(CreateTaskFragment.this).commit();
+				} catch (Exception e) {
+					Log.e("Exception when onBack", e.toString());
+				}
+			}
+		});
 	}
 }

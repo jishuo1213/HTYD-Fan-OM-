@@ -1,24 +1,37 @@
 package com.htyd.fan.om.util.https;
 
 public class Urls {
-
+	
+	public static  String BASEURL;
+	
 	public static final String LOCATIONURL = "http://www.weather.com.cn/data/list3/city";
 	
-	public static final String BASEURL = "http://192.168.1.188:8080/zdyw/";
+	//public static final String BASEURL = "http://192.168.1.26:8080/zdyw/";
 	
-	//public static final String BASEURL = "http://192.168.1.38:8080/zdyw/";
+	public static  String SAVEATTENDURL;
 	
-	public static final String SAVEATTENDURL = BASEURL+"kqAction?";
+	public static  String LOGINURL;
 	
-	public static final String LOGINURL = BASEURL + "loginAction?";
+	public static  String TASKURL;
 	
-	public static final String TASKURL = BASEURL  + "rwAction?";
+	public static  String TASKPROCESSURL;
 	
-	public static final String TASKPROCESSURL = BASEURL  + "rwclAction?";
+	public static  String UPLOADFILE ;
 	
-	public static final String UPLOADFILE = BASEURL+"uploadAction?Operate=upload";
+	public static  String FILE;
 	
-	public static final String FILE = BASEURL + "wjAction?";
+	public static String COMMONDATA;
 	
+	public static String ACCESSORYFILEPATH;
 	
+	public Urls(String baseUrl) {
+		BASEURL = baseUrl;
+		SAVEATTENDURL = BASEURL + "kqAction?";
+		LOGINURL = BASEURL + "loginAction?";
+		TASKURL = BASEURL + "rwAction?";
+		TASKPROCESSURL = BASEURL + "rwclAction?";
+		UPLOADFILE = BASEURL + "uploadAction?Operate=upload";
+		FILE = BASEURL + "wjAction?";
+		COMMONDATA = BASEURL + "zdAction?";
+	}
 }

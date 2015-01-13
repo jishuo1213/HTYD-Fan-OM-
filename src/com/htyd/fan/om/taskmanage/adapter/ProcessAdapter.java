@@ -8,36 +8,36 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.htyd.fan.om.R;
-import com.htyd.fan.om.model.TaskDetailBean;
+import com.htyd.fan.om.model.TaskProcessBean;
 import com.htyd.fan.om.util.base.Utils;
 
-public class TaskAdapter extends BaseAdapter {
+public class ProcessAdapter extends BaseAdapter {
 
-	private ArrayList<TaskDetailBean> taskList;
+	private ArrayList<TaskProcessBean> listProcess;
 	private Context context;
-
-	public TaskAdapter(ArrayList<TaskDetailBean> taskList,Context context) {
+	
+	public ProcessAdapter(ArrayList<TaskProcessBean> listProcess,Context context) {
 		super();
-		this.taskList = taskList;
+		this.listProcess = listProcess;
 		this.context = context;
 	}
 
 	@Override
 	public int getCount() {
-		return taskList.size();
+		return listProcess.size();
 	}
 
 	@Override
 	public Object getItem(int position) {
-		return taskList.get(position);
+		return listProcess.get(position);
 	}
 
 	@Override
 	public long getItemId(int position) {
+
 		return position;
 	}
 
@@ -47,34 +47,34 @@ public class TaskAdapter extends BaseAdapter {
 		ViewHolder mHolder;
 		if (convertView == null) {
 			convertView = ((LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(
-					R.layout.task_item_layout, null);
+					R.layout.task_process_item_layout, null);
 			mHolder = new ViewHolder(convertView);
 			convertView.setTag(mHolder);
 		} else {
 			mHolder = (ViewHolder) convertView.getTag();
 		}
-		TaskDetailBean mBean = (TaskDetailBean) getItem(position);
-		mHolder.taskDescrption.setText(mBean.taskTitle);
-		mHolder.taskCreateTime.setText(Utils.formatTime(mBean.saveTime));
+		TaskProcessBean mBean = (TaskProcessBean) getItem(position);
+		mHolder.processContent.setText(mBean.processContent);
+		mHolder.processCreateTime.setText(Utils
+				.formatTime(mBean.createTime));
 		if (mBean.taskState == 0) {
 			mHolder.taskState.setText("在处理");
-			mHolder.taskIcon.setBackgroundResource(R.drawable.img_task_process);
 		} else {
 			mHolder.taskState.setText("已完成");
-			mHolder.taskIcon.setBackgroundResource(R.drawable.img_task_complete);
 		}
+		mHolder.taskNum.setText((position + 1) + "");
 		return convertView;
 	}
 	
 	private class ViewHolder {
-		public TextView taskDescrption, taskCreateTime, taskState;
-		public ImageView taskIcon;
-		
+		public TextView processContent, processCreateTime, taskState, taskNum;
+
 		public ViewHolder(View v) {
-			taskDescrption = (TextView) v.findViewById(R.id.tv_task_descrption);
-			taskCreateTime = (TextView) v.findViewById(R.id.tv_task_createtime);
+			processContent = (TextView) v.findViewById(R.id.tv_process_content);
+			processCreateTime = (TextView) v
+					.findViewById(R.id.tv_process_create_time);
 			taskState = (TextView) v.findViewById(R.id.tv_task_state);
-			taskIcon = (ImageView) v.findViewById(R.id.img_task_state_icon);
+			taskNum = (TextView) v.findViewById(R.id.tv_task_num);
 		}
 	}
 }

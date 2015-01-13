@@ -14,6 +14,7 @@ public class AffiliatedFileBean implements Parcelable {
 	public int taskId;//任务网络id
 	public int netId;//服务器的附件ID
 	public long fileSize;//文件大小
+	public String fileDescription;//文件描述信息
 	
 	@Override
 	public int describeContents() {
@@ -28,6 +29,7 @@ public class AffiliatedFileBean implements Parcelable {
 		dest.writeInt(taskId);
 		dest.writeInt(netId);
 		dest.writeLong(fileSize);
+		dest.writeString(fileDescription);
 	}
 	
 	public static Parcelable.Creator<AffiliatedFileBean> CREATOR = new Creator<AffiliatedFileBean>() {
@@ -46,6 +48,7 @@ public class AffiliatedFileBean implements Parcelable {
 			mBean.taskId = source.readInt();
 			mBean.netId = source.readInt();
 			mBean.fileSize = source.readLong();
+			mBean.fileDescription = source.readString();
 			return mBean;
 		}
 	};
@@ -57,5 +60,6 @@ public class AffiliatedFileBean implements Parcelable {
 		this.taskId = taskId;
 		netId = Integer.parseInt(json.getString("WJID"));
 		fileSize = Long.parseLong(json.getString("WJDX"));
+		fileDescription = json.getString("LBMC");
 	}
 }

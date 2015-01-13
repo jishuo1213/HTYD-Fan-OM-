@@ -6,10 +6,19 @@
     tools:ignore="HardcodedText" >
 
     <TextView
-        android:id="@+id/tv_process_content"
+        android:id="@+id/tv_task_state"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
         android:gravity="center"
+        android:padding="5dp"
+        android:text="1111111111" />
+    <TextView
+        android:id="@+id/tv_process_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:layout_toLeftOf="@id/tv_task_state"
         android:padding="5dp"
         android:text="11111111111111"
         android:textColor="@color/key_text" />
@@ -24,14 +33,6 @@
         android:text="111111111111"
         android:textColor="@color/key_text" />
 
-    <TextView
-        android:id="@+id/tv_task_state"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:gravity="center"
-        android:padding="5dp"
-        android:text="1111111111" />
 
     <TextView
         android:id="@+id/tv_task_num"
@@ -41,6 +42,7 @@
         android:gravity="center"
         android:padding="5dp"
         android:layout_below="@id/tv_task_state"
+        android:layout_alignBaseline="@id/tv_process_create_time"
         android:text="1111111111" />
 
 </RelativeLayout>

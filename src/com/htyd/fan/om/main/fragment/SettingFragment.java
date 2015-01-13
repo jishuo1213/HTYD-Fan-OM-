@@ -26,14 +26,12 @@ public class SettingFragment extends Fragment {
 	}
 
 	private void initView(View v) {
-		TextView userName,commonLocation,syncData,logOut;
+		TextView userName,commonLocation,logOut;
 		userName = (TextView) v.findViewById(R.id.tv_user_name);
 		commonLocation = (TextView) v.findViewById(R.id.tv_common_address);
-		syncData = (TextView) v.findViewById(R.id.tv_sync_data);
 		logOut = (TextView) v.findViewById(R.id.tv_log_out);
 		userName.setText(Preferences.getUserinfo(getActivity(), "YHMC"));
 		commonLocation.setOnClickListener(settingListener);
-		syncData.setOnClickListener(settingListener);
 		logOut.setOnClickListener(settingListener);
 	}
 	
@@ -45,13 +43,13 @@ public class SettingFragment extends Fragment {
 				CommonAddressDialog dialog = new CommonAddressDialog();
 				dialog.show(getActivity().getFragmentManager(), null);
 				break;
-			case R.id.tv_sync_data:
-				break;
 			case R.id.tv_log_out:
 				Intent i = new Intent(getActivity(),LoginActivity.class);
 				startActivity(i);
 				OMUserDatabaseManager.getInstance(getActivity()).logoutDb();
 				getActivity().finish();
+				break;
+			case R.id.tv_person_info:
 				break;
 			}
 		}

@@ -12,9 +12,8 @@ import com.htyd.fan.om.util.base.Utils;
 public class TaskViewPanel {
 
 	public TextView taskLocation, taskAddress, taskPlanStartTime,
-			taskPlanEndTime, taskAccessory;
-	public EditText taskInstallLocation, taskTitle, taskDescription,
-			taskEquipment, taskProductType, taskState, taskType, taskRecipient,
+			taskPlanEndTime, taskAccessory, taskState,taskEquipment, taskProductType, taskType;
+	public EditText taskInstallLocation, taskTitle, taskDescription, taskRecipient,
 			taskRecipientPhone;
 	private int taskId;
 	private long saveTime;
@@ -31,11 +30,11 @@ public class TaskViewPanel {
 				.findViewById(R.id.edit_task_plan_starttime);
 		taskPlanEndTime = (TextView) v
 				.findViewById(R.id.edit_task_plan_endtime);
-		taskEquipment = (EditText) v.findViewById(R.id.edit_task_equipment);
-		taskProductType = (EditText) v
+		taskEquipment = (TextView) v.findViewById(R.id.edit_task_equipment);
+		taskProductType = (TextView) v
 				.findViewById(R.id.edit_task_product_type);
-		taskState = (EditText) v.findViewById(R.id.edit_task_state);
-		taskType = (EditText) v.findViewById(R.id.edit_task_type);
+		taskState = (TextView) v.findViewById(R.id.edit_task_state);
+		taskType = (TextView) v.findViewById(R.id.edit_task_type);
 		taskRecipient = (EditText) v.findViewById(R.id.edit_task_recipient);
 		taskRecipientPhone = (EditText) v
 				.findViewById(R.id.edit_task_recipient_phone);
@@ -57,7 +56,7 @@ public class TaskViewPanel {
 		} else {
 			taskState.setText("已完成");
 		}
-		taskType.setText(mBean.taskType + "");
+		taskType.setText(mBean.taskType);
 		taskRecipient.setText(mBean.recipientsName);
 		taskRecipientPhone.setText(mBean.recipientPhone);
 		taskId = mBean.taskNetId;
@@ -71,7 +70,6 @@ public class TaskViewPanel {
 		taskPlanEndTime.setFocusable(false);
 		taskEquipment.setFocusable(false);
 		taskProductType.setFocusable(false);
-		taskState.setFocusable(false);
 		taskType.setFocusable(false);
 		taskRecipient.setFocusable(false);
 		taskRecipientPhone.setFocusable(false);
@@ -99,7 +97,7 @@ public class TaskViewPanel {
 		} else {
 			taskBean.taskState = 2;
 		}
-		taskBean.taskType = Integer.parseInt(taskType.getText().toString());
+		taskBean.taskType = taskType.getText().toString();
 		taskBean.recipientsName = taskRecipient.getText().toString();
 		taskBean.recipientPhone = taskRecipientPhone.getText().toString();
 		taskBean.saveTime = this.saveTime;

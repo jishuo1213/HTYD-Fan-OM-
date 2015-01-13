@@ -110,6 +110,7 @@ public class OMUserDatabaseHelper extends SQLiteOpenHelper {
 			mBean.time = getLong(getColumnIndex(SQLSentence.COLUMN_TIME));
 			mBean.choseLocation = getString(getColumnIndex(SQLSentence.COLUMN_CHOOSE_LOCATION));
 			mBean.state = getInt(getColumnIndex(SQLSentence.COLUMN_ATTEND_STATE));
+			mBean.attendId = getInt(getColumnIndex(SQLSentence.COLUMN_CHECK_ID));
 			return mBean;
 		}
 	}
@@ -138,7 +139,7 @@ public class OMUserDatabaseHelper extends SQLiteOpenHelper {
 			mBean.planStartTime = getLong(getColumnIndex(SQLSentence.COLUMN_TASK_PLAN_STARTTIME));
 			mBean.planEndTime = getLong(getColumnIndex(SQLSentence.COLUMN_TASK_PLAN_ENDTIME));
 			mBean.taskState = getInt(getColumnIndex(SQLSentence.COLUMN_TASK_STATE));
-			mBean.taskType = getInt(getColumnIndex(SQLSentence.COLUMN_TASK_TYPE));
+			mBean.taskType = getString(getColumnIndex(SQLSentence.COLUMN_TASK_TYPE));
 			mBean.saveTime = getLong(getColumnIndex(SQLSentence.COLUMN_TASK_CREATE_TIME));
 			mBean.taskTitle = getString(getColumnIndex(SQLSentence.COLUMN_TASK_TITLE));
 			return mBean;
@@ -188,6 +189,7 @@ public class OMUserDatabaseHelper extends SQLiteOpenHelper {
 			mBean.taskId = getInt(getColumnIndex(SQLSentence.COLUMN_TASK_ACCESSORY_TASKID));
 			mBean.netId = getInt(getColumnIndex(SQLSentence.COLUMN_TASK_ACCESSORY_NET_ID));
 			mBean.fileSize = getLong(getColumnIndex(SQLSentence.COLUMN_TASK_ACCESSORY_FILE_SIZE));
+			mBean.fileDescription = getString(getColumnIndex(SQLSentence.COLUMN_TASK_ACCESSORY_FILE_DESCRIPTION));
 			return mBean;
 		}
 	}

@@ -4,6 +4,7 @@ import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -19,15 +20,16 @@ public class TaskAccessoryAdapter extends BaseAdapter {
 
 	private List<AffiliatedFileBean> accessoryList;
 	private Context context;
-	private UpLoadFileListener mListener;
+	private LoadListener mListener;
 	
-	public interface UpLoadFileListener{
+	public interface LoadListener{
 		public void onUpLoadClick(AffiliatedFileBean mBean,int position);
 		public void onDeleteClick(AffiliatedFileBean mBean,int position);
 		public void onPreviewImg(String path);
+		public void onSetPhotoDescription(int pos);
 	}
 	
-	public TaskAccessoryAdapter(List<AffiliatedFileBean> accessoryList,Context context,UpLoadFileListener listener) {
+	public TaskAccessoryAdapter(List<AffiliatedFileBean> accessoryList,Context context,LoadListener listener) {
 		this.accessoryList = accessoryList;
 		this.context = context;
 		this.mListener = listener;
@@ -61,7 +63,7 @@ public class TaskAccessoryAdapter extends BaseAdapter {
 			mHolder = (ViewHolder) convertView.getTag();
 		}
 		final AffiliatedFileBean mBean = (AffiliatedFileBean) getItem(position);
-		mHolder.accessoryName.setText("附件" + (position + 1));
+		//mHolder.accessoryName.setText("附件" + (position + 1));
 		if (mBean.fileSource == 0) {//本地创建的附件
 			mHolder.accessoryState.setText(mBean.fileState == 0?"未上传":"已上传");
 			mHolder.upLoad.setText("上传");
@@ -92,6 +94,16 @@ public class TaskAccessoryAdapter extends BaseAdapter {
 			@Override
 			public void onClick(View v) {
 				mListener.onDeleteClick(mBean, position);
+			}
+		});
+		mHolder.accessoryName.setText(mBean.fileDescription);
+		mHolder.accessoryName.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (TextUtils.isEmpty(mBean.fileDescription)) {
+					return;
+				}
+				mListener.onSetPhotoDescription(position);
 			}
 		});
 		return convertView;

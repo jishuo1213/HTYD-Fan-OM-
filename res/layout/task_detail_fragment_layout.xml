@@ -59,7 +59,9 @@
 
             <TextView
                 android:id="@+id/tv_task_address"
-                style="@style/style_task_detail_textview" />
+                style="@style/style_task_detail_textview"
+                android:layout_weight="1"
+                 />
         </TableRow>
 
         <View style="@style/h_line" />
@@ -187,23 +189,27 @@
 
             <View style="@style/v_line" />
 
-            <EditText
+            <TextView
                 android:id="@+id/edit_task_equipment"
-                style="@style/style_task_detail_edittext"
+                style="@style/style_task_detail_textview"
+                android:layout_width="0dp"
                 android:layout_weight="1" />
+
+            <View style="@style/v_line" />
+
+            
+             <TextView
+                style="@style/style_task_detail_textview"
+                android:text="@string/task_state" />
 
             <View style="@style/v_line" />
 
             <TextView
+                android:id="@+id/edit_task_state"
                 style="@style/style_task_detail_textview"
-                android:text="@string/task_product_type" />
-
-            <View style="@style/v_line" />
-
-            <EditText
-                android:id="@+id/edit_task_product_type"
-                style="@style/style_task_detail_edittext"
-                android:layout_weight="1" />
+                android:layout_weight="1" 
+                android:layout_width="0dp"/>
+            
         </TableRow>
 
         <View style="@style/h_line" />
@@ -213,17 +219,20 @@
             android:layout_height="0dp" 
             android:layout_weight="1">
 
-            <TextView
+           
+<TextView
                 style="@style/style_task_detail_textview"
-                android:text="@string/task_state" />
+                android:text="@string/task_product_type"
+                />
 
             <View style="@style/v_line" />
 
-            <EditText
-                android:id="@+id/edit_task_state"
-                style="@style/style_task_detail_edittext"
+            <TextView
+                android:id="@+id/edit_task_product_type"
+                style="@style/style_task_detail_textview"
+                android:layout_width="0dp"
                 android:layout_weight="1" />
-
+            
             <View style="@style/v_line" />
 
             <TextView
@@ -232,10 +241,11 @@
 
             <View style="@style/v_line" />
 
-            <EditText
+            <TextView
                 android:id="@+id/edit_task_type"
-                style="@style/style_task_detail_edittext"
-                android:layout_weight="1" />
+               style="@style/style_task_detail_textview"
+                android:layout_width="0dp"
+                android:layout_weight="1"/>
         </TableRow>
 
         <View style="@style/h_line" />

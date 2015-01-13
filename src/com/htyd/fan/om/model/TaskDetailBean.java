@@ -24,7 +24,7 @@ public class TaskDetailBean implements Parcelable {
 	public long planEndTime;// 计划结束时间
 	public long saveTime;// 填写保存时间
 	public int taskState;// 任务状态//0:在处理任务  2:已完成任务
-	public int taskType;// 任务类别
+	public String taskType;// 任务类别
 	
 
 	public TaskDetailBean() {
@@ -41,6 +41,9 @@ public class TaskDetailBean implements Parcelable {
 		planStartTime = Utils.parseDate(json.getString("JHKSSJ"));
 		planEndTime = Utils.parseDate(json.getString("YJJSSJ"));
 		saveTime = Utils.parseDate(json.getString("TXSJ"));
+		equipment = json.getString("SBCJ");
+		taskType = json.getString("RWGL");
+		productType = json.getString("CPLX");
 		switch (Integer.parseInt(json.getString("RWZT"))) {
 		case 0:
 			taskState = 0;// 在处理
@@ -75,7 +78,7 @@ public class TaskDetailBean implements Parcelable {
 		dest.writeLong(planEndTime);
 		dest.writeLong(saveTime);
 		dest.writeInt(taskState);
-		dest.writeInt(taskType);
+		dest.writeString(taskType);
 	}
 
 	public static Parcelable.Creator<TaskDetailBean> CREATOR = new Creator<TaskDetailBean>() {
@@ -103,7 +106,7 @@ public class TaskDetailBean implements Parcelable {
 			mBean.planEndTime = source.readLong();
 			mBean.saveTime = source.readLong();
 			mBean.taskState = source.readInt();
-			mBean.taskType = source.readInt();
+			mBean.taskType = source.readString();
 			return mBean;
 		}
 	};
@@ -148,14 +151,14 @@ public class TaskDetailBean implements Parcelable {
 		json.put("TXFS", "shouji");
 		json.put("RWZT", "");
 		json.put("SFSC", "");
-		json.put("SBCJ", "");
+		json.put("SBCJ", equipment);
 		json.put("CPLX", "");
 		json.put("LJDZ", "");
 		json.put("CCBH", "");
 		json.put("ZCBH", "");
-		json.put("RWGL", "");
+		json.put("RWGL", taskType);
 		json.put("TXID", "1");
-		json.put("RZ_MKID", 11);
+		json.put("RZ_MKID", Utils.TASKMODULE);
 		json.put("LJID", "");
 		json.put("CLLJ", "");
 		json.put("JLID", "");
@@ -178,15 +181,15 @@ public class TaskDetailBean implements Parcelable {
 		json.put("TXRDH", recipientPhone);
 		json.put("TXSJ", Utils.formatTime(saveTime, "yyyy-MM-dd HH:mm:ss"));
 		json.put("TXFS", "shouji");
-		json.put("SBCJ", "");
-		json.put("CPLX", "");
+		json.put("SBCJ", equipment);
+		json.put("CPLX", productType);
 		json.put("LJDZ", "");
 		json.put("CCBH", "");
 		json.put("ZCBH", "");
-		json.put("RWGL", "");
+		json.put("RWGL", taskType);
 		json.put("ZRR", "");
 		json.put("ZRRDH", "");
-		json.put("RZ_MKID", 11);
+		json.put("RZ_MKID", Utils.TASKMODULE);
 		return json;
 	}
 }

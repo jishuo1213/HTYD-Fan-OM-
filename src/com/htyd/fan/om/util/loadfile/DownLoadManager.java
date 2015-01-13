@@ -22,6 +22,7 @@ import org.json.JSONObject;
 import android.content.Context;
 
 import com.htyd.fan.om.main.OMApp;
+import com.htyd.fan.om.util.base.Utils;
 
 
 public class DownLoadManager {
@@ -48,6 +49,9 @@ public class DownLoadManager {
 	
 	public boolean downLoadFromNet(Context context, JSONObject param, String Url,
 			String operate, String targetFile) {
+		if (Utils.isAccessoryFileExist(targetFile)) {
+			return true;
+		}
 		NameValuePair nameParams = new BasicNameValuePair("Params",
 				param.toString());
 		List<NameValuePair> params = new ArrayList<NameValuePair>();

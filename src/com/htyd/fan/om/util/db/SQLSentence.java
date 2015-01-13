@@ -63,7 +63,7 @@ public class SQLSentence {
 			+ "_id integer primary key autoincrement, worklocation text ,installlocation text ,"
 			+ "description text  ,recipientname text ,task_title text,"
 			+ "recipientphone text ,taskequipment text ,producttype text ,"
-			+ "planstarttime integer ,planendtime integer ,taskstate integer ,tasktype integer,"
+			+ "planstarttime integer ,planendtime integer ,taskstate integer ,tasktype text,"
 			+ "task_id integer,createtime integer,task_async_state integer)";
 
 	public static final String TABLE_TASK_PROCESS = "taskprocess";
@@ -89,8 +89,17 @@ public class SQLSentence {
 	public static final String COLUMN_TASK_ACCESSORY_SOURCE = "accessory_type";
 	public static final String COLUMN_TASK_ACCESSORY_NET_ID = "accessory_net_id";
 	public static final String COLUMN_TASK_ACCESSORY_FILE_SIZE = "file_size";
+	public static final String COLUMN_TASK_ACCESSORY_FILE_DESCRIPTION = "file_description";
 
 	public static final String CREATE_TABLE_TASK_ACCESSORY = "create table taskaccessory ("
-			+ "_id integer primary key autoincrement, task_id integer references task(_id), accessory_path text"
-			+ ", accessory_state integer ,accessory_type integer,accessory_net_id integer,file_size integer)";
+			+ "_id integer primary key autoincrement, task_id integer references task(task_id), accessory_path text"
+			+ ", accessory_state integer ,accessory_type integer,accessory_net_id integer,file_size integer,file_description text)";
+	
+	public static final String TABLE_TASK_TYPE = "tasktype";
+	public static final String COLUMN_TASK_TYPE_ID = "_id";
+	public static final String COLUMN_TASK_TYPE_NAME = "type_name";
+	public static final String COLUMN_TASK_TYPE_CAT = "type_cat";
+	
+	public static final String CREATE_TABLE_TASK_TYPE = "create table tasktype ("
+	+"_id integer primary key autoincrement, type_name text,type_cat text)";
 }

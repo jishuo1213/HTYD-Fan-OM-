@@ -6,8 +6,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.Instrumentation;
 import android.app.LoaderManager;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Context;
@@ -19,6 +21,8 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,6 +36,7 @@ import android.widget.PopupMenu.OnMenuItemClickListener;
 import com.htyd.fan.om.R;
 import com.htyd.fan.om.model.AffiliatedFileBean;
 import com.htyd.fan.om.model.TaskDetailBean;
+import com.htyd.fan.om.model.CommonDataBean;
 import com.htyd.fan.om.taskmanage.TaskViewPanel;
 import com.htyd.fan.om.util.base.ThreadPool;
 import com.htyd.fan.om.util.base.Utils;
@@ -42,6 +47,7 @@ import com.htyd.fan.om.util.fragment.AddressListDialog.ChooseAddressListener;
 import com.htyd.fan.om.util.fragment.DateTimePickerDialog;
 import com.htyd.fan.om.util.fragment.SelectLocationDialogFragment;
 import com.htyd.fan.om.util.fragment.SpendTimePickerDialog;
+import com.htyd.fan.om.util.fragment.TaskTypeDialogFragment;
 import com.htyd.fan.om.util.fragment.UploadFileDialog;
 import com.htyd.fan.om.util.https.NetOperating;
 import com.htyd.fan.om.util.https.Urls;
@@ -60,6 +66,8 @@ public class EditTaskFragment extends Fragment implements ChooseAddressListener 
 	private static final int REQUESTENDTIME = 2;//结束时间
 	private static final int REQUESTLOCATION = 0;//工作地点
 	private static final int REQUESTZXING = 0x09;//设备条码
+	private static final int REQUESTTYPE = 0x10;//设备条码
+	private static final int REQUESTPROTUCT = 0x11;
 
 	protected TaskViewPanel mPanel;
 	protected TaskDetailBean mBean;
@@ -102,12 +110,13 @@ public class EditTaskFragment extends Fragment implements ChooseAddressListener 
 		mPanel = new TaskViewPanel(v);
 		mPanel.setTaskShow(mBean);
 		// mPanel.setViewEnable();
-		mPanel.taskState.setFocusable(false);
 		mPanel.taskLocation.setOnClickListener(dialogClickListener);
 		mPanel.taskPlanStartTime.setOnClickListener(dialogClickListener);
 		mPanel.taskPlanEndTime.setOnClickListener(dialogClickListener);
 		mPanel.taskAccessory.setOnClickListener(dialogClickListener);
 		mPanel.taskEquipment.setOnClickListener(dialogClickListener);
+		mPanel.taskType.setOnClickListener(dialogClickListener);
+		mPanel.taskProductType.setOnClickListener(dialogClickListener);
 		mPanel.taskInstallLocation.addTextChangedListener(installLocationWatcher);
 		popupMenu = new PopupMenu(getActivity(), mPanel.taskLocation);
 		popupMenu.inflate(R.menu.select_address_menu);
@@ -133,7 +142,7 @@ public class EditTaskFragment extends Fragment implements ChooseAddressListener 
 		});
 		getActivity().getActionBar().setTitle("编辑任务");
 	}
-
+	
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		super.onCreateOptionsMenu(menu, inflater);
@@ -208,12 +217,22 @@ public class EditTaskFragment extends Fragment implements ChooseAddressListener 
 				break;
 			case R.id.tv_task_accessory:
 				UploadFileDialog uploadDialog = (UploadFileDialog) UploadFileDialog
-						.newInstance(accessoryList, mBean.taskNetId, mBean.taskTitle);
+						.newInstance(accessoryList, mBean.taskNetId, mBean.taskTitle,false);
 				uploadDialog.show(fm, null);
 				break;
-			case R.id.tv_task_equipment:
+			case R.id.edit_task_equipment:
 				Intent i = new Intent(getActivity(),CaptureActivity.class);
 				startActivityForResult(i, REQUESTZXING);
+				break;
+			case R.id.edit_task_type:
+				DialogFragment taskTypeDialog = TaskTypeDialogFragment.newInstance("任务类别");
+				taskTypeDialog.setTargetFragment(EditTaskFragment.this, REQUESTTYPE);
+				taskTypeDialog.show(getFragmentManager(), null);
+				break;
+			case R.id.edit_task_product_type:
+				DialogFragment dialog = TaskTypeDialogFragment.newInstance("产品类型");
+				dialog.setTargetFragment(EditTaskFragment.this, REQUESTPROTUCT);
+				dialog.show(getFragmentManager(), null);
 				break;
 			}
 		}
@@ -237,6 +256,14 @@ public class EditTaskFragment extends Fragment implements ChooseAddressListener 
 				mPanel.taskPlanEndTime.setText(Utils.formatTime(endTime));
 			} else if (requestCode == REQUESTZXING) {
 				mPanel.taskEquipment.setText(data.getStringExtra("result"));
+			} else if (requestCode == REQUESTTYPE) {
+				mPanel.taskType
+						.setText(((CommonDataBean) data
+								.getParcelableExtra(TaskTypeDialogFragment.TYPENAME)).typeName);
+			} else if (requestCode == REQUESTPROTUCT) {
+				mPanel.taskProductType
+						.setText(((CommonDataBean) data
+								.getParcelableExtra(TaskTypeDialogFragment.TYPENAME)).typeName);
 			}
 		}
 	};
@@ -309,6 +336,7 @@ public class EditTaskFragment extends Fragment implements ChooseAddressListener 
 		public void onLoaderReset(Loader<Cursor> loader) {
 		}
 	}
+	
 	private class UpdateTask extends AsyncTask<TaskDetailBean, Void, Boolean>{
 
 		private TaskDetailBean mBean;
@@ -317,12 +345,13 @@ public class EditTaskFragment extends Fragment implements ChooseAddressListener 
 		protected void onPostExecute(Boolean result) {
 			if(result){
 				UItoolKit.showToastShort(getActivity(), "保存成功");
-				getActivity().finish();
+				back();
 			}else{
 				UItoolKit.showToastShort(getActivity(), "保存任务失败");
 			}
 		}
 
+		
 		@Override
 		protected Boolean doInBackground(TaskDetailBean... params) {
 			JSONObject param = new JSONObject();
@@ -350,5 +379,20 @@ public class EditTaskFragment extends Fragment implements ChooseAddressListener 
 	public void onAddressChoose(String address) {
 		mPanel.taskLocation.setText(address);
 		mPanel.taskAddress.setText(address + mPanel.taskInstallLocation.getText().toString());
+	}
+
+	protected void back() {
+		ThreadPool.runMethod(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					Instrumentation inst = new Instrumentation();
+					inst.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK);
+					getFragmentManager().beginTransaction().remove(EditTaskFragment.this).commit();
+				} catch (Exception e) {
+					Log.e("Exception when onBack", e.toString());
+				}
+			}
+		});
 	}
 }

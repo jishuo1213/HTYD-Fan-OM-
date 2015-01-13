@@ -1,12 +1,10 @@
 package com.htyd.fan.om.taskmanage.fragment;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -29,10 +27,8 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
@@ -41,7 +37,7 @@ import com.htyd.fan.om.R;
 import com.htyd.fan.om.model.TaskDetailBean;
 import com.htyd.fan.om.model.TaskProcessBean;
 import com.htyd.fan.om.taskmanage.TaskViewPanel;
-import com.htyd.fan.om.util.base.Utils;
+import com.htyd.fan.om.taskmanage.adapter.ProcessAdapter;
 import com.htyd.fan.om.util.db.OMUserDatabaseHelper.TaskProcessCursor;
 import com.htyd.fan.om.util.db.OMUserDatabaseManager;
 import com.htyd.fan.om.util.db.SQLSentence;
@@ -60,7 +56,7 @@ public class TaskWithProcessFragment extends Fragment {
 	private TaskViewPanel mPanel;
 	protected TaskDetailBean mBean;
 	protected ListView processListView;
-	protected List<TaskProcessBean> listProcess;
+	protected ArrayList<TaskProcessBean> listProcess;
 	protected ProcessAdapter mAdapter;
 	private TaskProcessCursorCallback mCallback;
 	private LoaderManager mManager;
@@ -154,7 +150,7 @@ public class TaskWithProcessFragment extends Fragment {
 				TaskProcessBean proBean = (TaskProcessBean) data.getParcelableExtra(CreateProcessDialog.PROCESSBEAN);
 				listProcess.add(proBean);
 				if (processListView.getAdapter() == null) {
-					mAdapter = new ProcessAdapter();
+					mAdapter = new ProcessAdapter(listProcess,getActivity());
 					processListView.setAdapter(mAdapter);
 				} else {
 					mAdapter.notifyDataSetChanged();
@@ -191,62 +187,6 @@ public class TaskWithProcessFragment extends Fragment {
 			dialog.show(fm, null);
 		}
 	};
-
-	private class ProcessAdapter extends BaseAdapter {
-
-		@Override
-		public int getCount() {
-			return listProcess.size();
-		}
-
-		@Override
-		public Object getItem(int position) {
-			return listProcess.get(position);
-		}
-
-		@Override
-		public long getItemId(int position) {
-
-			return position;
-		}
-
-		@SuppressLint("InflateParams")
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			ViewHolder mHolder;
-			if (convertView == null) {
-				convertView = getActivity().getLayoutInflater().inflate(
-						R.layout.task_process_item_layout, null);
-				mHolder = new ViewHolder(convertView);
-				convertView.setTag(mHolder);
-			} else {
-				mHolder = (ViewHolder) convertView.getTag();
-			}
-			TaskProcessBean mBean = (TaskProcessBean) getItem(position);
-			mHolder.processContent.setText(mBean.processContent);
-			mHolder.processCreateTime.setText(Utils
-					.formatTime(mBean.createTime));
-			if (mBean.taskState == 0) {
-				mHolder.taskState.setText("在处理");
-			} else {
-				mHolder.taskState.setText("已完成");
-			}
-			mHolder.taskNum.setText((position + 1) + "");
-			return convertView;
-		}
-	}
-
-	private class ViewHolder {
-		public TextView processContent, processCreateTime, taskState, taskNum;
-
-		public ViewHolder(View v) {
-			processContent = (TextView) v.findViewById(R.id.tv_process_content);
-			processCreateTime = (TextView) v
-					.findViewById(R.id.tv_process_create_time);
-			taskState = (TextView) v.findViewById(R.id.tv_task_state);
-			taskNum = (TextView) v.findViewById(R.id.tv_task_num);
-		}
-	}
 
 	public static class TaskProcessCursorLoader extends SQLiteCursorLoader {
 
@@ -305,7 +245,7 @@ public class TaskWithProcessFragment extends Fragment {
 				do {
 					listProcess.add(cursor.getTaskProcess());
 				} while (cursor.moveToNext());
-				mAdapter = new ProcessAdapter();
+				mAdapter = new ProcessAdapter(listProcess,getActivity());
 				if (processListView != null) {
 					processListView.setAdapter(mAdapter);
 				}

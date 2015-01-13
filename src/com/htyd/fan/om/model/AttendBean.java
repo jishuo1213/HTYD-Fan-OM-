@@ -12,7 +12,6 @@ import com.htyd.fan.om.util.base.Utils;
 
 public class AttendBean implements Parcelable {
 
-
 	public String province;
 	public String city;
 	public String district;
@@ -24,6 +23,7 @@ public class AttendBean implements Parcelable {
 	public int state;// 签到状态，0未签到 1 正常签到 2 补签
 	public String choseLocation;
 	public int month;
+	public int attendId;
 
 	public AttendBean() {
 	}
@@ -46,6 +46,7 @@ public class AttendBean implements Parcelable {
 		dest.writeInt(month);
 		dest.writeString(choseLocation);
 		dest.writeInt(state);
+		dest.writeInt(attendId);
 	}
 
 	public static Parcelable.Creator<AttendBean> CREATOR = new Creator<AttendBean>() {
@@ -69,6 +70,7 @@ public class AttendBean implements Parcelable {
 			mBean.month = source.readInt();
 			mBean.choseLocation = source.readString();
 			mBean.state = source.readInt();
+			mBean.attendId = source.readInt();
 			return mBean;
 		}
 	};
@@ -97,7 +99,7 @@ public class AttendBean implements Parcelable {
 		json.put("QDWZ", getAddress());
 		json.put("QDJD", longitude);
 		json.put("QDWD", latitude);
-		json.put("RZ_MKID",12);
+		json.put("RZ_MKID",Utils.ATTENDMODULE);
 		return json;
 	}
 	

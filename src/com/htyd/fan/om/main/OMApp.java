@@ -17,7 +17,10 @@ import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
 
 import android.app.Application;
-import android.util.Log;
+import android.text.TextUtils;
+
+import com.htyd.fan.om.util.base.Preferences;
+import com.htyd.fan.om.util.https.Urls;
 
 public class OMApp extends Application {
 	
@@ -33,8 +36,8 @@ public class OMApp extends Application {
 	public void onCreate() {
 		super.onCreate();
 		sOMApp = this;
-		Log.i("fanjishuo___omapponcreate", "oncreate");
 		initOmHttpClient();
+		initBaseUrl();
 	}
 	
 	public  HttpClient getHttpClient(){
@@ -43,11 +46,16 @@ public class OMApp extends Application {
 		}
 		return omHttpClient;
 	}
-
+	
+	private void initBaseUrl(){
+		if (!TextUtils.isEmpty(Preferences.getServerAddress(this))) {
+			new Urls(Preferences.getServerAddress(this));
+		}
+	}
+	
 	private  void initOmHttpClient() {
 
 		if (null == omHttpClient) {
-			Log.e("fanjishuo____getHttpClient", "new client");
 			HttpParams params = new BasicHttpParams();
 			// 设置一些基本参数
 			HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
@@ -62,7 +70,7 @@ public class OMApp extends Application {
 			/* 从连接池中取连接的时间 */
 			ConnManagerParams.setTimeout(params, 1000);
 			/* 连接超时 */
-			int ConnectionTimeOut = 3000;
+			int ConnectionTimeOut = 5000;
 
 			HttpConnectionParams
 					.setConnectionTimeout(params, ConnectionTimeOut);

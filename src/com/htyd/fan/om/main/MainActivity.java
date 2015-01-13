@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.ActionBar;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
@@ -15,6 +16,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.util.Log;
 import android.view.ActionProvider;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -41,7 +43,7 @@ public class MainActivity extends FragmentActivity {
 	private Drawable[] tabDrawable;
 	private FragmentPagerAdapter pageAdapter;
 	private TabPanel tabPanel;
-	private int currentPos;
+	public static  int currentPos;
 	private static Menu menu;
 	private ActionProvider firstProvider,thirdProvider;
 	private long firstBackKeyDown;
@@ -50,26 +52,62 @@ public class MainActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		if(savedInstanceState != null){
+			currentPos = savedInstanceState.getInt("pagepos");
+		}
 		firstProvider = new AttendOverflowMenu(this);
 		thirdProvider = new TaskOvewflowMenu(this);
+		currentPos = 0;
 		loadData();
 		init();
 		initActionBar();
 	}
 
 	@Override
+	protected void onResume() {
+		super.onResume();
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+	}
+	
+	@Override
 	protected void onDestroy() {
-		fragmentList.clear();
-		tabDrawable = null;
+		/*fragmentList.clear();
+		tabDrawable = null;*/
+		Log.i("fanjishuo____mainActivity", "onDestory");
 		super.onDestroy();
 	}
 
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putInt("pagepos", currentPos);
+	}
+	
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		Log.i("fanjishuo___mainActivity", "onConfigurationChanged");
+	}
+	
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+	}
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MainActivity.menu = menu;
 		getMenuInflater().inflate(R.menu.menu_popup, menu);
 		MenuItem menuItem = menu.findItem(R.id.more_menu);
-		menuItem.setActionProvider(firstProvider);
+		if (currentPos == 0) {
+			menuItem.setActionProvider(firstProvider);
+		} else if (currentPos == 1) {
+			menuItem.setActionProvider(thirdProvider);
+		}
 		menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 		return true;
 	}
@@ -122,8 +160,8 @@ public class MainActivity extends FragmentActivity {
 		};
 		mainViewPager.setAdapter(pageAdapter);
 		mainViewPager.setOnPageChangeListener(new PagerChangeListener());
-		tabPanel.setImg(0, true);
-		Utils.getAccessoryPath();
+		tabPanel.setImg(currentPos, true);
+		Urls.ACCESSORYFILEPATH = Utils.getAccessoryPath();
 	}
 
 	private class PagerChangeListener implements OnPageChangeListener {
@@ -247,6 +285,7 @@ public class MainActivity extends FragmentActivity {
 		case KeyEvent.KEYCODE_BACK:
 			long time = System.currentTimeMillis() - firstBackKeyDown;
 				if (time <= 1500) {
+					currentPos = 0;
 					new  LogoutTask().execute();
 					this.finish();
 					return true;

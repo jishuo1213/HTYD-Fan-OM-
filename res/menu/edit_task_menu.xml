@@ -7,7 +7,7 @@
         android:id="@+id/menu_edit_task"
         android:title="编辑任务"/>
     <item
-        android:id="@+id/menu_check_task"
+        android:id="@+id/menu_delete_task"
         android:title="删除任务"/>
 
 </menu>

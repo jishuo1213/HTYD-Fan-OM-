@@ -95,6 +95,8 @@
         android:layout_below="@id/tv_attend_state"
         android:layout_margin="10dp"
         android:layout_toLeftOf="@id/ldepart_ine"
+        android:textColor="@color/white"
+        android:background="@drawable/x_bg_btn_green"
         android:text="签到" />
 
     <GridView

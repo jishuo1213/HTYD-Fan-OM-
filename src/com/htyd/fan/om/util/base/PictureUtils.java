@@ -42,6 +42,34 @@ public class PictureUtils {
 		return new BitmapDrawable(a.getResources(), bitmap);
 	}
 	
+	@SuppressWarnings("deprecation")
+	public static Bitmap getScaledBitmap(Activity a, String path) {
+		Display display = a.getWindowManager().getDefaultDisplay();
+		float destWidth = display.getWidth();
+		float destHeight = display.getHeight();
+
+		BitmapFactory.Options options = new BitmapFactory.Options();
+		options.inJustDecodeBounds = true;
+		BitmapFactory.decodeFile(path, options);
+
+		float srcWidth = options.outWidth;
+		float srcHeight = options.outHeight;
+
+		int inSampleSize = 1;
+		if (srcHeight > destHeight || srcWidth > destWidth) {
+			if (srcWidth > srcHeight) {
+				inSampleSize = Math.round(srcHeight / destHeight);
+			} else {
+				inSampleSize = Math.round(srcWidth / destWidth);
+			}
+		}
+
+		options = new BitmapFactory.Options();
+		options.inSampleSize = inSampleSize;
+
+		return BitmapFactory.decodeFile(path, options);
+	}
+	
 	public static BitmapDrawable getScaledDrawable(Context c,int width,int height, String path) {
 		float destWidth = width;
 		float destHeight = height;

@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import com.htyd.fan.om.model.CityBean;
 import com.htyd.fan.om.model.DistrictBean;
 import com.htyd.fan.om.model.ProvinceBean;
+import com.htyd.fan.om.model.CommonDataBean;
 
 public class OMDatabaseManager {
 
@@ -52,6 +53,13 @@ public class OMDatabaseManager {
 		return db.insert(SQLSentence.TABLE_DISTRICT, null, cv);
 	}
 	
+	public long insertTaskType(CommonDataBean mBean) {
+		ContentValues cv = new ContentValues();
+		cv.put(SQLSentence.COLUMN_TASK_TYPE_CAT, mBean.typeDescription);
+		cv.put(SQLSentence.COLUMN_TASK_TYPE_NAME, mBean.typeName);
+		return db.insert(SQLSentence.TABLE_TASK_TYPE, null, cv);
+	}
+	
 	public Cursor queryCursor(int parentId, int type) {
 		switch (type) {
 		case 0:
@@ -64,7 +72,18 @@ public class OMDatabaseManager {
 		return null;
 	}
 	
+	public long deleteType(String cat){
+		openDb(1);
+		return db.delete(SQLSentence.TABLE_TASK_TYPE, SQLSentence.COLUMN_TASK_TYPE_CAT
+				+ " = ?", new String[] { cat});
+	}
+	
+	public Cursor queryTaskType(String type){
+		return mHelper.queryTaskType(type);
+	}
+	
 	public void clearFeedTable(String tableName) {
+		openDb(1);
 		String sql = "DELETE FROM " + tableName + ";";
 		db.execSQL(sql);
 		revertSeq(tableName);

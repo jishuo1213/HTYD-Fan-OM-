@@ -9,6 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.LoaderManager;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Context;
@@ -29,6 +30,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -39,6 +41,7 @@ import com.htyd.fan.om.R;
 import com.htyd.fan.om.model.TaskListBean;
 import com.htyd.fan.om.taskmanage.TaskManageActivity;
 import com.htyd.fan.om.util.base.Preferences;
+import com.htyd.fan.om.util.base.ThreadPool;
 import com.htyd.fan.om.util.base.Utils;
 import com.htyd.fan.om.util.db.OMUserDatabaseHelper.TaskCursor;
 import com.htyd.fan.om.util.db.OMUserDatabaseManager;
@@ -54,11 +57,13 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 
 	public static final String TASKTYPE = "tasktype";
 	public static final String TASKID = "taskid";
-
-	static final String TASKSTATE = "taskstate";
-	static final String INPROCESSINGTASK = "inprocessingtask";
-	static final String COMPLETED = "completed";
-
+	public static final int SAVETASK = 0x08;
+	
+	protected static final String TASKSTATE = "taskstate";
+	protected static final String INPROCESSINGTASK = "inprocessingtask";
+	protected static final String COMPLETED = "completed";
+	
+	
 	HashMap<String, List<TaskListBean>> taskMap;
 	ListView mListView;
 	TaskAdapter allTaskAdapter, inProcessTaskAdapter,
@@ -71,6 +76,7 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setRetainInstance(true);
 		taskMap = new HashMap<String, List<TaskListBean>>();
 		taskMap.put(COMPLETED, new ArrayList<TaskListBean>());
 		taskMap.put(INPROCESSINGTASK, new ArrayList<TaskListBean>());
@@ -116,12 +122,21 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 			mListView.setAdapter(inProcessTaskAdapter);
 			break;
 		case 1:
-			mListView.setAdapter(completedAdapter);
+			if(completedAdapter != null)
+				mListView.setAdapter(completedAdapter);
 			break;
 		case 2:
-			Intent i = new Intent(getActivity(), TaskManageActivity.class);
-			i.putExtra(TASKTYPE, -1);
-			startActivity(i);
+			try {
+				Intent i = new Intent(getActivity(), TaskManageActivity.class);
+				i.putExtra(TASKTYPE, -1);
+				startActivityForResult(i, SAVETASK);
+			} catch (Exception e) {
+				e.printStackTrace();
+				Intent i = new Intent("om.fan.task");
+				i.putExtra(TASKTYPE, -1);
+				startActivity(i);
+				break;
+			}
 			break;
 		case 3:
 			Intent intent = new Intent(getActivity(), TaskManageActivity.class);
@@ -132,18 +147,30 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 	}
 
 	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if(resultCode == Activity.RESULT_OK){
+			if(requestCode == SAVETASK){
+				mLoadManager.restartLoader(1, null, mCallback);
+			}
+		}
+	}
+	
+	@Override
 	public boolean onContextItemSelected(MenuItem item) {
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
+				.getMenuInfo();
+		int position = info.position;
+		TaskListBean mBean = (TaskListBean) mListView.getAdapter()
+				.getItem(position);
 		switch (item.getItemId()) {
 		case R.id.menu_edit_task:
-			AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
-					.getMenuInfo();
-			int position = info.position;
 			Intent i = new Intent(getActivity(), TaskManageActivity.class);
-			TaskListBean mBean = (TaskListBean) mListView.getAdapter()
-					.getItem(position);
 			i.putExtra(TASKID, mBean.taskNetId);
 			i.putExtra(TASKTYPE, -2);
 			startActivity(i);
+			return true;
+		case R.id.menu_delete_task:
+			new deleteTask().execute(mBean);
 			return true;
 		default:
 			return super.onContextItemSelected(item);
@@ -235,8 +262,10 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 			mHolder.taskCreateTime.setText(Utils.formatTime(mBean.createTime));
 			if (mBean.taskState == 0) {
 				mHolder.taskState.setText("在处理");
+				mHolder.taskStateIcon.setBackgroundResource(R.drawable.img_task_process);
 			} else {
 				mHolder.taskState.setText("已完成");
+				mHolder.taskStateIcon.setBackgroundResource(R.drawable.img_task_complete);
 			}
 			return convertView;
 		}
@@ -244,14 +273,14 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 
 	private class ViewHolder {
 		public TextView taskDescrption, taskCreateTime, taskState;
+		
 
-//		 public ImageView taskStateIcon;
+		 public ImageView taskStateIcon;
 		public ViewHolder(View v) {
 			taskDescrption = (TextView) v.findViewById(R.id.tv_task_descrption);
 			taskCreateTime = (TextView) v.findViewById(R.id.tv_task_createtime);
 			taskState = (TextView) v.findViewById(R.id.tv_task_state);
-			// taskStateIcon = (ImageView)
-			// v.findViewById(R.id.img_task_state_icon);
+			 taskStateIcon = (ImageView)v.findViewById(R.id.img_task_state_icon);
 		}
 	}
 
@@ -284,6 +313,7 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 				params.put("TXR", Preferences.getUserinfo(getContext(), "YHMC"));
 				params.put("LQR", Preferences.getUserinfo(getContext(), "YHID"));
 				params.put("RWGL", "");
+				params.put("WDRW", "");
 			} catch (JSONException e1) {
 				e1.printStackTrace();
 			}
@@ -347,6 +377,9 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 				completedAdapter = new TaskAdapter(2);
 			} else {
 				isLoaderFinish = false;
+				if(mListView != null && mListView.getAdapter() != null){
+					mListView.setAdapter(null);
+				}
 			}
 		}
 
@@ -377,6 +410,7 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 				param.put("TXR", Preferences.getUserinfo(getActivity(), "YHMC"));
 				param.put("LQR", Preferences.getUserinfo(getActivity(), "YHID"));
 				param.put("RWGL", "");
+				param.put("WDRW", "");
 			} catch (JSONException e1) {
 				e1.printStackTrace();
 			}
@@ -410,5 +444,55 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 			mPullRefreshListView.onRefreshComplete();
 			cancel(false);
 		}
+	}
+	
+	private class deleteTask extends AsyncTask<TaskListBean, Void, Boolean>{
+
+		private TaskListBean mBean;
+		
+		@Override
+		protected Boolean doInBackground(TaskListBean... params) {
+			JSONObject param = new JSONObject();
+			mBean = params[0];
+			String result = "";
+			try {
+				param.put("RWID", mBean.taskNetId);
+				result = NetOperating.getResultFromNet(getActivity(), param, Urls.TASKURL, "Operate=deleteRwByRwid");
+			} catch (JSONException e) {
+				e.printStackTrace();
+				return false;
+			} catch (Exception e) {
+				e.printStackTrace();
+				return false;
+			}
+			try {
+				return new JSONObject(result).getBoolean("RESULT");
+			} catch (JSONException e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
+		
+		@Override
+		protected void onPostExecute(Boolean result) {
+			if (result) {
+				deleteLocalTask(mBean.taskNetId);
+				mLoadManager.restartLoader(1, null, mCallback);
+				UItoolKit.showToastShort(getActivity(), "删除成功");
+			} else {
+				UItoolKit.showToastShort(getActivity(), "删除失败");
+			}
+		}
+	}
+	protected void deleteLocalTask(final int taskNetId){
+		final OMUserDatabaseManager mManger = OMUserDatabaseManager.getInstance(getActivity());
+		ThreadPool.runMethod(new Runnable() {
+			@Override
+			public void run() {
+				mManger.deleteTask(taskNetId);
+				mManger.deleteTaskProcess(taskNetId);
+				mManger.deleteTaskAccessory(taskNetId);
+			}
+		});
 	}
 }

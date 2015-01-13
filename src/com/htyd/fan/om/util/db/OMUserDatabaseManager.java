@@ -10,6 +10,8 @@ import com.htyd.fan.om.model.AffiliatedFileBean;
 import com.htyd.fan.om.model.AttendBean;
 import com.htyd.fan.om.model.TaskDetailBean;
 import com.htyd.fan.om.model.TaskProcessBean;
+import com.htyd.fan.om.util.base.Utils;
+import com.htyd.fan.om.util.db.OMUserDatabaseHelper.TaskAccessoryCursor;
 import com.htyd.fan.om.util.db.OMUserDatabaseHelper.TaskCursor;
 
 public class OMUserDatabaseManager {
@@ -27,7 +29,6 @@ public class OMUserDatabaseManager {
 
 	public synchronized static OMUserDatabaseManager getInstance(Context context) {
 		if (sManager == null) {
-			Log.e("fanjishuo______getInstance", "new db manager");
 			sManager = new OMUserDatabaseManager(context.getApplicationContext());
 		}
 		return sManager;
@@ -88,9 +89,29 @@ public class OMUserDatabaseManager {
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_TASKID, mBean.taskId);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_NET_ID, mBean.netId);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_FILE_SIZE, mBean.fileSize);
+		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_FILE_DESCRIPTION, mBean.fileDescription);
 		return db.insert(SQLSentence.TABLE_TASK_ACCESSORY, null, cv);
 	}
 	/*-------------------------------------------数据库修改操作---------------------------------------------*/
+	
+	public long updateAttend(AttendBean mBean){
+		ContentValues cv = new ContentValues();
+		StringBuilder sb = new StringBuilder();
+		sb.append(mBean.province).append("|").append(mBean.city).append("|")
+				.append(mBean.district).append("|").append(mBean.street)
+				.append("|").append(mBean.streetNum);
+		cv.put(SQLSentence.COLUMN_ADDRESS, sb.toString());
+		cv.put(SQLSentence.COLUMN_LATITUDE, mBean.latitude);
+		cv.put(SQLSentence.COLUMN_LONGITUDE, mBean.longitude);
+		cv.put(SQLSentence.COLUMN_MONTH, mBean.month);
+		cv.put(SQLSentence.COLUMN_TIME, mBean.time);
+		cv.put(SQLSentence.COLUMN_CHOOSE_LOCATION, mBean.choseLocation);
+		cv.put(SQLSentence.COLUMN_ATTEND_STATE,mBean.state);
+		openDb(1);
+		return db.update(SQLSentence.TABLE_CHECK, cv,
+				SQLSentence.COLUMN_CHECK_ID + "=?", new String[] { String.valueOf(mBean.attendId) });
+	}
+	
 	public long updateTask(TaskDetailBean mBean){
 		ContentValues cv = new ContentValues();
 		cv.put(SQLSentence.COLUMN_TASK_WORK_LOCATION, mBean.workLocation);
@@ -110,7 +131,7 @@ public class OMUserDatabaseManager {
 				new String[] { String.valueOf(mBean.taskNetId) });
 	}
 	
-	public long updateTaskAccessoryBean(AffiliatedFileBean mBean) {
+	public long updateDownloadAccessoryBean(AffiliatedFileBean mBean) {
 		ContentValues cv = new ContentValues();
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_PATH, mBean.filePath);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_STATE, mBean.fileState);
@@ -118,12 +139,13 @@ public class OMUserDatabaseManager {
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_TASKID, mBean.taskId);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_NET_ID, mBean.netId);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_FILE_SIZE, mBean.fileSize);
+		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_FILE_DESCRIPTION, mBean.fileDescription);
 		openDb(1);
 		return db.update(SQLSentence.TABLE_TASK_ACCESSORY, cv, SQLSentence.COLUMN_TASK_ACCESSORY_NET_ID+" = ?",
 				new String[] { String.valueOf(mBean.netId) });
 	}
 	
-	public long updateAccessoryBean(AffiliatedFileBean mBean) {
+	public long updateUploadAccessoryBean(AffiliatedFileBean mBean) {
 		ContentValues cv = new ContentValues();
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_PATH, mBean.filePath);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_STATE, mBean.fileState);
@@ -131,12 +153,37 @@ public class OMUserDatabaseManager {
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_TASKID, mBean.taskId);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_NET_ID, mBean.netId);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_FILE_SIZE, mBean.fileSize);
+		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_FILE_DESCRIPTION, mBean.fileDescription);
 		openDb(1);
 		return db.update(SQLSentence.TABLE_TASK_ACCESSORY, cv, SQLSentence.COLUMN_TASK_ACCESSORY_PATH+" = ?",
 				new String[] {mBean.filePath});
 	}
 	
 	/*-------------------------------------------数据库删除操作---------------------------------------------*/
+	
+	public long deleteTask(int taskNetId){
+		openDb(1);
+		return db.delete(SQLSentence.TABLE_TASK, SQLSentence.COLUMN_TASK_NET_ID
+				+ " = ?", new String[] { String.valueOf(taskNetId)});
+	}
+	
+	public long deleteTaskProcess(int taskNetId){
+		openDb(1);
+		return db.delete(SQLSentence.TABLE_TASK_PROCESS, SQLSentence.COLUMN_TASKPROCESS_TASK_ID
+				+ " = ?", new String[] { String.valueOf(taskNetId)});
+	}
+	
+	public long deleteTaskAccessory(int taskNetId){
+		openDb(1);
+		TaskAccessoryCursor cursor =  (TaskAccessoryCursor) queryAccessoryByTaskId(taskNetId);
+		if(cursor.getCount() > 0 && cursor.moveToFirst()){
+			do{
+				Utils.deleteFile(cursor.getAccessory().filePath);
+			}while(cursor.moveToNext());
+		}
+		return db.delete(SQLSentence.TABLE_TASK_ACCESSORY, SQLSentence.COLUMN_TASK_ACCESSORY_NET_ID
+				+ " = ?", new String[] { String.valueOf(taskNetId)});
+	}
 	
 	public long deleteTask(TaskDetailBean mBean){
 		openDb(1);
@@ -155,6 +202,13 @@ public class OMUserDatabaseManager {
 		return db.delete(SQLSentence.TABLE_TASK_ACCESSORY,
 				SQLSentence.COLUMN_TASK_ACCESSORY_PATH + "= ?",
 				new String[] { String.valueOf(path) });
+	}
+	
+	public long detelteTaskAccessory(int  netId) {
+		openDb(1);
+		return db.delete(SQLSentence.TABLE_TASK_ACCESSORY,
+				SQLSentence.COLUMN_TASK_ACCESSORY_NET_ID+ "= ?",
+				new String[] { String.valueOf(netId) });
 	}
 
 	/*-------------------------------------------数据库查询操作---------------------------------------------*/

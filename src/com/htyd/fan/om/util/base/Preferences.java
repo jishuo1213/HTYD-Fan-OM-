@@ -18,6 +18,7 @@ public class Preferences {
 	private static final String ACCOUNT = "account";
 	private static final String REMBERPWD = "remberpwd";
 	private static final String USERINFO = "userinformation";
+	private static final String SERVERURL = "serverurl";
 
 	private static SharedPreferences sp;
 	private static Editor editor;
@@ -113,5 +114,17 @@ public class Preferences {
 			e.printStackTrace();
 			return "";
 		}
+	}
+	
+	public static void setServerAddress(Context context, String address){
+		sp = context.getSharedPreferences(PREFERENCENAME, Context.MODE_PRIVATE);
+		editor = sp.edit();
+		editor.putString(SERVERURL, "http://"+address+":8080/zdyw/");
+		editor.apply();
+	}
+	
+	public static String getServerAddress(Context context){
+		sp = context.getSharedPreferences(PREFERENCENAME, Context.MODE_PRIVATE);
+		return sp.getString(SERVERURL, "");
 	}
 }

@@ -21,6 +21,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -324,6 +325,7 @@ public class SelectLocationDialogFragment extends DialogFragment {
 		@Override
 		protected Cursor loadFromNet() {
 			String address;
+			Log.i("fanjishuo_____locationLoader", "loadFromNet");
 			if (!TextUtils.isEmpty(parentCode)) {
 				address = Urls.LOCATIONURL + parentCode + ".xml";
 			} else {

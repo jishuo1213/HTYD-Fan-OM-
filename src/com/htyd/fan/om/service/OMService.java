@@ -69,7 +69,7 @@ public class OMService extends IntentService {
 						int num = bundle.getInt(UpLoadThread.THREADNUM);
 						AffiliatedFileBean mBean = affiliatedFileList.get(num);
 						mBean.fileState = 1;
-						mManager.updateAccessoryBean(mBean);
+						mManager.updateUploadAccessoryBean(mBean);
 						affiliatedFileList.remove(num);
 					}
 					if(affiliatedFileList.size() > 0){

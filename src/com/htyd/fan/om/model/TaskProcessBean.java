@@ -54,10 +54,15 @@ public class TaskProcessBean implements Parcelable {
 
 	public void setFromJson(JSONObject json) throws NumberFormatException, JSONException{
 		taskid = Integer.parseInt(json.getString("RWID"));
-		startTime = Utils.parseDate(json.getString("KSSJ"),"yyyy-MM-dd");
-		endTime = Utils.parseDate(json.getString("JSSJ"),"yyyy-MM-dd");
+		startTime = Utils.parseDate(json.getString("KSSJ"));
+		endTime = Utils.parseDate(json.getString("JSSJ"));
 		createTime = Utils.parseDate(json.getString("TXSJ"));
 		processContent = json.getString("CLNR");
+		if((int) Integer.parseInt(json.getString("WCBZ")) == 1){
+			taskState = 0;
+			return;
+		}
+		taskState = Integer.parseInt(json.getString("WCBZ"));
 	}
 	
 	public JSONObject toJson() throws JSONException {
@@ -70,6 +75,7 @@ public class TaskProcessBean implements Parcelable {
 		json.put("TXSJ", Utils.formatTime(createTime, "yyyy-MM-dd HH:mm:ss"));
 		json.put("TXR", "");
 		json.put("TXRDH", "");
+		json.put("RZ_MKID", Utils.TASKMODULE);
 		return json;
 	}
 }

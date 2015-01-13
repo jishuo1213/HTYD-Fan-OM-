@@ -5,7 +5,6 @@ import java.util.concurrent.ExecutionException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -15,9 +14,11 @@ import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.htyd.fan.om.R;
 import com.htyd.fan.om.main.MainActivity;
@@ -31,14 +32,16 @@ public class LoginActivity extends Activity {
 
 	protected EditText userNameEditText, passwordEditText;
 	private CheckBox checkBox, checkRemberPwd;
+	private TextView setServerAddress;
 	protected Button loginButton;
 	Context context;
 	protected String passWord;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
-		initActionBar();
+	//	initActionBar();
 		setContentView(R.layout.activity_login_layout);
 		initView();
 	}
@@ -50,6 +53,8 @@ public class LoginActivity extends Activity {
 		checkBox = (CheckBox) findViewById(R.id.check_auto_login);
 		checkRemberPwd = (CheckBox) findViewById(R.id.check_remember_pasword);
 		loginButton = (Button) findViewById(R.id.btn_log_in);
+		setServerAddress = (TextView) findViewById(R.id.tv_set_net);
+		setServerAddress.setOnClickListener(LoginListener);
 		loginButton.setOnClickListener(LoginListener);
 		userNameEditText.setText(Preferences.getLastLoginAccount(getBaseContext()));
 		if(Preferences.getIsRemPwd(getBaseContext())){
@@ -61,27 +66,36 @@ public class LoginActivity extends Activity {
 	private OnClickListener LoginListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			if (!checkCanLogin()) {
-				return;
+			switch (v.getId()) {
+			case R.id.btn_log_in:
+				if (Preferences.getServerAddress(getBaseContext()).length() == 0) {
+					UItoolKit.showToastShort(getBaseContext(), "还没有设置服务器地址，快去设置吧");
+					SetNetDialog dialog = new SetNetDialog();
+					dialog.show(getFragmentManager(), null);
+					return;
+				}
+				if (!checkCanLogin()) {
+					return;
+				}
+				startTask(userNameEditText.getText().toString(),passwordEditText.getText().toString());
+				loginButton.setEnabled(false);
+				passWord = passwordEditText.getText().toString();
+				break;
+			case R.id.tv_set_net:
+				SetNetDialog dialog = new SetNetDialog();
+				dialog.show(getFragmentManager(), null);
+				break;
 			}
-			startTask(userNameEditText.getText().toString(), passwordEditText
-					.getText().toString());
-			loginButton.setEnabled(false);
-			passWord = passwordEditText.getText().toString();
-			/*
-			 * Intent i = new Intent(getBaseContext(),MainActivity.class);
-			 * startActivity(i); finish();
-			 */
 		}
 	};
 
-	private void initActionBar() {
+/*	private void initActionBar() {
 		ActionBar actionBar = getActionBar();
 		actionBar.setBackgroundDrawable(getResources().getDrawable(
 				R.drawable.bg_top_navigation_bar));
 		actionBar.setTitle("登录");
 		actionBar.setDisplayShowHomeEnabled(false);
-	}
+	}*/
 
 	protected boolean checkCanLogin() {
 		if (TextUtils.isEmpty(userNameEditText.getText())

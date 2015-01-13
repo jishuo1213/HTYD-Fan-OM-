@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import com.htyd.fan.om.model.CityBean;
 import com.htyd.fan.om.model.DistrictBean;
 import com.htyd.fan.om.model.ProvinceBean;
+import com.htyd.fan.om.model.CommonDataBean;
 
 public class OMDatabaseHelper extends SQLiteOpenHelper {
 
@@ -32,6 +33,7 @@ public class OMDatabaseHelper extends SQLiteOpenHelper {
 		db.execSQL(SQLSentence.CREATE_TABLE_PROVINCE);
 		db.execSQL(SQLSentence.CREATE_TABLE_CITY);
 		db.execSQL(SQLSentence.CREATE_TABLE_DISTRICT);
+		db.execSQL(SQLSentence.CREATE_TABLE_TASK_TYPE);
 	}
 
 	@Override
@@ -68,6 +70,7 @@ public class OMDatabaseHelper extends SQLiteOpenHelper {
 				new String[] { String.valueOf(provinceId) }, null, null, null);
 		return new CityCursor(wrapped);
 	}
+	
 
 	public static class CityCursor extends CursorWrapper {
 
@@ -110,5 +113,30 @@ public class OMDatabaseHelper extends SQLiteOpenHelper {
 			mBean.districtName = getString(getColumnIndex(SQLSentence.COLUMN_DISTRICT_NAME));
 			return mBean;
 		}
+	}
+	
+	public CommonDataCursor queryTaskType(String type) {
+		Cursor cursor = getReadableDatabase().query(
+				SQLSentence.TABLE_TASK_TYPE, null,
+				SQLSentence.COLUMN_TASK_TYPE_CAT + " = ?",
+				new String[] { type }, null, null, null);
+		return new CommonDataCursor(cursor);
+	}
+	
+	public static class CommonDataCursor extends CursorWrapper{
+
+		public CommonDataCursor(Cursor cursor) {
+			super(cursor);
+		}
+		
+		public CommonDataBean getTaskType(){
+			if (isBeforeFirst() || isAfterLast())
+				return null;
+			CommonDataBean mBean = new CommonDataBean();
+			mBean.typeDescription = getString(getColumnIndex(SQLSentence.COLUMN_TASK_TYPE_CAT));
+			mBean.typeName = getString(getColumnIndex(SQLSentence.COLUMN_TASK_TYPE_NAME));
+			return mBean;
+		}
+		
 	}
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">OM</string>
+    <string name="app_name">终端运维管理系统</string>
     <string name="hello_world">Hello world!</string>
     <string name="more_menu">更多菜单</string>
 	<string name="abs__activitychooserview_choose_application">no use</string>
@@ -14,7 +14,7 @@
 	<string name="task_contacts_phone">联系人电话：</string>
 	<string name="task_plan_starttime">计划开始时间：</string>
 	<string name="task_plan_endtime">计划结束时间：</string>
-	<string name="task_equipment">设备厂家：</string>
+	<string name="task_equipment">设备编号：</string>
 	<string name="task_product_type">产品类型：</string>
 	<string name="task_state">任务状态：</string>
 	<string name="task_type">任务归类：</string>

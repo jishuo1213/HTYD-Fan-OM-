@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.concurrent.ExecutionException;
 
 import org.json.JSONArray;
@@ -22,9 +23,14 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -47,15 +53,20 @@ public class QueryTaskFragment extends Fragment {
 	private TextView taskCreateStartTime,taskCreateEndTime;
 	protected ListView listView;
 	protected ArrayList<TaskDetailBean> taskList = new ArrayList<TaskDetailBean>();
+	private long startTime;
+	private long endTime;
+	private TextView queryThreeDays,queryOneWeek,queryOneMonth;
+	
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 		try {
 			loadData(taskList);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		super.onCreate(savedInstanceState);
+		setHasOptionsMenu(true);
 	}
 
 	@Override
@@ -71,11 +82,31 @@ public class QueryTaskFragment extends Fragment {
 		taskCreateEndTime = (TextView) v.findViewById(R.id.tv_task_create_end_time);
 		taskCreateStartTime.setOnClickListener(queryTaskClickListener);
 		taskCreateEndTime.setOnClickListener(queryTaskClickListener);
+		queryThreeDays = (TextView) v.findViewById(R.id.tv_task_three_days);
+		queryOneWeek = (TextView) v.findViewById(R.id.tv_task_one_week);
+		queryOneMonth = (TextView) v.findViewById(R.id.tv_task_one_month);
+		queryThreeDays.setOnClickListener(queryTaskClickListener);
+		queryOneWeek.setOnClickListener(queryTaskClickListener);
+		queryOneMonth.setOnClickListener(queryTaskClickListener);
 		listView = (ListView) v.findViewById(R.id.list_query_task);
 		if(taskList.size() > 0){
 			listView.setAdapter(new TaskAdapter(taskList, getActivity()));
 		}
+		listView.setOnItemClickListener(queryTaskItemClickListener);
+		getActivity().getActionBar().setTitle("查询任务");
 	}
+	
+	private OnItemClickListener queryTaskItemClickListener = new OnItemClickListener() {
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position,
+				long id) {
+			TaskDetailBean mBean = (TaskDetailBean) parent.getAdapter().getItem(position);
+			Fragment fragment = ViewQueryTaskFragment.newInstance(mBean);
+			getFragmentManager().beginTransaction()
+					.replace(R.id.fragmentContainer, fragment)
+					.addToBackStack(null).commit();
+		}
+	};
 	
 	private OnClickListener queryTaskClickListener = new OnClickListener() {
 		@Override
@@ -91,18 +122,78 @@ public class QueryTaskFragment extends Fragment {
 				edialog.setTargetFragment(QueryTaskFragment.this, REQUESTENDTIME);
 				edialog.show(getFragmentManager(), null);
 				break;
+			case R.id.tv_task_three_days:
+				queryClick(3);
+				break;
+			case R.id.tv_task_one_week:
+				queryClick(7);
+				break;
+			case R.id.tv_task_one_month:
+				queryClick(-1);
+				break;
 			}
 		}
 	};
+	
+	protected void queryClick(int day) {
+		Calendar c = Calendar.getInstance();
+		if(day == -1){
+			day = c.get(Calendar.DATE);
+		}
+		endTime = c.getTimeInMillis();
+		
+		c.add(Calendar.DATE, -day);
+		startTime = c.getTimeInMillis();
+		taskCreateStartTime.setText(Utils.formatTime(startTime, "yyyy-MM-dd"));
+		taskCreateEndTime.setText(Utils.formatTime(endTime, "yyyy-MM-dd"));
+		new QueryTaskFromNet().execute(
+				Utils.formatTime(startTime, "yyyy-MM-dd"),
+				Utils.formatTime(endTime, "yyyy-MM-dd"));
+	}
+	
 	public void onActivityResult(int requestCode, int resultCode, android.content.Intent data) {
 		if(resultCode == Activity.RESULT_OK){
 			if(requestCode == REQUESTSTARTTIME){
-				taskCreateStartTime.setText(Utils.formatTime(data.getLongExtra(SelectDateDialog.SELECTTIME, 0), "yyyy-MM-dd"));
+				startTime = data.getLongExtra(SelectDateDialog.SELECTTIME, 0);
+				taskCreateStartTime.setText(Utils.formatTime(startTime, "yyyy-MM-dd"));
 			}else if(requestCode == REQUESTENDTIME){
+				endTime = data.getLongExtra(SelectDateDialog.SELECTTIME, 0);
+				if(endTime < startTime){
+					endTime = startTime;
+				}
 				taskCreateEndTime.setText(Utils.formatTime(data.getLongExtra(SelectDateDialog.SELECTTIME, 0), "yyyy-MM-dd"));
 			}
 		}
 	};
+	
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		super.onCreateOptionsMenu(menu, inflater);
+		inflater.inflate(R.menu.query_task, menu);
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.menu_query_task:
+			if(startTime == 0 && endTime == 0){
+				UItoolKit.showToastShort(getActivity(), "先选择时间段");
+				return true;
+			}
+			if(startTime == 0){
+				startTime  = endTime;
+			}
+			if(endTime == 0){
+				endTime = startTime;
+			}
+			new QueryTaskFromNet().execute(
+					Utils.formatTime(startTime, "yyyy-MM-dd"),
+					Utils.formatTime(endTime, "yyyy-MM-dd"));
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
 	
 	private class QueryTaskFromNet extends AsyncTask<String, Void, String>{
 
@@ -113,13 +204,14 @@ public class QueryTaskFragment extends Fragment {
 				param.put("RWBT", "");
 				param.put("TXSJ", "");
 				param.put("RWID", "");
-				param.put("RWZT", params[0]);
 				param.put("RWZT", "");
-				param.put("TXSJ_BEGIN", params[1]);
-				param.put("TXSJ_END", "");
+				param.put("RWZT", "");
+				param.put("TXSJ_BEGIN",params[0]);
+				param.put("TXSJ_END", params[1]);
 				param.put("TXR", Preferences.getUserinfo(getActivity(), "YHMC"));
 				param.put("LQR", Preferences.getUserinfo(getActivity(), "YHID"));
 				param.put("RWGL", "");
+				param.put("WDRW", "");
 			} catch (JSONException e1) {
 				e1.printStackTrace();
 			}
@@ -161,6 +253,8 @@ public class QueryTaskFragment extends Fragment {
 	public void saveResult(String result) {
 		BufferedWriter writer = null;
 		try {
+			JSONObject json = new JSONObject(result);
+			result = json.getString("Rows");
 			OutputStream out = getActivity().openFileOutput(
 					Preferences.getUserId(getActivity()) + ".xml",
 					Context.MODE_PRIVATE);
@@ -169,6 +263,8 @@ public class QueryTaskFragment extends Fragment {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (JSONException e) {
 			e.printStackTrace();
 		} finally {
 			try {

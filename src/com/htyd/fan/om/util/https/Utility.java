@@ -16,6 +16,7 @@ import com.htyd.fan.om.model.DistrictBean;
 import com.htyd.fan.om.model.ProvinceBean;
 import com.htyd.fan.om.model.TaskDetailBean;
 import com.htyd.fan.om.model.TaskProcessBean;
+import com.htyd.fan.om.model.CommonDataBean;
 import com.htyd.fan.om.util.db.OMDatabaseManager;
 import com.htyd.fan.om.util.db.OMUserDatabaseManager;
 
@@ -165,6 +166,21 @@ public class Utility {
 		return false;
 	}
 	
+	public static boolean handleTaskProcessResponse(String response,ArrayList<TaskProcessBean> processList
+			) throws JSONException {
+		if (!TextUtils.isEmpty(response)) {
+			JSONObject resultJson = new JSONObject(response);
+			JSONArray array = (JSONArray) new JSONTokener(resultJson.getString("Rows")).nextValue();
+			for(int i = 0;i<array.length();i++){
+				TaskProcessBean mBean = new TaskProcessBean();
+				mBean.setFromJson(array.getJSONObject(i));
+				processList.add(mBean);
+			}
+				return true;
+			}
+		return false;
+	}
+	
 	/**
 	 * 解析返回的签到数据
 	 * @param mManager
@@ -210,6 +226,39 @@ public class Utility {
 			}
 		} else {
 			throw new Exception("错误");
+		}
+	}
+	
+	public static void handleAccessory(ArrayList<AffiliatedFileBean> accessoryList,
+			String response,int taskId) throws Exception {
+		if (!TextUtils.isEmpty(response)) {
+			JSONArray array = (JSONArray) new JSONTokener(
+					response).nextValue();
+			for (int i = 0; i < array.length(); i++) {
+				AffiliatedFileBean mBean = new AffiliatedFileBean();
+				mBean.setFromJson(array.getJSONObject(i),taskId);
+				accessoryList.add(mBean);
+			}
+		} else {
+			throw new Exception("错误");
+		}
+	}
+	
+	public static boolean handleTaskType(OMDatabaseManager mManager,String result, ArrayList<CommonDataBean> typeList) throws JSONException{
+		if(!TextUtils.isEmpty(result)){ 
+			mManager.openDb(1);
+			JSONObject resultJson = new JSONObject(result);
+			JSONArray array = (JSONArray) new JSONTokener(
+					resultJson.getString("Rows")).nextValue();
+			for (int i = 0; i < array.length(); i++) {
+				CommonDataBean mBean = new CommonDataBean();
+				typeList.add(mBean);
+				mBean.setFromJson(array.getJSONObject(i));
+				mManager.insertTaskType(mBean);
+			}
+			return true;
+		}else{
+			return false;
 		}
 	}
 }

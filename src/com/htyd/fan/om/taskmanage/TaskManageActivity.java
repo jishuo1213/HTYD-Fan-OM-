@@ -1,6 +1,7 @@
 package com.htyd.fan.om.taskmanage;
 
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -9,19 +10,19 @@ import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Loader;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 
 import com.htyd.fan.om.R;
 import com.htyd.fan.om.model.TaskDetailBean;
 import com.htyd.fan.om.taskmanage.fragment.CreateTaskFragment;
+import com.htyd.fan.om.taskmanage.fragment.CreateTaskFragment.SaveTaskListener;
 import com.htyd.fan.om.taskmanage.fragment.EditTaskFragment;
 import com.htyd.fan.om.taskmanage.fragment.QueryTaskFragment;
 import com.htyd.fan.om.taskmanage.fragment.TaskListFragment;
 import com.htyd.fan.om.taskmanage.fragment.TaskWithProcessFragment;
 import com.htyd.fan.om.util.base.SingleFragmentActivity;
 
-public class TaskManageActivity extends SingleFragmentActivity {
+public class TaskManageActivity extends SingleFragmentActivity implements SaveTaskListener {
 
 	private static final String TASKNETID = "tasknetid";
 	private static final int LOADERID = 0x09;
@@ -49,6 +50,7 @@ public class TaskManageActivity extends SingleFragmentActivity {
 		ActionBar actionBar = getActionBar();
 		actionBar.setBackgroundDrawable(getResources().getDrawable(
 				R.drawable.bg_top_navigation_bar));
+		actionBar.setDisplayShowHomeEnabled(false);
 		actionBar.setDisplayHomeAsUpEnabled(true);
 	}
 
@@ -56,9 +58,10 @@ public class TaskManageActivity extends SingleFragmentActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			if (NavUtils.getParentActivityName(this) != null) {
+			/*if (NavUtils.getParentActivityName(this) != null) {
 				NavUtils.navigateUpFromSameTask(this);
-			}
+			}*/
+			finish();
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -120,12 +123,17 @@ public class TaskManageActivity extends SingleFragmentActivity {
 	@Override
 	protected Fragment createFragment() {
 		if (getIntent().getIntExtra(TaskListFragment.TASKTYPE, -1) == -1) {
-			return new CreateTaskFragment();
+			return CreateTaskFragment.newInstance(this);
 		}else if(getIntent().getIntExtra(TaskListFragment.TASKTYPE, -1) == 12){
 			return new QueryTaskFragment();
 		} else {
 			initLoader();
 			return new Fragment();
 		}
+	}
+
+	@Override
+	public void onSaveSuccess() {
+		setResult(Activity.RESULT_OK);
 	}
 }

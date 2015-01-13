@@ -106,7 +106,7 @@ public class WelcomePageFragment extends Fragment {
 		protected String doInBackground(String... params) {
 
 			try {
-				Thread.sleep(2000);
+				Thread.sleep(1000);
 			} catch (InterruptedException e2) {
 				e2.printStackTrace();
 			}

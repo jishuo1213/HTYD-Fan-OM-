@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,7 +8,7 @@
 
     <TextView
         android:id="@+id/tv_add_accessory"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="10dp"
@@ -19,8 +19,17 @@
         android:textColor="@color/key_text"
         android:textSize="18sp"
         />
+    <ImageView 
+        android:id="@+id/tv_refresh_accessory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/refreshicon_titlebar2"
+        android:layout_alignParentRight="true"
+        android:contentDescription="@null"
+        />
     
     <ListView
+        android:layout_below="@id/tv_add_accessory"
         android:id="@+id/list_accessory" 
         android:layout_margin="10dp"
         android:layout_width="match_parent"
@@ -29,4 +38,4 @@
         android:dividerHeight="1px"
         />
 
-</LinearLayout>
+</RelativeLayout>

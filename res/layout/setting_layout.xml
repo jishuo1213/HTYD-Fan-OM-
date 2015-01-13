@@ -3,61 +3,55 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:ignore="HardcodedText" 
-    android:background="@color/activity_bg_color" >
+    android:background="@color/activity_bg_color"
+    tools:ignore="HardcodedText" >
 
     <TextView
         android:id="@+id/welcome"
         style="@style/style_normal_textview"
-        android:text="欢迎你，"
-        />
-    
-    <TextView 
+        android:text="欢迎你，" />
+
+    <TextView
         android:id="@+id/tv_user_name"
         style="@style/style_normal_textview"
         android:layout_toRightOf="@id/welcome"
-        android:text="admin"
-        />
-    
-    <TextView 
+        android:text="admin" />
+
+    <TextView
         android:id="@+id/setting"
         style="?android:listSeparatorTextViewStyle"
         android:layout_below="@id/tv_user_name"
         android:text="设置项"
-        android:textSize="19sp"
-        />
-    
-    <TextView 
+        android:textSize="19sp" />
+
+    <TextView
         android:id="@+id/tv_common_address"
         style="@style/style_normal_textview"
-        android:layout_below="@id/setting"
         android:layout_width="match_parent"
+        android:layout_below="@id/setting"
+        android:layout_margin="5dp"
         android:background="@color/skyblue"
-        android:layout_margin="5dp"
-        android:text="管理常用地点"
-        />
-    
-    <TextView 
-        android:id="@+id/tv_sync_data"
+        android:text="管理常用地点" />
+
+    <TextView
+        android:id="@+id/tv_person_info"
         style="@style/style_normal_textview"
-        android:layout_below="@id/tv_common_address"
+        android:layout_width="match_parent"
+        android:layout_below="@id/tv_common_address" 
         android:layout_margin="5dp"
-        android:text="同步数据"
-        android:layout_alignRight="@id/tv_common_address"
-        android:layout_alignParentLeft="true"
         android:background="@color/orange"
-        />
-    	
-    	<TextView 
+        android:text="修改个人资料"
+        android:textColor="@color/white"/>
+    
+    <TextView
         android:id="@+id/tv_log_out"
         style="@style/style_normal_textview"
-        android:layout_below="@id/tv_sync_data"
-        android:layout_margin="5dp"
-        android:text="退出登录"
-        android:layout_alignRight="@id/tv_common_address"
         android:layout_alignParentLeft="true"
+        android:layout_width="match_parent"
+        android:layout_below="@id/tv_person_info"
+        android:layout_margin="5dp"
         android:background="@color/red"
-        android:textColor="@color/white"
-        />
-    
+        android:text="退出登录"
+        android:textColor="@color/white" />
+
 </RelativeLayout>

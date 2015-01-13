@@ -35,7 +35,7 @@
     <application
         android:name="com.htyd.fan.om.main.OMApp"
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/om_logo"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" 
         >
@@ -46,14 +46,20 @@
         <activity
             android:name="com.htyd.fan.om.main.MainActivity"
             android:label="@string/app_name"
+            android:alwaysRetainTaskState="true"
             android:screenOrientation="landscape" >
         </activity>
 
-        <receiver
+        <!-- <receiver
             android:name="com.htyd.fan.om.map.LocationReceiver"
             android:exported="false" >
+        </receiver> -->
+        
+        <receiver
+            android:name="com.htyd.fan.om.service.NetStateReceiver"
+            android:exported="false" >
             <intent-filter>
-                <action android:name="com.htyd.fan.om.map.ACTION_LOCATION" />
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
 
@@ -67,9 +73,9 @@
         <activity
             android:name="com.htyd.fan.om.taskmanage.TaskManageActivity"
             android:screenOrientation="landscape" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.htyd.fan.om.main.MainActivity" />
+            <intent-filter >
+                <action android:name="om.fan.task"/>
+            </intent-filter>
         </activity>
         <activity
             android:name="com.htyd.fan.om.login.LoginActivity"
@@ -90,12 +96,15 @@
 
         <activity android:name="com.htyd.fan.om.util.zxing.CaptureActivity"
             android:screenOrientation="portrait"/>
+        
+        <activity android:name="com.htyd.fan.om.util.fragment.PhotoViewer"
+            android:screenOrientation="landscape"
+            />
         <service
             android:name="com.baidu.location.f"
             android:enabled="true"
             android:process=":remote"
-             >
-        </service>
+             />
     </application>
 
 </manifest>

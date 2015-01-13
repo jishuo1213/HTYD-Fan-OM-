@@ -24,7 +24,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -49,7 +48,6 @@ public class CommonAddressDialog extends DialogFragment implements SelectLocatio
 			addressList = loadAddress();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-			Log.i("fanjishuo___onCreate", "catch e");
 		}
 	}
 	

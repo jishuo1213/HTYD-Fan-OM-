@@ -22,6 +22,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -39,6 +40,7 @@ import android.widget.TextView;
 
 import com.htyd.fan.om.R;
 import com.htyd.fan.om.attendmanage.adapter.AttendCalendarGridAdapter;
+import com.htyd.fan.om.main.MainActivity;
 import com.htyd.fan.om.map.LocationReceiver;
 import com.htyd.fan.om.map.OMLocationManager;
 import com.htyd.fan.om.model.AttendBean;
@@ -49,6 +51,7 @@ import com.htyd.fan.om.util.base.ThreadPool;
 import com.htyd.fan.om.util.base.Utils;
 import com.htyd.fan.om.util.db.OMUserDatabaseHelper.AttendCursor;
 import com.htyd.fan.om.util.db.OMUserDatabaseManager;
+import com.htyd.fan.om.util.db.SQLSentence;
 import com.htyd.fan.om.util.fragment.AddressListDialog;
 import com.htyd.fan.om.util.fragment.AddressListDialog.ChooseAddressListener;
 import com.htyd.fan.om.util.fragment.SelectLocationDialogFragment;
@@ -69,7 +72,7 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 	private LoaderManager mLoadManager;
 	private AttendLoaderCallback mCallback;
 	private GridView monthGridView;
-	private TextView attendTime, attendLocation, attendState;
+	private TextView attendTime, attendLocation, attendState,month;
 	private Button signButton;
 	public static int currentSelect;// 当前选中的天的位置
 	private int firstDayPosition;// 这个月一号的位置
@@ -110,23 +113,24 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 	@Override
 	public void onResume() {
 		super.onResume();
+		getActivity().registerReceiver(mLocationReceiver,new IntentFilter(OMLocationManager.ACTION_LOCATION));
 	}
 
 	@Override
 	public void onStop() {
-		getActivity().unregisterReceiver(mLocationReceiver);
 		super.onStop();
 	}
 
 	@Override
 	public void onPause() {
+		getActivity().unregisterReceiver(mLocationReceiver);
+		Log.i("fanjishuo_____attendfragment", "onPAUSE");
 		super.onPause();
 	}
 	
 	@Override
 	public void onStart() {
 		super.onStart();
-		getActivity().registerReceiver(mLocationReceiver,new IntentFilter(OMLocationManager.ACTION_LOCATION));
 	}
 
 	private void intiView(View v) {
@@ -137,7 +141,7 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 		monthGridView.setAdapter(new AttendCalendarGridAdapter(monthList,
 				getActivity()));
 		monthGridView.setOnItemClickListener(new OnDayClickListener());
-		TextView month = (TextView) v.findViewById(R.id.tv_month);
+		month = (TextView) v.findViewById(R.id.tv_month);
 		month.setText(selectDay.get(Calendar.YEAR) + "年"
 				+ (selectDay.get(Calendar.MONTH) + 1) + "月");
 		attendTime = (TextView) v.findViewById(R.id.tv_attend_time);
@@ -146,6 +150,7 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 		signButton = (Button) v.findViewById(R.id.btn_add_attend);
 		signButton.setOnClickListener(mListener);
 		attendLocation.setOnClickListener(mListener);
+		month.setOnClickListener(mListener);
 		popupMenu = new PopupMenu(getActivity(), attendLocation);
 		popupMenu.inflate(R.menu.select_address_menu);
 		popupMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
@@ -192,11 +197,14 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 			case  R.id.tv_attend_address:
 				popupMenu.show();
 				break;
+			case R.id.tv_month:
+				new RefreshAttendTask().execute();
+				v.setEnabled(false);
+				break;
 			}
 		}
 	}
 	
-
 	private class MainPageGridAdapter extends BaseAdapter {
 		private String[] itemArray;
 		private Resources r;
@@ -304,7 +312,7 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 			}
 			DateBean mBean = (DateBean) parent.getAdapter().getItem(position);
 			if (mBean.state != 1) {
-				UItoolKit.showToastShort(getActivity(), "看清楚日期在点啊浑淡!");
+				UItoolKit.showToastShort(getActivity(), "看清楚日期在点啊!");
 				return;
 			}
 			if (mBean.day > Calendar.getInstance().get(Calendar.DATE)) {
@@ -349,7 +357,13 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 			JSONObject param = new JSONObject();
 			try {
 				param.put("YHID", Preferences.getUserinfo(getContext(), "YHID"));
-				param.put("QDRQ", Calendar.getInstance().get(Calendar.YEAR) + "-" + (monthNum + 1));
+				if (monthNum >= 9) {
+					param.put("QDRQ", Calendar.getInstance().get(Calendar.YEAR)
+							+ "-" + (monthNum + 1));
+				} else {
+					param.put("QDRQ", Calendar.getInstance().get(Calendar.YEAR)
+							+ "-0" + (monthNum + 1));
+				}
 				result = NetOperating.getResultFromNet(getContext(), param,
 						Urls.SAVEATTENDURL, "Operate=getAllKqxxByyhidAndqdrq");
 				Utility.handleAttend(mManager, result);
@@ -382,10 +396,11 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 					AttendBean tempBean = attendCursor.getAttend();
 					pos = Utils.getCalendarField(tempBean.time, Calendar.DATE) - 1;
 					attendMap.put(pos, tempBean);
-					setGridView(tempBean,firstDayPosition+pos);
+				//	setGridView(tempBean,firstDayPosition+pos);
 					monthList.get(firstDayPosition+pos).attendState = tempBean.state;
 				} while (attendCursor.moveToNext());
 				isFinish = true;
+				((AttendCalendarGridAdapter)monthGridView.getAdapter()).notifyDataSetChanged();
 				setDetailView(attendMap.get(currentSelect - firstDayPosition));
 				OMUserDatabaseManager.getInstance(getActivity()).closeDb();
 			} else {
@@ -406,9 +421,9 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 			return;
 		}
 		TextView textView = (TextView) v.findViewById(R.id.tv_item_weekday);
-		if(attendBean.state == 1){
+		if (attendBean.state == 1) {
 			textView.setTextColor(getActivity().getResources().getColor(R.color.green));
-		}else if(attendBean.state == 2){
+		} else if (attendBean.state == 2) {
 			textView.setTextColor(getActivity().getResources().getColor(R.color.blue));
 		}
 	}
@@ -438,7 +453,7 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 		@Override
 		protected void onNetWorkLocationReceived(Context context,
 				OMLocationBean loc) {
-			if(!isVisible()){
+			if(MainActivity.currentPos != 0){
 				return;
 			}
 			AttendBean mBean = new AttendBean();
@@ -503,7 +518,7 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 			if (result.equals("TRUE")) {
 				OMUserDatabaseManager.getInstance(getActivity()).openDb(1);
 				ThreadPool.runMethod(new Runnable() {
-					@Override
+				@Override
 					public void run() {
 						OMUserDatabaseManager.getInstance(getActivity()).insertAttendBean(mBean);
 					}
@@ -516,11 +531,24 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 				attendState.setText("已签到");
 				int pos = Utils.getCalendarField(mBean.time, Calendar.DATE) - 1;
 				monthList.get(firstDayPosition + pos).attendState = mBean.state;
+				((AttendCalendarGridAdapter)monthGridView.getAdapter()).notifyDataSetChanged();
 				setGridView(mBean, firstDayPosition + pos);
 				attendMap.put(pos, mBean);
 			} else if (result.equals("REPEAT")){
-				UItoolKit.showToastShort(getActivity(), "一天签十次也不会涨工资的");
-			}else{
+				UItoolKit.showToastShort(getActivity(), "重复签到");
+			} else if (result.equals("REPEAT_TRUE")){
+				UItoolKit.showToastShort(getActivity(), "签到又成功");
+				int pos = Utils.getCalendarField(mBean.time, Calendar.DATE) - 1;
+				int id = attendMap.get(pos).attendId;
+				mBean.attendId = id;
+				attendMap.put(pos, mBean);
+				ThreadPool.runMethod(new Runnable() {
+					@Override
+						public void run() {
+							OMUserDatabaseManager.getInstance(getActivity()).updateAttend(mBean);
+						}
+					});
+			} else {
 				UItoolKit.showToastShort(getActivity(), "保存至网络错误");
 			}
 			signButton.setEnabled(true);
@@ -547,5 +575,66 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 	@Override
 	public void onAddressChoose(String address) {
 		attendLocation.setText(address);
+	}
+	
+	private class RefreshAttendTask extends AsyncTask<Void, Void, Boolean>{
+
+		private OMUserDatabaseManager mManger;
+		
+		public RefreshAttendTask() {
+			super();
+			mManger = OMUserDatabaseManager.getInstance(getActivity());
+		}
+
+		@Override
+		protected Boolean doInBackground(Void... params) {
+			String result = "";
+			JSONObject param = new JSONObject();
+			Calendar c = Calendar.getInstance();
+			try {
+				param.put("YHID", Preferences.getUserinfo(getActivity(), "YHID"));
+				param.put("QDRQ", c.get(Calendar.YEAR) + "-" + (c.get(Calendar.MONTH) + 1));
+				result = NetOperating.getResultFromNet(getActivity(), param,
+						Urls.SAVEATTENDURL, "Operate=getAllKqxxByyhidAndqdrq");
+			} catch (JSONException e) {
+				e.printStackTrace();
+				return false;
+			} catch (Exception e) {
+				e.printStackTrace();
+				return false;
+			}
+			mManger.clearFeedTable(SQLSentence.TABLE_CHECK);
+			try {
+				Utility.handleAttend(mManger, result);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return false;
+			}
+			return true;
+		}
+		
+		@Override
+		protected void onPostExecute(Boolean result) {
+			if (result) {
+				Bundle args = new Bundle();
+				args.putInt(MONTHNUM, Calendar.getInstance()
+						.get(Calendar.MONTH));
+				attendMap.clear();
+				resetAttendList();
+				mLoadManager.restartLoader(ATTENDLOADERID, args, mCallback);
+				UItoolKit.showToastShort(getActivity(), "刷新成功");
+			} else {
+				UItoolKit.showToastShort(getActivity(), "加载数据失败");
+			}
+			month.setEnabled(true);
+			cancel(false);
+		}
+	}
+	
+	protected void resetAttendList(){
+		int length = monthList.size();
+		for(int i = 0;i<length;i++){
+			monthList.get(i).attendState = 0;
+		}
 	}
 }

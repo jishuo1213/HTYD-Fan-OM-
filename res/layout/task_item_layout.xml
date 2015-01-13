@@ -14,7 +14,7 @@
         android:layout_margin="5dp"
         android:contentDescription="@null"
         android:scaleType="center"
-        android:src="@drawable/img_task_complete" />
+         />
 
     <TextView
         android:id="@+id/tv_task_descrption"

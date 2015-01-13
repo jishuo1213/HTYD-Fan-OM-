@@ -11,14 +11,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONTokener;
 
-import com.htyd.fan.om.R;
-import com.htyd.fan.om.util.ui.UItoolKit;
-
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
@@ -26,6 +23,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+
+import com.htyd.fan.om.R;
+import com.htyd.fan.om.util.ui.UItoolKit;
 
 public class AddressListDialog extends DialogFragment {
 
@@ -58,7 +58,7 @@ public class AddressListDialog extends DialogFragment {
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		Builder builder = new AlertDialog.Builder(getActivity());
 		builder.setTitle("选择常用地点");
-		if (addressList.size() > 0) {
+		if( addressList != null && addressList.size() > 0) {
 			builder.setAdapter(new AddressAdapter(addressList), new OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {

@@ -86,7 +86,6 @@ public class CreateProcessDialog extends DialogFragment {
 		}
 
 		builder.setNegativeButton("取消", dialogListener);
-		dialog = builder.create();
 		return builder.create();
 	}
 
@@ -144,8 +143,7 @@ public class CreateProcessDialog extends DialogFragment {
 				isShowDialog(dialog,false);
 				if (!checkCanSave()) {
 					UItoolKit.showToastShort(getActivity(), "这些都不能不填");
-				}
-				if (checkCanSave()) {
+				}else{
 					sendReult();
 				}
 				break;
@@ -250,6 +248,7 @@ public class CreateProcessDialog extends DialogFragment {
 				getTargetFragment().onActivityResult(getTargetRequestCode(),
 						Activity.RESULT_OK, i);
 				isShowDialog(dialog,true);
+				dialog.cancel();
 			} else {
 				UItoolKit.showToastShort(getActivity(), "保存不成功，请重试");
 			}
@@ -289,5 +288,5 @@ public class CreateProcessDialog extends DialogFragment {
 			e.printStackTrace();
 		}
 	}
-
+	
 }

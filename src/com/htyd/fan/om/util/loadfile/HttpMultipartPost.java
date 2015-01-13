@@ -21,7 +21,7 @@ import android.content.DialogInterface.OnCancelListener;
 import android.os.AsyncTask;
 
 import com.htyd.fan.om.main.OMApp;
-import com.htyd.fan.om.model.AffiliatedFileBean;
+import com.htyd.fan.om.util.base.Utils;
 import com.htyd.fan.om.util.https.Urls;
 import com.htyd.fan.om.util.loadfile.CustomMultipartEntity.ProgressListener;
 import com.htyd.fan.om.util.ui.UItoolKit;
@@ -33,12 +33,11 @@ public class HttpMultipartPost extends AsyncTask<String, Integer, String> {
 	private String filePath;
 	private ProgressDialog pd;
 	private long totalSize;
-	private AffiliatedFileBean mBean;
 	private UpLoadFinishListener listener;
 	private int position;
 	
 	public interface UpLoadFinishListener{
-		public void onUpLoadFinish(AffiliatedFileBean mBean,int position);
+		public void onUpLoadFinish(int fileId,int position);
 	}
 
 	public HttpMultipartPost(Context context, String filePath,UpLoadFinishListener listener) {
@@ -46,7 +45,6 @@ public class HttpMultipartPost extends AsyncTask<String, Integer, String> {
 		this.filePath = filePath;
 		this.listener = listener;
 		position = -1;
-	    mBean = new AffiliatedFileBean();
 	}
 
 	@Override
@@ -88,18 +86,17 @@ public class HttpMultipartPost extends AsyncTask<String, Integer, String> {
 			StringBody sb2 = new StringBody(params[1],Charset.defaultCharset());
 			StringBody sb3 = new StringBody(params[2],Charset.defaultCharset());
 			StringBody sb4 = new StringBody(params[3],Charset.defaultCharset());
-			StringBody sb5 = new StringBody("11");
+			StringBody sb5 = new StringBody(Utils.TASKMODULE+"");
+			StringBody sb6 = new StringBody(params[5],Charset.defaultCharset());
 			
 			multipartContent.addPart("image", new FileBody(new File(
 					filePath)));
-			mBean.filePath = filePath;
-			mBean.fileSource = 0;
-			mBean.taskId = Integer.parseInt(params[2]);
 			multipartContent.addPart("yhid", sb1);
 			multipartContent.addPart("yhmc", sb2);
 			multipartContent.addPart("rwid", sb3);
 			multipartContent.addPart("rwbt", sb4);
 			multipartContent.addPart("rz_mkid", sb5);
+			multipartContent.addPart("lbmc", sb6);
 			totalSize = multipartContent.getContentLength();
 			
 			// Send it
@@ -129,9 +126,7 @@ public class HttpMultipartPost extends AsyncTask<String, Integer, String> {
 			JSONObject json = new JSONObject(result);
 			if(json.getBoolean("RESULT")){
 				UItoolKit.showToastShort(context, "保存成功");
-				mBean.fileState = 1;
-				mBean.netId = json.getInt("WJID");
-				listener.onUpLoadFinish(mBean,position);
+				listener.onUpLoadFinish(json.getInt("WJID"),position);
 			}else{
 				UItoolKit.showToastShort(context, "保存失败");
 			}
