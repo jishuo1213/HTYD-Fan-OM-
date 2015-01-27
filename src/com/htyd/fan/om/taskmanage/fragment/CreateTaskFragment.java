@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -32,9 +33,9 @@ import android.widget.TextView;
 import com.htyd.fan.om.R;
 import com.htyd.fan.om.map.LocationReceiver;
 import com.htyd.fan.om.map.OMLocationManager;
+import com.htyd.fan.om.model.CommonDataBean;
 import com.htyd.fan.om.model.OMLocationBean;
 import com.htyd.fan.om.model.TaskDetailBean;
-import com.htyd.fan.om.model.CommonDataBean;
 import com.htyd.fan.om.util.base.Preferences;
 import com.htyd.fan.om.util.base.ThreadPool;
 import com.htyd.fan.om.util.base.Utils;
@@ -42,6 +43,7 @@ import com.htyd.fan.om.util.db.OMUserDatabaseManager;
 import com.htyd.fan.om.util.fragment.AddressListDialog;
 import com.htyd.fan.om.util.fragment.AddressListDialog.ChooseAddressListener;
 import com.htyd.fan.om.util.fragment.DateTimePickerDialog;
+import com.htyd.fan.om.util.fragment.InputDialogFragment;
 import com.htyd.fan.om.util.fragment.SelectLocationDialogFragment;
 import com.htyd.fan.om.util.fragment.SpendTimePickerDialog;
 import com.htyd.fan.om.util.fragment.TaskTypeDialogFragment;
@@ -58,20 +60,21 @@ public class CreateTaskFragment extends Fragment implements ChooseAddressListene
 	private static final int REQUESTENDTIME = 4;// 结束时间
 	private static final int REQUESTZXING = 5;//条码扫描
 	private static final int REQUESTTYPE = 0x06;//任务类型
-
+	private static final int REQUESTLOCATIONINPUT = 0x07;//工作地点
+	private static final int REQUESTCODEINPUT = 0x08;//条码输入
+	
 	private TaskViewPanel mPanel;
 	private TaskDetailBean mBean;
 	private SelectViewClickListener mListener;
 	private OMUserDatabaseManager mManager;
 	protected long startTime;
-//	private List<AffiliatedFileBean> accessoryList;
-//	protected ListViewForScrollView accessoryListView;
 	protected double latitiude, longitude;
-	protected PopupMenu popupMenu;
+	protected PopupMenu locationPopupMenu,barcodePopMenu;
 	protected SaveTaskListener saveListener;
+	protected Handler handler;
 	
 	public interface SaveTaskListener {
-		public void onSaveSuccess();
+		public void onSaveSuccess(TaskDetailBean mBean,boolean isLocal);
 	}
 	
 	public static Fragment newInstance(SaveTaskListener saveListener){
@@ -91,6 +94,7 @@ public class CreateTaskFragment extends Fragment implements ChooseAddressListene
 		mBean = new TaskDetailBean();
 		mListener = new SelectViewClickListener();
 		mManager = OMUserDatabaseManager.getInstance(getActivity());
+		handler = new Handler();
 	}
 
 	@Override
@@ -103,14 +107,19 @@ public class CreateTaskFragment extends Fragment implements ChooseAddressListene
 	}
 	
 	@Override
-		public void onActivityCreated(Bundle savedInstanceState) {
+	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		OMLocationManager.get(getActivity()).startLocationUpdate();
+		if (Utils.isNetWorkEnable()) {
+			Log.i("fanjishuo___onActivityCreated", "onActivityCreated");
+			OMLocationManager.get(getActivity()).setLocCilentOption(null);
+			OMLocationManager.get(getActivity()).startLocationUpdate();
 		}
+	}
 	
 	@Override
 	public void onStart() {
 		super.onStart();
+		Log.i("fanjishuo___onStart", "onStarts");
 		getActivity().registerReceiver(mLocationReceiver, new IntentFilter(OMLocationManager.ACTION_LOCATION));
 	}
 	
@@ -144,6 +153,12 @@ public class CreateTaskFragment extends Fragment implements ChooseAddressListene
 			}else if(requestCode == REQUESTTYPE){
 				CommonDataBean mBean = data.getParcelableExtra(TaskTypeDialogFragment.TYPENAME);
 				mPanel.taskType.setText(mBean.typeName);
+			} else if (requestCode == REQUESTLOCATIONINPUT) {
+				mPanel.taskWorkLocation.setText(data
+						.getStringExtra(InputDialogFragment.INPUTTEXT));
+			} else if (requestCode == REQUESTCODEINPUT) {
+				mPanel.taskEquipment.setText(data
+						.getStringExtra(InputDialogFragment.INPUTTEXT));
 			}
 		}
 	}
@@ -163,6 +178,10 @@ public class CreateTaskFragment extends Fragment implements ChooseAddressListene
 				return true;
 			}
 			mPanel.getTaskDetailBean(mBean);
+			if(!Utils.isNetWorkEnable()){
+				offLineCreateTask();
+				return true;
+			}
 			startTask(mBean);
 			return true;
 		default:
@@ -170,12 +189,52 @@ public class CreateTaskFragment extends Fragment implements ChooseAddressListene
 		}
 	}
 
+	private void offLineCreateTask() {
+		mBean.isSyncToServer = 0;
+		ThreadPool.runMethod(new Runnable() {
+			@Override
+			public void run() {
+				OMUserDatabaseManager.getInstance(getActivity()).openDb(1);
+				mBean.saveTime = System.currentTimeMillis();
+				long temp = OMUserDatabaseManager.getInstance(getActivity()).insertTaskBean(mBean);
+				mBean.taskLocalId = (int) temp;
+				if (temp > 0) {
+					handler.post(saveSuccess);
+				} else {
+					handler.post(saveFail);
+				}
+			}
+		});
+	}
+
 	private void initView(View v) {
 		mPanel = new TaskViewPanel(v);
 		mPanel.setListener();
-		popupMenu = new PopupMenu(getActivity(), mPanel.taskWorkLocation);
-		popupMenu.inflate(R.menu.select_address_menu);
-		popupMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+		barcodePopMenu = new PopupMenu(getActivity(), mPanel.taskEquipment);
+		barcodePopMenu.inflate(R.menu.qrcode_menu);
+		barcodePopMenu
+				.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+
+					@Override
+					public boolean onMenuItemClick(MenuItem item) {
+						switch (item.getItemId()) {
+						case R.id.menu_scan:
+							Intent i = new Intent(getActivity(),CaptureActivity.class);
+							startActivityForResult(i, REQUESTZXING);
+							return true;
+						case R.id.menu_input_qrcode:
+							DialogFragment fragment = InputDialogFragment.newInstance("设备条码", "输入设备条码");
+							fragment.setTargetFragment(CreateTaskFragment.this, REQUESTCODEINPUT);
+							fragment.show(getFragmentManager(), null);
+							return true;
+						default:
+							return true;
+						}
+					}
+				});
+		locationPopupMenu = new PopupMenu(getActivity(), mPanel.taskWorkLocation);
+		locationPopupMenu.inflate(R.menu.select_address_menu);
+		locationPopupMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 			@Override
 			public boolean onMenuItemClick(MenuItem item) {
 				switch (item.getItemId()) {
@@ -189,6 +248,11 @@ public class CreateTaskFragment extends Fragment implements ChooseAddressListene
 					locationDialog.setTargetFragment(CreateTaskFragment.this, 0);
 					locationDialog.show(fm, null);
 					return true;
+				case R.id.menu_input:
+					DialogFragment inputdialog = InputDialogFragment.newInstance("工作地点", "请输入工作地点");
+					inputdialog.setTargetFragment(CreateTaskFragment.this, REQUESTLOCATIONINPUT);
+					inputdialog.show(getFragmentManager(), null);
+					return true;
 				default:
 					return true;
 				}
@@ -198,15 +262,29 @@ public class CreateTaskFragment extends Fragment implements ChooseAddressListene
 		getActivity().getActionBar().setTitle("新建任务");
 	}
 
+	protected Runnable saveSuccess = new Runnable() {
+		@Override
+		public void run() {
+			UItoolKit.showToastShort(getActivity(), "保存至本地成功");
+			saveListener.onSaveSuccess(mBean,true);
+			back();
+		}
+	};
+	
+	protected Runnable saveFail = new Runnable() {
+		@Override
+		public void run() {
+			UItoolKit.showToastShort(getActivity(), "保存至本地出错,请重试");
+		}
+	};
+	
 	private class TaskViewPanel {
 
 		private TextView taskWorkLocation, taskStartTime, taskNeedTime,
 				taskEquipment, taskType;
 		private EditText taskTitle, taskDescription, taskInstallLocation;
-				/*taskContact, taskContactPhone, addAccessory*/
 
 		public TaskViewPanel(View v) {
-//			addAccessory = (TextView) v.findViewById(R.id.tv_add_accessory);
 			taskTitle = (EditText) v.findViewById(R.id.edit_task_title);
 			taskDescription = (EditText) v
 					.findViewById(R.id.edit_task_description);
@@ -215,9 +293,6 @@ public class CreateTaskFragment extends Fragment implements ChooseAddressListene
 					.findViewById(R.id.edit_install_location);
 			taskStartTime = (TextView) v.findViewById(R.id.tv_start_time);
 			taskNeedTime = (TextView) v.findViewById(R.id.tv_work_need_time);
-/*			taskContact = (EditText) v.findViewById(R.id.edit_contacts);
-			taskContactPhone = (EditText) v
-					.findViewById(R.id.edit_contacts_phone);*/
 			taskEquipment = (TextView) v.findViewById(R.id.tv_task_equipment);
 			taskType = (TextView) v.findViewById(R.id.tv_task_type);
 		}
@@ -234,10 +309,7 @@ public class CreateTaskFragment extends Fragment implements ChooseAddressListene
 			mBean.installLocation = taskInstallLocation.getText().toString();
 			mBean.workLocation = taskWorkLocation.getText().toString();
 			mBean.taskTitle = taskTitle.getText().toString();
-/*			mBean.taskContacts = taskContact.getText().toString();
-			mBean.contactsPhone = taskContactPhone.getText().toString();*/
 			mBean.equipment = taskEquipment.getText().toString();
-//			mBean.taskContacts = taskDescription.getText().toString();
 			mBean.planStartTime = startTime;
 			mBean.planEndTime = Utils.parseDate(taskNeedTime.getText().toString(), "yyyy年MM月dd日 HH:mm:ss");
 			mBean.recipientsName = Preferences.getUserinfo(getActivity(), "YHMC");
@@ -252,8 +324,6 @@ public class CreateTaskFragment extends Fragment implements ChooseAddressListene
 			taskNeedTime.setOnClickListener(mListener);
 			taskEquipment.setOnClickListener(mListener);
 			taskType.setOnClickListener(mListener);
-//			addAccessory.setOnClickListener(mListener);
-//			registerForContextMenu(addAccessory);
 		}
 	}
 
@@ -263,7 +333,7 @@ public class CreateTaskFragment extends Fragment implements ChooseAddressListene
 			FragmentManager fm = getActivity().getFragmentManager();
 			switch (v.getId()) {
 			case R.id.tv_work_location:
-				popupMenu.show();
+				locationPopupMenu.show();
 				break;
 			case R.id.tv_start_time:
 				DateTimePickerDialog dateDialog = (DateTimePickerDialog) DateTimePickerDialog
@@ -284,8 +354,9 @@ public class CreateTaskFragment extends Fragment implements ChooseAddressListene
 				spendDialog.show(fm, null);
 				break;
 			case R.id.tv_task_equipment:
-				Intent i = new Intent(getActivity(),CaptureActivity.class);
-				startActivityForResult(i, REQUESTZXING);
+/*				Intent i = new Intent(getActivity(),CaptureActivity.class);
+				startActivityForResult(i, REQUESTZXING);*/
+				barcodePopMenu.show();
 				break;
 			case R.id.tv_task_type:
 				DialogFragment dialog = TaskTypeDialogFragment.newInstance("任务类别");
@@ -304,28 +375,13 @@ public class CreateTaskFragment extends Fragment implements ChooseAddressListene
 			longitude = loc.longitude;
 			OMLocationManager.get(getActivity()).stopLocationUpdate();
 		}
-
-		@Override
-		protected void onGPSLocationReceived(Context context, OMLocationBean loc) {
-		}
 		
+		@Override
+		protected void onNetDisableReceived(Context context) {
+			UItoolKit.showToastShort(getActivity(), "网络连接失败");
+			OMLocationManager.get(getActivity()).stopLocationUpdate();
+		}
 	};
-/*	@Override
-	public void onUpLoadClick(AffiliatedFileBean mBean,int position) {
-		HttpMultipartPost post = new HttpMultipartPost(getActivity(), mBean.filePath,this);
-		post.execute();
-	}
-
-	@Override
-	public void onDeleteClick(AffiliatedFileBean mBean, int position) {
-		accessoryList.remove(position);
-//		TaskAccessoryAdapter mAdapter = (TaskAccessoryAdapter)accessoryListView.getAdapter();
-//		mAdapter.notifyDataSetChanged();
-	}*/
-	
-/*	@Override
-	public void onPreviewImg(String path) {
-	}*/
 	
 	private class SaveTask extends AsyncTask<TaskDetailBean, Void, Boolean>{
 
@@ -362,17 +418,22 @@ public class CreateTaskFragment extends Fragment implements ChooseAddressListene
 		protected void onPostExecute(Boolean result) {
 			if(result){
 				mManager.openDb(1);
+				mBean.isSyncToServer = 1;
 				ThreadPool.runMethod(new Runnable() {
 					@Override
 					public void run() {
-						mManager.insertTaskBean(mBean);
+						long temp =  mManager.insertTaskBean(mBean);
+						if(temp > 0){
+							back();
+							mBean.taskLocalId = (int) temp;
+							saveListener.onSaveSuccess(mBean,false);
+						}
 					}
 				});
 				UItoolKit.showToastShort(getActivity(), "保存成功!");
-				back();
-				saveListener.onSaveSuccess();
 			}else{
 				UItoolKit.showToastShort(getActivity(), "保存至网络失败");
+				offLineCreateTask();
 			}
 		}
 	}
@@ -394,14 +455,17 @@ public class CreateTaskFragment extends Fragment implements ChooseAddressListene
 		ThreadPool.runMethod(new Runnable() {
 			@Override
 			public void run() {
-				try {
-					Instrumentation inst = new Instrumentation();
-					inst.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK);
-					getFragmentManager().beginTransaction().remove(CreateTaskFragment.this).commit();
-				} catch (Exception e) {
-					Log.e("Exception when onBack", e.toString());
-				}
+				finishActivity();
 			}
 		});
+	}
+	protected void finishActivity() {
+		try {
+			Instrumentation inst = new Instrumentation();
+			inst.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK);
+			getFragmentManager().beginTransaction().remove(CreateTaskFragment.this).commit();
+		} catch (Exception e) {
+			Log.e("Exception when onBack", e.toString());
+		}
 	}
 }

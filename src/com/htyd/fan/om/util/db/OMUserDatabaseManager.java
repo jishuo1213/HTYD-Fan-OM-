@@ -20,11 +20,13 @@ public class OMUserDatabaseManager {
 	private static OMUserDatabaseManager sManager;
 	private Context mAppContext;
 	private SQLiteDatabase db;
+	private ContentValues cv;
 
 	private OMUserDatabaseManager(Context context) {
 		mAppContext = context;
 		mHelper = OMUserDatabaseHelper.getInstance(mAppContext);
 		db = mHelper.getWritableDatabase();
+		cv = new ContentValues();
 	}
 
 	public synchronized static OMUserDatabaseManager getInstance(Context context) {
@@ -35,7 +37,7 @@ public class OMUserDatabaseManager {
 	}
 	/*-------------------------------------------数据库插入操作---------------------------------------------*/
 	public long insertAttendBean(AttendBean mBean) {
-		ContentValues cv = new ContentValues();
+		cv.clear();
 		StringBuilder sb = new StringBuilder();
 		sb.append(mBean.province).append("|").append(mBean.city).append("|")
 				.append(mBean.district).append("|").append(mBean.street)
@@ -51,7 +53,7 @@ public class OMUserDatabaseManager {
 	}
 
 	public long insertTaskBean(TaskDetailBean mBean) {
-		ContentValues cv = new ContentValues();
+		cv.clear();
 		cv.put(SQLSentence.COLUMN_TASK_NET_ID, mBean.taskNetId);
 		cv.put(SQLSentence.COLUMN_TASK_WORK_LOCATION, mBean.workLocation);
 		cv.put(SQLSentence.COLUMN_TASK_INSTALL_LOCATION, mBean.installLocation);
@@ -66,36 +68,39 @@ public class OMUserDatabaseManager {
 		cv.put(SQLSentence.COLUMN_TASK_CREATE_TIME, mBean.saveTime);
 		cv.put(SQLSentence.COLUMN_TASK_STATE, mBean.taskState);
 		cv.put(SQLSentence.COLUMN_TASK_TYPE, mBean.taskType);
+		cv.put(SQLSentence.COLUMN_TASK_ASYNC_STATE, mBean.isSyncToServer);
 		return db.insert(SQLSentence.TABLE_TASK, null, cv);
 	}
 
 	public long insertTaskProcessBean(TaskProcessBean mBean) {
-		ContentValues cv = new ContentValues();
-		cv.put(SQLSentence.COLUMN_TASKPROCESS_TASK_ID, mBean.taskid);
-		cv.put(SQLSentence.COLUMN_TASKPROCESS_TASK_STATE, mBean.taskState);
+		cv.clear();
+		cv.put(SQLSentence.COLUMN_TASKPROCESS_TASK_ID, mBean.taskNetid);
+//		cv.put(SQLSentence.COLUMN_TASKPROCESS_TASK_STATE, mBean.taskState);
 		cv.put(SQLSentence.COLUMN_TASKPROCESS_STARTTIME, mBean.startTime);
 		cv.put(SQLSentence.COLUMN_TASKPROCESS_ENDTIME, mBean.endTime);
 		cv.put(SQLSentence.COLUMN_TASKPROCESS_CREATE_TIME, mBean.createTime);
-		cv.put(SQLSentence.COLUMN_TASKPROCESS_TASK_PROCESSWHAT,
-				mBean.processContent);
+		cv.put(SQLSentence.COLUMN_TASKPROCESS_TASK_PROCESSWHAT,mBean.processContent);
+		cv.put(SQLSentence.COLUMN_TASKPROCESS_TASK_LOCAL_ID, mBean.taskLocalId);
+		cv.put(SQLSentence.COLUMN_TASKPROCESS_ASYNC_STATE, mBean.isSyncToServer);
 		return db.insert(SQLSentence.TABLE_TASK_PROCESS, null, cv);
 	}
 
 	public long insertTaskAccessoryBean(AffiliatedFileBean mBean) {
-		ContentValues cv = new ContentValues();
+		cv.clear();
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_PATH, mBean.filePath);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_STATE, mBean.fileState);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_SOURCE, mBean.fileSource);
-		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_TASKID, mBean.taskId);
+		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_TASK_NET_ID, mBean.taskId);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_NET_ID, mBean.netId);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_FILE_SIZE, mBean.fileSize);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_FILE_DESCRIPTION, mBean.fileDescription);
+		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_TASK_LOCAL_ID, mBean.taskLocalId);
 		return db.insert(SQLSentence.TABLE_TASK_ACCESSORY, null, cv);
 	}
 	/*-------------------------------------------数据库修改操作---------------------------------------------*/
 	
 	public long updateAttend(AttendBean mBean){
-		ContentValues cv = new ContentValues();
+		cv.clear();
 		StringBuilder sb = new StringBuilder();
 		sb.append(mBean.province).append("|").append(mBean.city).append("|")
 				.append(mBean.district).append("|").append(mBean.street)
@@ -112,53 +117,133 @@ public class OMUserDatabaseManager {
 				SQLSentence.COLUMN_CHECK_ID + "=?", new String[] { String.valueOf(mBean.attendId) });
 	}
 	
-	public long updateTask(TaskDetailBean mBean){
-		ContentValues cv = new ContentValues();
+	public long updateSyncTask(TaskDetailBean mBean){
+		cv.clear();
 		cv.put(SQLSentence.COLUMN_TASK_WORK_LOCATION, mBean.workLocation);
 		cv.put(SQLSentence.COLUMN_TASK_INSTALL_LOCATION, mBean.installLocation);
 		cv.put(SQLSentence.COLUMN_TASK_DESCRIPTION, mBean.taskDescription);
 		cv.put(SQLSentence.COLUMN_TASK_RECIPIENT_NAME, mBean.recipientsName);
 		cv.put(SQLSentence.COLUMN_TASK_RECIPIENT_PHONE, mBean.recipientPhone);
 		cv.put(SQLSentence.COLUMN_TASK_EQUIPMENT, mBean.equipment);
+		cv.put(SQLSentence.COLUMN_TASK_TITLE, mBean.taskTitle);
 		cv.put(SQLSentence.COLUMN_TASK_PRODUCT_TYPE, mBean.productType);
 		cv.put(SQLSentence.COLUMN_TASK_PLAN_STARTTIME, mBean.planStartTime);
 		cv.put(SQLSentence.COLUMN_TASK_PLAN_ENDTIME, mBean.planEndTime);
 		cv.put(SQLSentence.COLUMN_TASK_STATE, mBean.taskState);
 		cv.put(SQLSentence.COLUMN_TASK_TYPE, mBean.taskType);
+		cv.put(SQLSentence.COLUMN_TASK_ASYNC_STATE, mBean.isSyncToServer);
 		openDb(1);
 		return db.update(SQLSentence.TABLE_TASK, cv,
 				SQLSentence.COLUMN_TASK_NET_ID + "= ?",
 				new String[] { String.valueOf(mBean.taskNetId) });
 	}
 	
+	public long doneTaskUpdateDb(int taskNetId){
+		cv.clear();
+		cv.put(SQLSentence.COLUMN_TASK_STATE, 2);
+		openDb(1);
+		return db.update(SQLSentence.TABLE_TASK, cv,
+				SQLSentence.COLUMN_TASK_NET_ID + "= ?",
+				new String[] { String.valueOf(taskNetId) });
+	}
+	
+	public long updateUnSyncTask(TaskDetailBean mBean){
+		cv.clear();
+		cv.put(SQLSentence.COLUMN_TASK_NET_ID, mBean.taskNetId);
+		cv.put(SQLSentence.COLUMN_TASK_WORK_LOCATION, mBean.workLocation);
+		cv.put(SQLSentence.COLUMN_TASK_INSTALL_LOCATION, mBean.installLocation);
+		cv.put(SQLSentence.COLUMN_TASK_DESCRIPTION, mBean.taskDescription);
+		cv.put(SQLSentence.COLUMN_TASK_RECIPIENT_NAME, mBean.recipientsName);
+		cv.put(SQLSentence.COLUMN_TASK_RECIPIENT_PHONE, mBean.recipientPhone);
+		cv.put(SQLSentence.COLUMN_TASK_EQUIPMENT, mBean.equipment);
+		cv.put(SQLSentence.COLUMN_TASK_TITLE, mBean.taskTitle);
+		cv.put(SQLSentence.COLUMN_TASK_PRODUCT_TYPE, mBean.productType);
+		cv.put(SQLSentence.COLUMN_TASK_PLAN_STARTTIME, mBean.planStartTime);
+		cv.put(SQLSentence.COLUMN_TASK_PLAN_ENDTIME, mBean.planEndTime);
+		cv.put(SQLSentence.COLUMN_TASK_STATE, mBean.taskState);
+		cv.put(SQLSentence.COLUMN_TASK_TYPE, mBean.taskType);
+		cv.put(SQLSentence.COLUMN_TASK_ASYNC_STATE, mBean.isSyncToServer);
+		openDb(1);
+		return db.update(SQLSentence.TABLE_TASK, cv,
+				SQLSentence.COLUMN_TASK_ID + "= ?",
+				new String[] { String.valueOf(mBean.taskLocalId) });
+	}
+	
+	public long updateTaskNetId(TaskDetailBean mBean){
+		cv.clear();
+		cv.put(SQLSentence.COLUMN_TASK_NET_ID, mBean.taskNetId);
+		openDb(1);
+		return db.update(SQLSentence.TABLE_TASK, cv,
+				SQLSentence.COLUMN_TASK_ID + "= ?",
+				new String[] { String.valueOf(mBean.taskLocalId) });
+	}
+	
 	public long updateDownloadAccessoryBean(AffiliatedFileBean mBean) {
-		ContentValues cv = new ContentValues();
+		cv.clear();
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_PATH, mBean.filePath);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_STATE, mBean.fileState);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_SOURCE, mBean.fileSource);
-		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_TASKID, mBean.taskId);
+		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_TASK_NET_ID, mBean.taskId);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_NET_ID, mBean.netId);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_FILE_SIZE, mBean.fileSize);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_FILE_DESCRIPTION, mBean.fileDescription);
+		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_TASK_LOCAL_ID, mBean.taskLocalId);
 		openDb(1);
 		return db.update(SQLSentence.TABLE_TASK_ACCESSORY, cv, SQLSentence.COLUMN_TASK_ACCESSORY_NET_ID+" = ?",
 				new String[] { String.valueOf(mBean.netId) });
 	}
 	
 	public long updateUploadAccessoryBean(AffiliatedFileBean mBean) {
-		ContentValues cv = new ContentValues();
+		cv.clear();
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_PATH, mBean.filePath);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_STATE, mBean.fileState);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_SOURCE, mBean.fileSource);
-		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_TASKID, mBean.taskId);
+		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_TASK_NET_ID, mBean.taskId);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_NET_ID, mBean.netId);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_FILE_SIZE, mBean.fileSize);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_FILE_DESCRIPTION, mBean.fileDescription);
+		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_TASK_LOCAL_ID, mBean.taskLocalId);
 		openDb(1);
 		return db.update(SQLSentence.TABLE_TASK_ACCESSORY, cv, SQLSentence.COLUMN_TASK_ACCESSORY_PATH+" = ?",
 				new String[] {mBean.filePath});
 	}
 	
+	public long updateTaskProcess(int taskLocalId,int taskNetId){
+		cv.clear();
+		cv.put(SQLSentence.COLUMN_TASKPROCESS_TASK_ID, taskNetId);
+//		cv.put(SQLSentence.COLUMN_TASKPROCESS_TASK_STATE, mBean.taskState);
+/*		cv.put(SQLSentence.COLUMN_TASKPROCESS_STARTTIME, mBean.startTime);
+		cv.put(SQLSentence.COLUMN_TASKPROCESS_ENDTIME, mBean.endTime);
+		cv.put(SQLSentence.COLUMN_TASKPROCESS_CREATE_TIME, mBean.createTime);
+		cv.put(SQLSentence.COLUMN_TASKPROCESS_TASK_PROCESSWHAT,mBean.processContent);
+		cv.put(SQLSentence.COLUMN_TASKPROCESS_TASK_LOCAL_ID, mBean.taskLocalId);
+		cv.put(SQLSentence.COLUMN_TASKPROCESS_ASYNC_STATE, mBean.isSyncToServer);*/
+		openDb(1);
+		return db.update(SQLSentence.TABLE_TASK_PROCESS, cv, SQLSentence.COLUMN_TASKPROCESS_TASK_LOCAL_ID+" = ?",
+				new String[] {taskLocalId+""});
+	}
+	
+	public long updateTaskAccessory(int taskLocalId,int taskNetId){
+		cv.clear();
+		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_TASK_NET_ID, taskNetId);
+		openDb(1);
+		return db.update(SQLSentence.TABLE_TASK_ACCESSORY, cv, SQLSentence.COLUMN_TASK_ACCESSORY_TASK_LOCAL_ID+" = ?",
+				new String[] {taskLocalId+""});
+	}
+	
+	
+	public long updateSingleProcess(TaskProcessBean mBean){
+		cv.clear();
+		cv.put(SQLSentence.COLUMN_TASKPROCESS_TASK_ID, mBean.taskNetid);
+		/*cv.put(SQLSentence.COLUMN_TASKPROCESS_STARTTIME, mBean.startTime);
+		cv.put(SQLSentence.COLUMN_TASKPROCESS_ENDTIME, mBean.endTime);
+		cv.put(SQLSentence.COLUMN_TASKPROCESS_CREATE_TIME, mBean.createTime);
+		cv.put(SQLSentence.COLUMN_TASKPROCESS_TASK_PROCESSWHAT,mBean.processContent);*/
+		cv.put(SQLSentence.COLUMN_TASKPROCESS_TASK_LOCAL_ID, mBean.taskLocalId);
+		cv.put(SQLSentence.COLUMN_TASKPROCESS_ASYNC_STATE, mBean.isSyncToServer);
+		return db.update(SQLSentence.TABLE_TASK_PROCESS, cv, SQLSentence.COLUMN_TASKPROCESS_CREATE_TIME+" = ?",
+				new String[] {mBean.createTime+""});
+	}
 	/*-------------------------------------------数据库删除操作---------------------------------------------*/
 	
 	public long deleteTask(int taskNetId){
@@ -175,7 +260,7 @@ public class OMUserDatabaseManager {
 	
 	public long deleteTaskAccessory(int taskNetId){
 		openDb(1);
-		TaskAccessoryCursor cursor =  (TaskAccessoryCursor) queryAccessoryByTaskId(taskNetId);
+		TaskAccessoryCursor cursor =  (TaskAccessoryCursor) queryAccessoryByTaskNetId(taskNetId);
 		if(cursor.getCount() > 0 && cursor.moveToFirst()){
 			do{
 				Utils.deleteFile(cursor.getAccessory().filePath);
@@ -211,6 +296,14 @@ public class OMUserDatabaseManager {
 				new String[] { String.valueOf(netId) });
 	}
 
+	public void refreshTask() {
+		openDb(1);
+		 db.delete(SQLSentence.TABLE_TASK,
+				SQLSentence.COLUMN_TASK_ASYNC_STATE+" = ?",
+				new String[] { String.valueOf(1) });
+		 revertSeq(SQLSentence.TABLE_TASK);
+	}
+	
 	/*-------------------------------------------数据库查询操作---------------------------------------------*/
 	public Cursor queryAttendCursor(int monthNum) {
 		return mHelper.queryMonthAttend(monthNum);
@@ -220,21 +313,30 @@ public class OMUserDatabaseManager {
 		return mHelper.queryUserTask();
 	}
 
-	public Cursor queryProcessByTaskId(int taskId) {
-		return mHelper.queryProcessByTaskId(taskId);
+	public Cursor queryProcessByTaskNetId(int taskId) {
+		return mHelper.queryProcessByTaskNetId(taskId);
+	}
+	
+	public Cursor queryProcessByTaskLocalId(int taskId) {
+		return mHelper.queryProcessByTaskLocalId(taskId);
 	}
 
-	public Cursor queryAccessoryByTaskId(int taskId) {
-		return mHelper.queryAccessoryByTaskId(taskId);
+	public Cursor queryAccessoryByTaskNetId(int taskNetId) {
+		return mHelper.queryAccessoryByTaskNetId(taskNetId);
+	}
+	
+	public Cursor queryAccessoryByTaskLocalId(int taskLocalId) {
+		return mHelper.queryAccessoryByTaskLocalId(taskLocalId);
 	}
 	
 	public Cursor queryUnLoadAccessory(){
 		return mHelper.queryUnLoadFile();
 	}
 	
-	public TaskDetailBean getSingleTask(int taskNetId){
+	public TaskDetailBean getSingleTask(int taskLocald){
 		openDb(0);
-		TaskCursor cursor = mHelper.queryUserSingleTask(taskNetId);
+		Log.i("fanjishuo____getSingleTask", "taskLocald"+taskLocald);
+		TaskCursor cursor = mHelper.queryUserSingleTask(taskLocald);
 		return cursor.getTask();
 	}
 	/*--------------------------------------------------------------------------------------------------------*/
@@ -242,6 +344,8 @@ public class OMUserDatabaseManager {
 	 * 删除数据库表
 	 * @param tableName
 	 */
+	
+
 	
 	public void clearFeedTable(String tableName) {
 		String sql = "DELETE FROM " + tableName + ";";

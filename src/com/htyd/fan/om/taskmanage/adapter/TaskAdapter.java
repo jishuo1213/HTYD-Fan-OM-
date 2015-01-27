@@ -73,7 +73,7 @@ public class TaskAdapter extends BaseAdapter {
 		public ViewHolder(View v) {
 			taskDescrption = (TextView) v.findViewById(R.id.tv_task_descrption);
 			taskCreateTime = (TextView) v.findViewById(R.id.tv_task_createtime);
-			taskState = (TextView) v.findViewById(R.id.tv_task_state);
+			taskState = (TextView) v.findViewById(R.id.tv_process_sync_state);
 			taskIcon = (ImageView) v.findViewById(R.id.img_task_state_icon);
 		}
 	}

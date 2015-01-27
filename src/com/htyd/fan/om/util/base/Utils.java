@@ -6,10 +6,13 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import android.annotation.SuppressLint;
+import android.app.Instrumentation;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
+import android.util.Log;
+import android.view.KeyEvent;
 
 import com.htyd.fan.om.util.https.Urls;
 
@@ -118,5 +121,29 @@ public class Utils {
 			return true;
 		}
 		return false;
+	}
+	
+	public static boolean isNetWorkEnable() {
+		Log.i("fanjishuo____isNetWorkEnable", Preferences.netType);
+		return !Preferences.netType.equals(NetWorkUtils.NETWORK_TYPE_DISCONNECT);
+	}
+	
+	public static void back(){
+		ThreadPool.runMethod(new Runnable() {
+			@Override
+			public void run() {
+				finishActivity();
+			}
+		});
+	}
+	
+	private static void finishActivity() {
+		try {
+			Instrumentation inst = new Instrumentation();
+			inst.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK);
+	//		fragment.getFragmentManager().beginTransaction().remove(fragment).commit();
+		} catch (Exception e) {
+			Log.e("Exception when onBack", e.toString());
+		}
 	}
 }

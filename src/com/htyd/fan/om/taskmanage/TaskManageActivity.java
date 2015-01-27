@@ -7,9 +7,11 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.LoaderManager;
 import android.app.LoaderManager.LoaderCallbacks;
+import android.content.Intent;
 import android.content.Loader;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.htyd.fan.om.R;
@@ -24,7 +26,10 @@ import com.htyd.fan.om.util.base.SingleFragmentActivity;
 
 public class TaskManageActivity extends SingleFragmentActivity implements SaveTaskListener {
 
-	private static final String TASKNETID = "tasknetid";
+	public static final String TASKDETAIL = "taskdetail";
+	public static final String ISLOCAL = "islocal";
+	
+	private static final String TASKLOCALID = "tasknetid";
 	private static final int LOADERID = 0x09;
 	
 	private LoaderManager mManager;
@@ -42,7 +47,7 @@ public class TaskManageActivity extends SingleFragmentActivity implements SaveTa
 		mManager = getLoaderManager();
 		mCallBacks = new TaskLoaderCallBacks(new Handler());
 		Bundle args = new Bundle();
-		args.putInt(TASKNETID, getIntent().getIntExtra(TaskListFragment.TASKID, -1));
+		args.putInt(TASKLOCALID, getIntent().getIntExtra(TaskListFragment.TASKLOCALID, -1));
 		mManager.initLoader(LOADERID, args, mCallBacks);
 	}
 
@@ -58,9 +63,6 @@ public class TaskManageActivity extends SingleFragmentActivity implements SaveTa
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			/*if (NavUtils.getParentActivityName(this) != null) {
-				NavUtils.navigateUpFromSameTask(this);
-			}*/
 			finish();
 			return true;
 		default:
@@ -78,6 +80,7 @@ public class TaskManageActivity extends SingleFragmentActivity implements SaveTa
 			fragment = TaskWithProcessFragment.newInstance(data);
 			break;
 		case -2:// 编辑任务
+			Log.i("fanjishuo___showFragment", (data == null) +"");
 			fragment = EditTaskFragment.newInstance(data);
 			break;
 		case 2:// 已完成
@@ -100,7 +103,7 @@ public class TaskManageActivity extends SingleFragmentActivity implements SaveTa
 
 		@Override
 		public Loader<TaskDetailBean> onCreateLoader(int id, Bundle args) {
-			return new SingleTaskLoader(getBaseContext(), args.getInt(TASKNETID));
+			return new SingleTaskLoader(getBaseContext(), args.getInt(TASKLOCALID));
 		}
 
 		@Override
@@ -133,7 +136,11 @@ public class TaskManageActivity extends SingleFragmentActivity implements SaveTa
 	}
 
 	@Override
-	public void onSaveSuccess() {
-		setResult(Activity.RESULT_OK);
+	public void onSaveSuccess(TaskDetailBean mBean, boolean isLocal) {
+		Intent i = new Intent();
+		Log.i("fanjishuo___onSaveSuccess", mBean.taskLocalId+"");
+		i.putExtra(TASKDETAIL, mBean);
+		i.putExtra(ISLOCAL, isLocal);
+		setResult(Activity.RESULT_OK,i);
 	}
 }

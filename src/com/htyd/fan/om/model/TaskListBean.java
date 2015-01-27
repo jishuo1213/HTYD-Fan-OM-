@@ -9,6 +9,8 @@ public class TaskListBean implements Parcelable {
 	public int taskState;
 	public long createTime;
 	public String taskTitle;
+	public int isSyncToServer;
+	public int taskLocalId;
 	
 	@Override
 	public int describeContents() {
@@ -21,6 +23,8 @@ public class TaskListBean implements Parcelable {
 		dest.writeInt(taskState);
 		dest.writeLong(createTime);
 		dest.writeString(taskTitle);
+		dest.writeInt(isSyncToServer);
+		dest.writeInt(taskLocalId);
 	}
 	
 	public Parcelable.Creator<TaskListBean> CREATOR = new Creator<TaskListBean>() {
@@ -38,6 +42,8 @@ public class TaskListBean implements Parcelable {
 			mBean.taskState = source.readInt();
 			mBean.createTime = source.readLong();
 			mBean.taskTitle = source.readString();
+			mBean.isSyncToServer = source.readInt();
+			mBean.taskLocalId = source.readInt();
 			return mBean;
 		}
 	};

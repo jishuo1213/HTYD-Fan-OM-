@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     tools:ignore="HardcodedText" >
 
     <ImageView
@@ -13,8 +13,8 @@
         android:layout_centerVertical="true"
         android:layout_margin="5dp"
         android:contentDescription="@null"
-        android:scaleType="center"
-         />
+        android:src="@drawable/img_task_process"
+        android:scaleType="center" />
 
     <TextView
         android:id="@+id/tv_task_descrption"
@@ -25,23 +25,33 @@
         android:layout_toRightOf="@id/img_task_state_icon"
         android:text="111111111111111111111" />
 
-     <TextView
+    <TextView
         android:id="@+id/tv_task_createtime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/img_task_state_icon"
         android:layout_marginLeft="10dp"
+        android:layout_alignParentBottom="true"
         android:layout_toRightOf="@id/img_task_state_icon"
         android:text="111111111111111111111" />
-     
-     <TextView 
-         android:id="@+id/tv_task_state"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:layout_alignParentRight="true"
-         android:layout_marginRight="10dp"
-         android:layout_alignBottom="@id/tv_task_createtime"
-         android:text="11111111111"
-          />
-    
+
+    <TextView
+        android:id="@+id/tv_process_sync_state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/tv_task_createtime"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="10dp"
+        android:text="11111111111" />
+
+    <TextView
+        android:id="@+id/tv_task_sync_state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/tv_task_descrption"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="10dp"
+        android:text="" />
+
 </RelativeLayout>

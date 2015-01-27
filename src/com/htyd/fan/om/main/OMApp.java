@@ -18,6 +18,7 @@ import org.apache.http.protocol.HTTP;
 
 import android.app.Application;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.htyd.fan.om.util.base.Preferences;
 import com.htyd.fan.om.util.https.Urls;
@@ -35,6 +36,7 @@ public class OMApp extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		Log.e("fanjishuo____onCreate", "appcreate");
 		sOMApp = this;
 		initOmHttpClient();
 		initBaseUrl();

@@ -103,7 +103,7 @@ public class ViewQueryTaskFragment extends Fragment {
 					UItoolKit.showToastShort(getActivity(), "数据还未加载完成");
 					return;
 				}
-				DialogFragment dialog = UploadFileDialog.newInstance(accessoryList, mBean.taskNetId, mBean.taskTitle,true);
+				DialogFragment dialog = UploadFileDialog.newInstance(accessoryList, mBean.taskNetId, mBean.taskTitle,true,mBean.taskLocalId);
 				dialog.show(getFragmentManager(), null);
 			}
 		});

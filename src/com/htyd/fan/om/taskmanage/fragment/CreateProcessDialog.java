@@ -17,14 +17,17 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.htyd.fan.om.R;
 import com.htyd.fan.om.model.TaskProcessBean;
+import com.htyd.fan.om.taskmanage.netthread.SaveTaskProcessThread;
+import com.htyd.fan.om.taskmanage.netthread.SaveTaskProcessThread.SyncTaskProceeSuccess;
 import com.htyd.fan.om.util.base.Preferences;
 import com.htyd.fan.om.util.base.ThreadPool;
 import com.htyd.fan.om.util.base.Utils;
@@ -35,29 +38,33 @@ import com.htyd.fan.om.util.https.NetOperating;
 import com.htyd.fan.om.util.https.Urls;
 import com.htyd.fan.om.util.ui.UItoolKit;
 
-public class CreateProcessDialog extends DialogFragment {
+public class CreateProcessDialog extends DialogFragment implements SyncTaskProceeSuccess{
 
 	public static final String PROCESSBEAN = "processbean";
 	private static final int REQUESTSTARTTIME = 1;// 开始时间
 	private static final int REQUESTENDTIME = 2;// 结束时间
 	private static final String REPROCESSBEAN = "receprocessbean";
 	private static final String SHOWORNOT = "showornot";
-	private static final String TASKID = "taskid";
+	private static final String TASKNETID = "taskid";
+	private static final String TASKLOCALID = "tasklocalid";
 
 	private EditText processContent;
 	private TextView selectStartTime, selectEndTime;
-	private RadioButton done, undone;
+//	private RadioButton done, undone;
 	protected long startTime, endTime;
 	private DialogInterface dialog;
+	protected Handler handler;
+	protected TaskProcessBean mBean;
 	
 	public static DialogFragment newInstance(TaskProcessBean mBean,
-			boolean showornot,int taskID) {
+			boolean showornot,int taskNetID,int taskLocalId) {
 		DialogFragment fragment = new CreateProcessDialog();
 		Bundle bundle = new Bundle();
 		if (mBean != null)
 			bundle.putParcelable(REPROCESSBEAN, mBean);
 		bundle.putBoolean(SHOWORNOT, showornot);
-		bundle.putInt(TASKID, taskID);
+		bundle.putInt(TASKNETID, taskNetID);
+		bundle.putInt(TASKLOCALID, taskLocalId);
 		fragment.setArguments(bundle);
 		return fragment;
 	}
@@ -65,6 +72,7 @@ public class CreateProcessDialog extends DialogFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		handler = new Handler();
 	}
 
 	@SuppressLint("InflateParams")
@@ -78,13 +86,16 @@ public class CreateProcessDialog extends DialogFragment {
 		if (getArguments().getBoolean(SHOWORNOT, false)) {
 			builder.setTitle("查看处理内容");
 			builder.setPositiveButton("确定", null);
+			TaskProcessBean mBean = getArguments().getParcelable(REPROCESSBEAN);
+			if(mBean.isSyncToServer == 0){
+				builder.setNeutralButton("上传", dialogListener);
+			}
 			setViewShow((TaskProcessBean) getArguments().getParcelable(
 					REPROCESSBEAN));
 		} else {
 			builder.setTitle("新建处理内容");
 			builder.setPositiveButton("保存", dialogListener);
 		}
-
 		builder.setNegativeButton("取消", dialogListener);
 		return builder.create();
 	}
@@ -93,16 +104,16 @@ public class CreateProcessDialog extends DialogFragment {
 		processContent.setText(mBean.processContent);
 		selectStartTime.setText(Utils.formatTime(mBean.startTime));
 		selectEndTime.setText(Utils.formatTime(mBean.endTime));
-		if (mBean.taskState == 0) {
+	/*	if (mBean.taskState == 0) {
 			undone.setChecked(true);
 		} else {
 			done.setChecked(true);
-		}
+		}*/
 		processContent.setFocusable(false);
 		selectStartTime.setEnabled(false);
 		selectEndTime.setEnabled(false);
-		undone.setEnabled(false);
-		done.setEnabled(false);
+//		undone.setEnabled(false);
+//		done.setEnabled(false);
 	}
 
 	@Override
@@ -127,8 +138,8 @@ public class CreateProcessDialog extends DialogFragment {
 		processContent = (EditText) v.findViewById(R.id.edit_process_content);
 		selectStartTime = (TextView) v.findViewById(R.id.tv_process_start_time);
 		selectEndTime = (TextView) v.findViewById(R.id.tv_process_end_time);
-		done = (RadioButton) v.findViewById(R.id.radio_task_state_done);
-		undone = (RadioButton) v.findViewById(R.id.radio_task_state_undone);
+//		done = (RadioButton) v.findViewById(R.id.radio_task_state_done);
+//		undone = (RadioButton) v.findViewById(R.id.radio_task_state_undone);
 		selectStartTime.setOnClickListener(selectTimeListener);
 		selectEndTime.setOnClickListener(selectTimeListener);
 	}
@@ -143,13 +154,31 @@ public class CreateProcessDialog extends DialogFragment {
 				isShowDialog(dialog,false);
 				if (!checkCanSave()) {
 					UItoolKit.showToastShort(getActivity(), "这些都不能不填");
-				}else{
+					return;
+				} 
+				mBean = getProcessBean();
+				if(Utils.isNetWorkEnable() && getArguments().getInt(TASKNETID) != 0){
 					sendReult();
+				} else {
+					offLineCreateProcess();
 				}
 				break;
 			case Dialog.BUTTON_NEGATIVE:
 				isShowDialog(dialog,true);
 				break;
+			case Dialog.BUTTON_NEUTRAL:
+				TaskProcessBean mBean = getArguments().getParcelable(REPROCESSBEAN);
+				if(mBean.taskNetid == 0){
+					UItoolKit.showToastShort(getActivity(), "该任务还未同步至服务器，不能先同步处理项");
+					return;
+				}
+				if(mBean.isSyncToServer == 1){
+					UItoolKit.showToastShort(getActivity(), "已经同步至服务器");
+					return;
+				}
+				SaveTaskProcessThread syncThread = new SaveTaskProcessThread(handler, getActivity(), mBean);
+				syncThread.setListener(CreateProcessDialog.this);
+				ThreadPool.runMethod(syncThread);
 			}
 		}
 	};
@@ -185,26 +214,62 @@ public class CreateProcessDialog extends DialogFragment {
 	protected boolean checkCanSave() {
 		return !(TextUtils.isEmpty(processContent.getText())
 				|| TextUtils.isEmpty(selectStartTime.getText())
-				|| TextUtils.isEmpty(selectEndTime.getText()) || (!done
-				.isChecked() && !undone.isChecked()));
+				|| TextUtils.isEmpty(selectEndTime.getText()));
 	}
 
+	protected void offLineCreateProcess() {
+		ThreadPool.runMethod(new Runnable() {
+			@Override
+			public void run() {
+				OMUserDatabaseManager.getInstance(getActivity()).openDb(1);
+				mBean.isSyncToServer = 0;
+				if (OMUserDatabaseManager.getInstance(getActivity())
+						.insertTaskProcessBean(mBean) > 0) {
+					handler.post(saveSuccess);
+				} else {
+					handler.post(saveFail);
+				}
+			}
+		});
+	}
+
+	protected Runnable saveSuccess = new Runnable() {
+		@Override
+		public void run() {
+			UItoolKit.showToastShort(getActivity(), "保存至本地成功");
+			sendResultToTarget(mBean);
+		}
+	};
+	
+	protected Runnable saveFail = new Runnable() {
+		@Override
+		public void run() {
+			UItoolKit.showToastShort(getActivity(), "保存至本地失败，请重试");
+		}
+	};
+	
 	protected void sendReult() {
 		if (getTargetFragment() == null) {
 			return;
 		}
+		startTask(mBean);
+		/*if (done.isChecked()) {
+			mBean.taskState = 2;
+		} else {
+			mBean.taskState = 0;
+		}*/
+	}
+
+	protected TaskProcessBean getProcessBean() {
 		TaskProcessBean mBean = new TaskProcessBean();
 		mBean.processContent = processContent.getText().toString();
 		mBean.startTime = startTime;
 		mBean.endTime = endTime;
-		mBean.taskid = getArguments().getInt(TASKID);
-		if (done.isChecked()) {
-			mBean.taskState = 2;
-		} else {
-			mBean.taskState = 0;
-		}
+		mBean.taskNetid = getArguments().getInt(TASKNETID);
+		mBean.taskLocalId = getArguments().getInt(TASKLOCALID);
+		Log.i("fanjishuo___getProcessBean", mBean.taskLocalId+"");
 		mBean.createTime = System.currentTimeMillis();
-		startTask(mBean);
+		return mBean;
 	}
 
 	private class SaveTaskProcessTask extends
@@ -235,6 +300,7 @@ public class CreateProcessDialog extends DialogFragment {
 		@Override
 		protected void onPostExecute(Boolean result) {
 			if (result) {
+				mBean.isSyncToServer = 1;
 				ThreadPool.runMethod(new Runnable() {
 					@Override
 					public void run() {
@@ -242,15 +308,11 @@ public class CreateProcessDialog extends DialogFragment {
 						OMUserDatabaseManager.getInstance(getActivity()).insertTaskProcessBean(mBean);
 					}
 				});
-				UItoolKit.showToastShort(getActivity(), "保存成功");
-				Intent i = new Intent();
-				i.putExtra(PROCESSBEAN, mBean);
-				getTargetFragment().onActivityResult(getTargetRequestCode(),
-						Activity.RESULT_OK, i);
-				isShowDialog(dialog,true);
-				dialog.cancel();
+				UItoolKit.showToastShort(getActivity(), "保存至网络成功");
+				sendResultToTarget(mBean);
 			} else {
 				UItoolKit.showToastShort(getActivity(), "保存不成功，请重试");
+				offLineCreateProcess();
 			}
 			stopTask(this);
 		}
@@ -288,5 +350,24 @@ public class CreateProcessDialog extends DialogFragment {
 			e.printStackTrace();
 		}
 	}
-	
+
+	protected void sendResultToTarget(TaskProcessBean mBean) {
+		Intent i = new Intent();
+		i.putExtra(PROCESSBEAN, mBean);
+		getTargetFragment().onActivityResult(getTargetRequestCode(),
+				Activity.RESULT_OK, i);
+		isShowDialog(dialog,true);
+		dialog.cancel();
+	}
+
+	@Override
+	public void onSyncSuccess() {
+		sendSyncResult();
+	}
+	private void sendSyncResult(){
+		if(getTargetFragment() == null){
+			return;
+		}
+		getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, null);
+	}
 }

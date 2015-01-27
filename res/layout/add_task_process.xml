@@ -72,7 +72,7 @@
             android:padding="5dp"
             android:textSize="15sp" />
     </TableRow>
-    <TextView
+<!--     <TextView
         android:id="@+id/tv_task_state"
         style="@style/style_task_detail_textview"
         android:layout_height="wrap_content"
@@ -104,7 +104,6 @@
             android:checked="true"
             />
     </RadioGroup>
-
     <View 
         android:id="@+id/no_use"
         android:layout_width="1px"
@@ -112,5 +111,6 @@
         android:layout_below="@id/radio_group"
         android:layout_centerHorizontal="true"
         />
+ -->
     
 </RelativeLayout>

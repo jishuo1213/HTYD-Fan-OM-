@@ -16,8 +16,10 @@ import com.htyd.fan.om.model.AffiliatedFileBean;
 import com.htyd.fan.om.util.db.OMUserDatabaseHelper.TaskAccessoryCursor;
 import com.htyd.fan.om.util.db.OMUserDatabaseManager;
 
+@SuppressWarnings("unused")
 public class OMService extends IntentService {
 
+	
 	private static final int THREADNUM = 2;
 	
 	private ArrayList <AffiliatedFileBean> affiliatedFileList;
@@ -83,5 +85,8 @@ public class OMService extends IntentService {
 				break;
 			}
 		}
+	}
+	public static int add(int i ,int j){
+		return i+j;
 	}
 }

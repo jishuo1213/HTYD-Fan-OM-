@@ -8,16 +8,16 @@ import com.htyd.fan.om.util.loaders.DataLoader;
 
 public class SingleTaskLoader extends DataLoader<TaskDetailBean> {
 
-	private int taskNetId;
+	private int taskSingleId;
 	
 	public SingleTaskLoader(Context context,int taskNetId) {
 		super(context);
-		this.taskNetId = taskNetId;
+		this.taskSingleId = taskNetId;
 	}
 
 	@Override
 	public TaskDetailBean loadInBackground() {
-		return OMUserDatabaseManager.getInstance(getContext()).getSingleTask(taskNetId);
+		return OMUserDatabaseManager.getInstance(getContext()).getSingleTask(taskSingleId);
 	}
 
 }

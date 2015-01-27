@@ -25,6 +25,7 @@ public class TaskDetailBean implements Parcelable {
 	public long saveTime;// 填写保存时间
 	public int taskState;// 任务状态//0:在处理任务  2:已完成任务
 	public String taskType;// 任务类别
+	public int isSyncToServer;//是否同步至服务器 0:未同步 1:已同步
 	
 
 	public TaskDetailBean() {
@@ -41,9 +42,10 @@ public class TaskDetailBean implements Parcelable {
 		planStartTime = Utils.parseDate(json.getString("JHKSSJ"));
 		planEndTime = Utils.parseDate(json.getString("YJJSSJ"));
 		saveTime = Utils.parseDate(json.getString("TXSJ"));
-		equipment = json.getString("SBCJ");
+		equipment = json.getString("ZCBH");
 		taskType = json.getString("RWGL");
 		productType = json.getString("CPLX");
+		isSyncToServer = 1;
 		switch (Integer.parseInt(json.getString("RWZT"))) {
 		case 0:
 			taskState = 0;// 在处理
@@ -79,6 +81,7 @@ public class TaskDetailBean implements Parcelable {
 		dest.writeLong(saveTime);
 		dest.writeInt(taskState);
 		dest.writeString(taskType);
+		dest.writeInt(isSyncToServer);
 	}
 
 	public static Parcelable.Creator<TaskDetailBean> CREATOR = new Creator<TaskDetailBean>() {
@@ -107,6 +110,7 @@ public class TaskDetailBean implements Parcelable {
 			mBean.saveTime = source.readLong();
 			mBean.taskState = source.readInt();
 			mBean.taskType = source.readString();
+			mBean.isSyncToServer = source.readInt();
 			return mBean;
 		}
 	};
@@ -147,15 +151,19 @@ public class TaskDetailBean implements Parcelable {
 		json.put("YJJSSJ", Utils.formatTime(planEndTime, "yyyy-MM-dd HH:mm:ss"));
 		json.put("TXR", recipientsName);
 		json.put("TXRDH", recipientPhone);
-		json.put("TXSJ", "");
+		if (saveTime == 0) {
+			json.put("TXSJ", "");
+		} else {
+			json.put("TXSJ", Utils.formatTime(saveTime, "yyyy-MM-dd HH:mm:ss"));
+		}
 		json.put("TXFS", "shouji");
 		json.put("RWZT", "");
 		json.put("SFSC", "");
-		json.put("SBCJ", equipment);
+		json.put("SBCJ", "");
 		json.put("CPLX", "");
 		json.put("LJDZ", "");
 		json.put("CCBH", "");
-		json.put("ZCBH", "");
+		json.put("ZCBH", equipment);
 		json.put("RWGL", taskType);
 		json.put("TXID", "1");
 		json.put("RZ_MKID", Utils.TASKMODULE);
@@ -181,15 +189,30 @@ public class TaskDetailBean implements Parcelable {
 		json.put("TXRDH", recipientPhone);
 		json.put("TXSJ", Utils.formatTime(saveTime, "yyyy-MM-dd HH:mm:ss"));
 		json.put("TXFS", "shouji");
-		json.put("SBCJ", equipment);
+		json.put("SBCJ", "");
 		json.put("CPLX", productType);
 		json.put("LJDZ", "");
 		json.put("CCBH", "");
-		json.put("ZCBH", "");
+		json.put("ZCBH", equipment);
 		json.put("RWGL", taskType);
 		json.put("ZRR", "");
 		json.put("ZRRDH", "");
 		json.put("RZ_MKID", Utils.TASKMODULE);
 		return json;
+	}
+	
+	public TaskListBean getTaskListBean(){
+		TaskListBean mBean = new TaskListBean();
+		setTaskListBean(mBean);
+		return mBean;
+	}
+	
+	public void setTaskListBean(TaskListBean mBean){
+		mBean.createTime = saveTime;
+		mBean.isSyncToServer = isSyncToServer;
+		mBean.taskNetId = taskNetId;
+		mBean.taskState = taskState;
+		mBean.taskTitle = taskTitle;
+		mBean.taskLocalId = taskLocalId;
 	}
 }

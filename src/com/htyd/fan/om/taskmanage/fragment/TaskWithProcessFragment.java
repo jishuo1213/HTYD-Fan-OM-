@@ -16,8 +16,10 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Parcelable;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -50,8 +52,10 @@ import com.htyd.fan.om.util.ui.UItoolKit;
 public class TaskWithProcessFragment extends Fragment {
 
 	private static final String SELECTTASK = "selecttask";
-	private static final String TASKID = "taskid";
-	private static final int REQUEST_PROCESS = 0;
+	private static final String TASKNETID = "taskid";
+	private static final int REQUEST_PROCESS = 0x01;
+	private static final int REQUEST_PROCESS_SYNC = 0x02;
+	private static final String TASKLOCALID = "tasklocalid";
 
 	private TaskViewPanel mPanel;
 	protected TaskDetailBean mBean;
@@ -61,6 +65,7 @@ public class TaskWithProcessFragment extends Fragment {
 	private TaskProcessCursorCallback mCallback;
 	private LoaderManager mManager;
 	private PullToRefreshListView mPullRefreshListView;
+	protected Handler handler;
 
 	public static Fragment newInstance(Parcelable mBean) {
 		Bundle bundle = new Bundle();
@@ -77,7 +82,8 @@ public class TaskWithProcessFragment extends Fragment {
 		mManager = getActivity().getLoaderManager();
 		mCallback = new TaskProcessCursorCallback();
 		Bundle args = new Bundle();
-		args.putInt(TASKID, mBean.taskNetId);
+		args.putInt(TASKNETID, mBean.taskNetId);
+		args.putInt(TASKLOCALID, mBean.taskLocalId);
 		mManager.initLoader(0, args, mCallback);
 		setHasOptionsMenu(true);
 	}
@@ -105,11 +111,26 @@ public class TaskWithProcessFragment extends Fragment {
 				return true;
 			}
 			FragmentManager fm = getActivity().getFragmentManager();
-			CreateProcessDialog dialog = (CreateProcessDialog) CreateProcessDialog.newInstance(null, false,mBean.taskNetId);
+			CreateProcessDialog dialog = (CreateProcessDialog) CreateProcessDialog.newInstance(null, false,mBean.taskNetId,mBean.taskLocalId);
 			dialog.setTargetFragment(TaskWithProcessFragment.this,
 					REQUEST_PROCESS);
 			dialog.show(fm, null);
 			return true;
+		/*case R.id.menu_sync_process:
+			if(mBean.isSyncToServer == 0){
+				UItoolKit.showToastShort(getActivity(), "该任务还未同步至服务器,请先同步任务");
+				return true;
+			}
+			if(listProcess.size() == 0){
+				UItoolKit.showToastShort(getActivity(), "没有需要同步的内容");
+				return true;
+			}
+			if(listProcess.get(listProcess.size() - 1).isSyncToServer == 1){
+				UItoolKit.showToastShort(getActivity(), "处理项已全部同步");
+				return true;
+			}*/
+//			ThreadPool.runMethod(new SaveTaskProcessThread(handler, getActivity(), null, listProcess, mBean.taskNetId));
+//			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
@@ -155,11 +176,13 @@ public class TaskWithProcessFragment extends Fragment {
 				} else {
 					mAdapter.notifyDataSetChanged();
 				}
-				if(proBean.taskState == 2){
+/*				if(proBean.taskState == 2){
 					mPanel.taskState.setText("已完成");
 					mBean.taskState = 2;
-					OMUserDatabaseManager.getInstance(getActivity()).updateTask(mBean);
-				}
+					OMUserDatabaseManager.getInstance(getActivity()).updateSyncTask(mBean);
+				}*/
+			}else if(requestCode == REQUEST_PROCESS_SYNC){
+				mAdapter.notifyDataSetChanged();
 			}
 		}
 	}
@@ -172,7 +195,8 @@ public class TaskWithProcessFragment extends Fragment {
 			FragmentManager fm = getActivity().getFragmentManager();
 			CreateProcessDialog dialog = (CreateProcessDialog) CreateProcessDialog.newInstance(
 					(TaskProcessBean) parent.getAdapter().getItem(position),
-					true,mBean.taskNetId);
+					true,mBean.taskNetId,mBean.taskLocalId);
+			dialog.setTargetFragment(TaskWithProcessFragment.this, REQUEST_PROCESS_SYNC);
 			dialog.show(fm, null);
 		}
 	};
@@ -180,8 +204,12 @@ public class TaskWithProcessFragment extends Fragment {
 	private OnClickListener createBtnClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
+			if(mBean.taskState == 2){
+				UItoolKit.showToastShort(getActivity(), "任务已经完成，不能继续创建处理项");
+				return;
+			}
 			FragmentManager fm = getActivity().getFragmentManager();
-			CreateProcessDialog dialog = (CreateProcessDialog) CreateProcessDialog.newInstance(null, false,mBean.taskNetId);
+			CreateProcessDialog dialog = (CreateProcessDialog) CreateProcessDialog.newInstance(null, false,mBean.taskNetId,mBean.taskLocalId);
 			dialog.setTargetFragment(TaskWithProcessFragment.this,
 					REQUEST_PROCESS);
 			dialog.show(fm, null);
@@ -190,19 +218,25 @@ public class TaskWithProcessFragment extends Fragment {
 
 	public static class TaskProcessCursorLoader extends SQLiteCursorLoader {
 
-		private int taskId;
+		private int taskNetId,taskLocalId;
 		private OMUserDatabaseManager mManager;
 
-		public TaskProcessCursorLoader(Context context, int taskId) {
+		public TaskProcessCursorLoader(Context context, int taskNetId,int taskLocalId) {
 			super(context);
-			this.taskId = taskId;
+			this.taskNetId = taskNetId;
+			this.taskLocalId = taskLocalId;
 			mManager = OMUserDatabaseManager.getInstance(context);
 		}
 
 		@Override
 		protected Cursor loadCursor() {
 			mManager.openDb(0);
-			return mManager.queryProcessByTaskId(taskId);
+			if (taskNetId > 0) {
+				return mManager.queryProcessByTaskNetId(taskNetId);
+			} else {
+				Log.i("fanjishuo___loadCursor", taskLocalId+"");
+				return mManager.queryProcessByTaskLocalId(taskLocalId);
+			}
 		}
 
 		@Override
@@ -211,7 +245,7 @@ public class TaskWithProcessFragment extends Fragment {
 			String result = "";
 			try {
 				param.put("CLID", "");
-				param.put("RWID", taskId);
+				param.put("RWID", taskNetId);
 				result = NetOperating.getResultFromNet(getContext(), param, Urls.TASKPROCESSURL, "Operate=getAllRwclxx");
 				Utility.handleTaskProcessResponse(mManager, result);
 			} catch (JSONException e) {
@@ -230,7 +264,7 @@ public class TaskWithProcessFragment extends Fragment {
 		@Override
 		public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 			return new TaskProcessCursorLoader(getActivity(),
-					args.getInt(TASKID));
+					args.getInt(TASKNETID),args.getInt(TASKLOCALID));
 		}
 
 		@Override
@@ -269,7 +303,7 @@ public class TaskWithProcessFragment extends Fragment {
 		protected void onPostExecute(Boolean result) {
 			if (result) {
 				Bundle args = new Bundle();
-				args.putInt(TASKID, mBean.taskNetId);
+				args.putInt(TASKNETID, mBean.taskNetId);
 				mManager.restartLoader(0, args, mCallback);
 				UItoolKit.showToastShort(getActivity(), "刷新成功");
 			} else {

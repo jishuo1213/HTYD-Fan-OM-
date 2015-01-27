@@ -191,5 +191,9 @@ public class BaiduMapFragment extends Fragment {
 			}
 			mListener.onLocationReceiveListener(loc);
 		}
+
+		@Override
+		protected void onNetDisableReceived(Context context) {
+		}
 	};
 }

@@ -18,8 +18,10 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -30,6 +32,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
+import android.widget.HeaderViewListAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -38,26 +41,31 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.htyd.fan.om.R;
+import com.htyd.fan.om.main.MainActivity.OnItemChooserListener;
+import com.htyd.fan.om.model.TaskDetailBean;
 import com.htyd.fan.om.model.TaskListBean;
 import com.htyd.fan.om.taskmanage.TaskManageActivity;
+import com.htyd.fan.om.taskmanage.netthread.DoneTaskThread;
+import com.htyd.fan.om.taskmanage.netthread.DoneTaskThread.DoneTaskListener;
 import com.htyd.fan.om.util.base.Preferences;
 import com.htyd.fan.om.util.base.ThreadPool;
 import com.htyd.fan.om.util.base.Utils;
 import com.htyd.fan.om.util.db.OMUserDatabaseHelper.TaskCursor;
 import com.htyd.fan.om.util.db.OMUserDatabaseManager;
-import com.htyd.fan.om.util.db.SQLSentence;
 import com.htyd.fan.om.util.https.NetOperating;
 import com.htyd.fan.om.util.https.Urls;
 import com.htyd.fan.om.util.https.Utility;
 import com.htyd.fan.om.util.loaders.SQLiteCursorLoader;
-import com.htyd.fan.om.util.ui.CustomChooserView.OnItemChooserListener;
 import com.htyd.fan.om.util.ui.UItoolKit;
 
-public class TaskListFragment extends Fragment implements OnItemChooserListener {
+public class TaskListFragment extends Fragment implements OnItemChooserListener,DoneTaskListener {
 
 	public static final String TASKTYPE = "tasktype";
-	public static final String TASKID = "taskid";
-	public static final int SAVETASK = 0x08;
+	public static final String TASKLOCALID = "taskid";
+	public static final int CREATETASK = 0x08;//新建任务
+	public static final int EDITTASK = 0x09;//编辑任务
+	
+//	private static final String ISLOADFROMNET = "isloadfromnet";
 	
 	protected static final String TASKSTATE = "taskstate";
 	protected static final String INPROCESSINGTASK = "inprocessingtask";
@@ -72,6 +80,8 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 	private LoaderManager mLoadManager;
 	protected PullToRefreshListView mPullRefreshListView;
 	boolean isLoaderFinish;
+	private Handler handler;
+	protected int editPosition;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -84,6 +94,7 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 		mLoadManager = getActivity().getLoaderManager();
 		isLoaderFinish = false;
 		mLoadManager.initLoader(1, null, mCallback);
+		handler = new Handler();
 	}
 
 	@Override
@@ -129,7 +140,7 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 			try {
 				Intent i = new Intent(getActivity(), TaskManageActivity.class);
 				i.putExtra(TASKTYPE, -1);
-				startActivityForResult(i, SAVETASK);
+				startActivityForResult(i, CREATETASK);
 			} catch (Exception e) {
 				e.printStackTrace();
 				Intent i = new Intent("om.fan.task");
@@ -149,8 +160,22 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if(resultCode == Activity.RESULT_OK){
-			if(requestCode == SAVETASK){
-				mLoadManager.restartLoader(1, null, mCallback);
+			if (requestCode == CREATETASK) {
+				TaskListBean mBean = ((TaskDetailBean)data.getParcelableExtra(TaskManageActivity.TASKDETAIL)).getTaskListBean();
+				taskMap.get(INPROCESSINGTASK).add(mBean);
+				HeaderViewListAdapter ha = (HeaderViewListAdapter) mListView.getAdapter();
+				if (ha.getWrappedAdapter() == null) {
+					mListView.setAdapter(new TaskAdapter(-1));
+				} else {
+					((TaskAdapter) ha.getWrappedAdapter()).notifyDataSetChanged();
+				}
+			} else if (requestCode == EDITTASK) {
+				HeaderViewListAdapter ha = (HeaderViewListAdapter) mListView.getAdapter();
+				TaskAdapter adapter = (TaskAdapter)ha.getWrappedAdapter();
+				TaskListBean mBean = (TaskListBean) adapter.getItem(editPosition - 1);
+				((TaskDetailBean)data.getParcelableExtra(TaskManageActivity.TASKDETAIL)).setTaskListBean(mBean);
+				adapter.notifyDataSetChanged();
+//				mLoadManager.restartLoader(1, null, mCallback);
 			}
 		}
 	}
@@ -162,15 +187,30 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 		int position = info.position;
 		TaskListBean mBean = (TaskListBean) mListView.getAdapter()
 				.getItem(position);
+		editPosition = position;
 		switch (item.getItemId()) {
 		case R.id.menu_edit_task:
 			Intent i = new Intent(getActivity(), TaskManageActivity.class);
-			i.putExtra(TASKID, mBean.taskNetId);
+			i.putExtra(TASKLOCALID, mBean.taskLocalId);
 			i.putExtra(TASKTYPE, -2);
-			startActivity(i);
+	//		i.putExtra(TASKPOSITION, position);
+			startActivityForResult(i, EDITTASK);
 			return true;
 		case R.id.menu_delete_task:
 			new deleteTask().execute(mBean);
+			return true;
+		case R.id.menu_done_task:
+			if (mBean.isSyncToServer == 0) {
+				UItoolKit.showToastShort(getActivity(), "任务还未同步，请先同步任务");
+				return true;
+			}
+			if(mBean.taskState == 2){
+				UItoolKit.showToastShort(getActivity(), "任务已经完成");
+				return true;
+			}
+			DoneTaskThread thread = new DoneTaskThread(handler, getActivity(), mBean); 
+			thread.setListener(this);
+			ThreadPool.runMethod(thread);
 			return true;
 		default:
 			return super.onContextItemSelected(item);
@@ -188,11 +228,12 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
+			Log.e("fanjishuo____onItemClick", "position------"+position);
 			TaskListBean mBean = (TaskListBean) parent.getAdapter()
 					.getItem(position);
 			Intent i = new Intent(getActivity(), TaskManageActivity.class);
 			i.putExtra(TASKTYPE, mBean.taskState);
-			i.putExtra(TASKID, mBean.taskNetId);
+			i.putExtra(TASKLOCALID, mBean.taskLocalId);
 			startActivity(i);
 		}
 	}
@@ -211,6 +252,8 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 
 		@Override
 		public int getCount() {
+			inProcessTaskNum = taskMap.get(INPROCESSINGTASK).size();
+			completedNum = taskMap.get(COMPLETED).size();
 			switch (type) {
 			case 0:
 				return inProcessTaskNum;
@@ -224,6 +267,7 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 
 		@Override
 		public Object getItem(int position) {
+			Log.e("fanjishuo____getItem", "position------"+position);
 			switch (type) {
 			case 0:
 				return taskMap.get(INPROCESSINGTASK).get(position);
@@ -267,36 +311,53 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 				mHolder.taskState.setText("已完成");
 				mHolder.taskStateIcon.setBackgroundResource(R.drawable.img_task_complete);
 			}
+			if(mBean.isSyncToServer == 0){
+				mHolder.taskSyncSate.setText("未同步");
+			} else {
+				mHolder.taskSyncSate.setText("");
+			}
 			return convertView;
+		}
+		
+		public int getType(){
+			return type;
 		}
 	}
 
 	private class ViewHolder {
-		public TextView taskDescrption, taskCreateTime, taskState;
+		public TextView taskDescrption, taskCreateTime, taskState,taskSyncSate;
 		
 
 		 public ImageView taskStateIcon;
 		public ViewHolder(View v) {
 			taskDescrption = (TextView) v.findViewById(R.id.tv_task_descrption);
 			taskCreateTime = (TextView) v.findViewById(R.id.tv_task_createtime);
-			taskState = (TextView) v.findViewById(R.id.tv_task_state);
+			taskState = (TextView) v.findViewById(R.id.tv_process_sync_state);
 			 taskStateIcon = (ImageView)v.findViewById(R.id.img_task_state_icon);
+			 taskSyncSate = (TextView) v.findViewById(R.id.tv_task_sync_state);
 		}
 	}
 
 	public static class TaskCursorLoader extends SQLiteCursorLoader {
 
 		private OMUserDatabaseManager mManager;
+//		private boolean isLoadFromNet;
 
 		public TaskCursorLoader(Context context) {
 			super(context);
 			mManager = OMUserDatabaseManager.getInstance(context);
+//			this.isLoadFromNet = isLoadFromNet;
 		}
 
 		@Override
 		protected Cursor loadCursor() {
 			mManager.openDb(0);
-			return mManager.queryUserTask();
+	//		if (isLoadFromNet) {
+//				isLoadFromNet = false;
+	//			return loadFromNet();
+	//		} else {
+				return mManager.queryUserTask();
+//			}
 		}
 
 		@Override
@@ -314,6 +375,7 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 				params.put("LQR", Preferences.getUserinfo(getContext(), "YHID"));
 				params.put("RWGL", "");
 				params.put("WDRW", "");
+				params.put("FZR", "");
 			} catch (JSONException e1) {
 				e1.printStackTrace();
 			}
@@ -350,25 +412,20 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 
 		@Override
 		public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-			List<TaskListBean> mList = new ArrayList<TaskListBean>();
 			if (data != null && data.moveToFirst()) {
 				isLoaderFinish = true;
+				TaskListBean mBean;
 				TaskCursor taskCursor = (TaskCursor) data;
-				do {
-					mList.add(taskCursor.getTaskListBean());
-				} while (data.moveToNext());
 				taskMap.get(INPROCESSINGTASK).clear();
 				taskMap.get(COMPLETED).clear();
-				for (TaskListBean mBean : mList) {
-					switch (mBean.taskState) {
-					case 0:// 在处理任务
+				do {
+					mBean = taskCursor.getTaskListBean();
+					if(mBean.taskState == 0){
 						taskMap.get(INPROCESSINGTASK).add(mBean);
-						break;
-					case 2:// 已完成任务
+					}else if(mBean.taskState == 2){
 						taskMap.get(COMPLETED).add(mBean);
-						break;
 					}
-				}
+				} while (data.moveToNext());
 				allTaskAdapter = new TaskAdapter(-1);
 				if (mListView != null) {
 					mListView.setAdapter(allTaskAdapter);
@@ -411,6 +468,7 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 				param.put("LQR", Preferences.getUserinfo(getActivity(), "YHID"));
 				param.put("RWGL", "");
 				param.put("WDRW", "");
+				param.put("FZR","");
 			} catch (JSONException e1) {
 				e1.printStackTrace();
 			}
@@ -426,7 +484,8 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 				return false;
 			}
 			try {
-				mManger.clearFeedTable(SQLSentence.TABLE_TASK);
+//				mManger.clearFeedTable(SQLSentence.TABLE_TASK);
+				mManger.refreshTask();
 				return Utility.handleTaskResponse(mManger, result);
 			} catch (JSONException e) {
 				e.printStackTrace();
@@ -477,7 +536,26 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 		protected void onPostExecute(Boolean result) {
 			if (result) {
 				deleteLocalTask(mBean.taskNetId);
-				mLoadManager.restartLoader(1, null, mCallback);
+				HeaderViewListAdapter ha = (HeaderViewListAdapter) mListView.getAdapter();
+				TaskAdapter adapter = (TaskAdapter)ha.getWrappedAdapter();
+				switch (adapter.getType()) {
+				case 0:
+					taskMap.get(INPROCESSINGTASK).remove(editPosition - 1);
+					adapter.notifyDataSetChanged();
+					break;
+				case 2:
+					taskMap.get(COMPLETED).remove(editPosition - 1);
+					adapter.notifyDataSetChanged();
+					break;
+				case -1:
+					if (editPosition-1 < taskMap.get(INPROCESSINGTASK).size()) {
+						taskMap.get(INPROCESSINGTASK).remove(editPosition-1);
+					} else {
+						taskMap.get(COMPLETED).remove(editPosition - taskMap.get(INPROCESSINGTASK).size() -1);
+					}
+					adapter.notifyDataSetChanged();
+					break;
+				}
 				UItoolKit.showToastShort(getActivity(), "删除成功");
 			} else {
 				UItoolKit.showToastShort(getActivity(), "删除失败");
@@ -494,5 +572,17 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener 
 				mManger.deleteTaskAccessory(taskNetId);
 			}
 		});
+	}
+
+	@Override
+	public void onTaskDone() {
+		HeaderViewListAdapter ha = (HeaderViewListAdapter) mListView.getAdapter();
+		TaskAdapter adapter = (TaskAdapter)ha.getWrappedAdapter();
+		TaskListBean mBean = (TaskListBean) adapter.getItem(editPosition -1);
+		mBean.taskState = 2;
+		taskMap.get(COMPLETED).add(mBean);
+		taskMap.get(INPROCESSINGTASK).remove(mBean);
+		adapter.notifyDataSetChanged();
+//		mLoadManager.restartLoader(1, null, mCallback);
 	}
 }

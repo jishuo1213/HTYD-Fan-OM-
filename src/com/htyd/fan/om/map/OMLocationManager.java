@@ -37,10 +37,8 @@ public class OMLocationManager {
 			lco = new LocationClientOption();
 			lco.setOpenGps(true);// 打开gps
 			lco.setCoorType("bd09ll"); // 设置坐标类型
-			lco.setScanSpan(10000);
 			lco.setIsNeedAddress(true);
-			lco.setLocationMode(LocationMode.Hight_Accuracy);
-			lco.setTimeOut(10000);
+			lco.setLocationMode(LocationMode.Battery_Saving);
 			mLocClient.setLocOption(lco);
 			return;
 		}

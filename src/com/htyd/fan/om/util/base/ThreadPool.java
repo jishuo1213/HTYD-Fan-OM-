@@ -1,6 +1,5 @@
 package com.htyd.fan.om.util.base;
 
-import java.lang.ref.SoftReference;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 

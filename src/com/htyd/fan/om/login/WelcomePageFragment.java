@@ -15,7 +15,9 @@ import android.view.ViewGroup;
 
 import com.htyd.fan.om.R;
 import com.htyd.fan.om.main.MainActivity;
+import com.htyd.fan.om.util.base.NetWorkUtils;
 import com.htyd.fan.om.util.base.Preferences;
+import com.htyd.fan.om.util.base.Utils;
 import com.htyd.fan.om.util.https.NetOperating;
 import com.htyd.fan.om.util.https.Urls;
 import com.htyd.fan.om.util.ui.UItoolKit;
@@ -25,6 +27,7 @@ public class WelcomePageFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		Preferences.netType = NetWorkUtils.getNetWorkType(getActivity());
 	}
 
 	@Override
@@ -36,7 +39,7 @@ public class WelcomePageFragment extends Fragment {
 	}
 
 	private void checkAutoLogin() {
-		if (Preferences.getIsAutoLogin(getActivity())) {
+		if (Preferences.getIsAutoLogin(getActivity()) && Utils.isNetWorkEnable()) {
 			startTask(Preferences.getLastLoginAccount(getActivity()),
 					Preferences.getLastLoginPassword(getActivity()));
 		} else {

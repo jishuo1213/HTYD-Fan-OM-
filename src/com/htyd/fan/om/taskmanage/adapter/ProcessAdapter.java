@@ -57,23 +57,29 @@ public class ProcessAdapter extends BaseAdapter {
 		mHolder.processContent.setText(mBean.processContent);
 		mHolder.processCreateTime.setText(Utils
 				.formatTime(mBean.createTime));
-		if (mBean.taskState == 0) {
+/*		if (mBean.taskState == 0) {
 			mHolder.taskState.setText("在处理");
 		} else {
 			mHolder.taskState.setText("已完成");
+		}*/
+		if (mBean.isSyncToServer == 0) {
+			mHolder.processSyncState.setText("未同步");
+		} else {
+			mHolder.processSyncState.setText("");
 		}
 		mHolder.taskNum.setText((position + 1) + "");
 		return convertView;
 	}
 	
 	private class ViewHolder {
-		public TextView processContent, processCreateTime, taskState, taskNum;
+		public TextView processContent, processCreateTime, taskNum,processSyncState;
 
 		public ViewHolder(View v) {
 			processContent = (TextView) v.findViewById(R.id.tv_process_content);
 			processCreateTime = (TextView) v
 					.findViewById(R.id.tv_process_create_time);
-			taskState = (TextView) v.findViewById(R.id.tv_task_state);
+//			taskState = (TextView) v.findViewById(R.id.tv_task_state);
+			processSyncState = (TextView) v.findViewById(R.id.tv_process_sync_state);
 			taskNum = (TextView) v.findViewById(R.id.tv_task_num);
 		}
 	}

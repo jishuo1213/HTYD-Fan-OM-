@@ -22,19 +22,16 @@ import java.util.List;
 import android.content.Context;
 import android.view.ActionProvider;
 import android.view.View;
-import android.widget.Toast;
 
 import com.htyd.fan.om.R;
 import com.htyd.fan.om.model.CustomChooser;
-import com.htyd.fan.om.util.ui.CustomChooserView.OnItemChooserListener;
 
 /**
  * 
  * @author guilin
  * 
  */
-public class CustomMoreActionProvider extends ActionProvider implements
-		OnItemChooserListener {
+public class CustomMoreActionProvider extends ActionProvider {
 
 	/**
 	 * Context for accessing resources.
@@ -81,7 +78,7 @@ public class CustomMoreActionProvider extends ActionProvider implements
 		// Create the view and set its data model.
 		CustomChooserView customChooserView = new CustomChooserView(mContext);
 		customChooserView.setCustomChooserData(list);
-		customChooserView.setOnItemChooserListener(this);
+	//	customChooserView.setOnItemChooserListener(this);
 		// Lookup and set the expand action icon.
 		customChooserView
 				.setExpandActivityOverflowButtonResource(R.drawable.actionbar_more_icon);
@@ -102,9 +99,9 @@ public class CustomMoreActionProvider extends ActionProvider implements
 		return true;
 	}
 
-	@Override
-	public void onItemChooser(int position) {
+	//@Override
+	/*public void onItemChooser(int position) {
 		Toast.makeText(mContext, "choose item " + position, Toast.LENGTH_SHORT)
 				.show();
-	}
+	}*/
 }

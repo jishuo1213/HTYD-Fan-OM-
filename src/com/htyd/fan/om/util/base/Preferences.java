@@ -22,6 +22,8 @@ public class Preferences {
 
 	private static SharedPreferences sp;
 	private static Editor editor;
+	
+	public static String netType;
 
 	public static void setUserId(Context context, String UserId) {
 		sp = context.getSharedPreferences(PREFERENCENAME, Context.MODE_PRIVATE);
@@ -119,7 +121,7 @@ public class Preferences {
 	public static void setServerAddress(Context context, String address){
 		sp = context.getSharedPreferences(PREFERENCENAME, Context.MODE_PRIVATE);
 		editor = sp.edit();
-		editor.putString(SERVERURL, "http://"+address+":8080/zdyw/");
+		editor.putString(SERVERURL, "http://"+address+"/zdyw/");
 		editor.apply();
 	}
 	

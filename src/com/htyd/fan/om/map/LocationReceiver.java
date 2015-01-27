@@ -7,9 +7,8 @@ import android.location.LocationManager;
 
 import com.baidu.location.BDLocation;
 import com.htyd.fan.om.model.OMLocationBean;
-import com.htyd.fan.om.util.ui.UItoolKit;
 
-public class LocationReceiver extends BroadcastReceiver {
+public abstract class LocationReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
@@ -21,7 +20,7 @@ public class LocationReceiver extends BroadcastReceiver {
 			} else if (loc.result == BDLocation.TypeNetWorkLocation) {
 				onNetWorkLocationReceived(context, loc);
 			} else {
-				UItoolKit.showToastShort(context, "网络连接失败");
+				onNetDisableReceived(context);
 			}
 			return;
 		}
@@ -39,7 +38,9 @@ public class LocationReceiver extends BroadcastReceiver {
 
 	protected void onNetWorkLocationReceived(Context context, OMLocationBean loc) {
 	}
-
+	
+	protected abstract void onNetDisableReceived(Context context);
+	
 	protected void onGPSLocationReceived(Context context, OMLocationBean loc) {
 
 	}

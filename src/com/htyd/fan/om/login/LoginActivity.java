@@ -24,6 +24,7 @@ import com.htyd.fan.om.R;
 import com.htyd.fan.om.main.MainActivity;
 import com.htyd.fan.om.util.base.DES;
 import com.htyd.fan.om.util.base.Preferences;
+import com.htyd.fan.om.util.base.Utils;
 import com.htyd.fan.om.util.https.NetOperating;
 import com.htyd.fan.om.util.https.Urls;
 import com.htyd.fan.om.util.ui.UItoolKit;
@@ -35,7 +36,6 @@ public class LoginActivity extends Activity {
 	private TextView setServerAddress;
 	protected Button loginButton;
 	Context context;
-	protected String passWord;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -58,8 +58,10 @@ public class LoginActivity extends Activity {
 		loginButton.setOnClickListener(LoginListener);
 		userNameEditText.setText(Preferences.getLastLoginAccount(getBaseContext()));
 		if(Preferences.getIsRemPwd(getBaseContext())){
-			passwordEditText.setText(Preferences.getLastLoginPassword(getBaseContext()));
-			checkRemberPwd.setChecked(true);
+			if (Utils.isNetWorkEnable()) { 
+				passwordEditText.setText(Preferences.getLastLoginPassword(getBaseContext()));
+				checkRemberPwd.setChecked(true);
+			} 
 		}
 	}
 
@@ -77,9 +79,12 @@ public class LoginActivity extends Activity {
 				if (!checkCanLogin()) {
 					return;
 				}
+				if(!Utils.isNetWorkEnable()){
+					offLineLogin();
+					return;
+				}
 				startTask(userNameEditText.getText().toString(),passwordEditText.getText().toString());
 				loginButton.setEnabled(false);
-				passWord = passwordEditText.getText().toString();
 				break;
 			case R.id.tv_set_net:
 				SetNetDialog dialog = new SetNetDialog();
@@ -106,8 +111,30 @@ public class LoginActivity extends Activity {
 		return true;
 	}
 
+	protected void offLineLogin() {
+		if (checkUserName() && checkPassword()) {
+			Intent i = new Intent(context, MainActivity.class);
+			startActivity(i);
+			finish();
+			return;
+		}else{
+			UItoolKit.showToastShort(context, "用户名或密码与上次登录不符");
+			return;
+		}
+	}
+
+	private boolean checkPassword() {
+		return userNameEditText.getText().toString().equals(Preferences.getLastLoginAccount(context));
+	}
+
+	private boolean checkUserName() {
+		return passwordEditText.getText().toString().equals(Preferences.getLastLoginPassword(context));
+	}
+
 	private class LoginTask extends AsyncTask<String, Void, String> {
 
+		private String password;
+		
 		@Override
 		protected void onPostExecute(String result) {
 			if (result == null) {
@@ -142,7 +169,7 @@ public class LoginActivity extends Activity {
 				Preferences.setLastLoginAccount(getBaseContext(),
 						resultJson.getString("DLZH"));
 				Preferences.setLastLoginPassword(getBaseContext(),
-						DES.encryptDES(passWord, "19911213"));
+						DES.encryptDES(password, "19911213"));
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
@@ -167,6 +194,7 @@ public class LoginActivity extends Activity {
 		protected String doInBackground(String... params) {
 
 			JSONObject param = new JSONObject();
+			password = params[1];
 			try {
 				param.put("DLZH", params[0]);
 				param.put("DLMM", params[1]);

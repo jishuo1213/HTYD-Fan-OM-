@@ -1,8 +1,11 @@
 package com.htyd.fan.om.main;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -17,12 +20,12 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
-import android.view.ActionProvider;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewConfiguration;
 import android.widget.TextView;
 
 import com.htyd.fan.om.R;
@@ -32,8 +35,6 @@ import com.htyd.fan.om.taskmanage.fragment.TaskListFragment;
 import com.htyd.fan.om.util.base.Utils;
 import com.htyd.fan.om.util.https.NetOperating;
 import com.htyd.fan.om.util.https.Urls;
-import com.htyd.fan.om.util.ui.AttendOverflowMenu;
-import com.htyd.fan.om.util.ui.TaskOvewflowMenu;
 import com.htyd.fan.om.util.ui.UItoolKit;
 
 public class MainActivity extends FragmentActivity {
@@ -44,19 +45,25 @@ public class MainActivity extends FragmentActivity {
 	private FragmentPagerAdapter pageAdapter;
 	private TabPanel tabPanel;
 	public static  int currentPos;
-	private static Menu menu;
-	private ActionProvider firstProvider,thirdProvider;
+	private  Menu menu;
+	//private ActionProvider firstProvider,thirdProvider;
 	private long firstBackKeyDown;
+	private OnItemChooserListener listener;
 
+	public interface OnItemChooserListener {
+		public void onItemChooser(int position);
+	}
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		forceShowOverflowMenu();
 		setContentView(R.layout.activity_main);
 		if(savedInstanceState != null){
 			currentPos = savedInstanceState.getInt("pagepos");
 		}
-		firstProvider = new AttendOverflowMenu(this);
-		thirdProvider = new TaskOvewflowMenu(this);
+		/*firstProvider = new AttendOverflowMenu(this);
+		thirdProvider = new TaskOvewflowMenu(this);*/
 		currentPos = 0;
 		loadData();
 		init();
@@ -98,18 +105,44 @@ public class MainActivity extends FragmentActivity {
 		super.onRestoreInstanceState(savedInstanceState);
 	}
 	
+	@SuppressLint("AlwaysShowAction")
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		MainActivity.menu = menu;
-		getMenuInflater().inflate(R.menu.menu_popup, menu);
-		MenuItem menuItem = menu.findItem(R.id.more_menu);
+		this.menu = menu;
+		getMenuInflater().inflate(R.menu.om_over_flow_menu, menu);
+		setIconEnable(menu,true);
 		if (currentPos == 0) {
-			menuItem.setActionProvider(firstProvider);
+			menu.findItem(R.id.menu_process_task).setVisible(false);
+			menu.findItem(R.id.menu_create_task).setVisible(false);
+			menu.findItem(R.id.menu_finish_task).setVisible(false);
+			menu.findItem(R.id.menu_query_task).setVisible(false);
 		} else if (currentPos == 1) {
-			menuItem.setActionProvider(thirdProvider);
+			menu.findItem(R.id.menu_attend_one).setVisible(false);
+			menu.findItem(R.id.menu_attend_two).setVisible(false);
 		}
-		menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		
+		switch(item.getItemId()){
+		case R.id.menu_process_task:
+			listener.onItemChooser(0);
+			return true;
+		case R.id.menu_finish_task:
+			listener.onItemChooser(1);
+			return true;
+		case R.id.menu_create_task:
+			listener.onItemChooser(2);
+			return true;
+		case R.id.menu_query_task:
+			listener.onItemChooser(3);
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+		
 	}
 
 	private void initActionBar() {
@@ -128,8 +161,9 @@ public class MainActivity extends FragmentActivity {
 //		TodoReminde tab2 = new TodoReminde();
 		TaskListFragment tab3 = new TaskListFragment();
 		SettingFragment tab4 = new SettingFragment();
-		TaskOvewflowMenu temp = (TaskOvewflowMenu)thirdProvider;
-		temp.setListener(tab3);
+	//	TaskOvewflowMenu temp = (TaskOvewflowMenu)thirdProvider;
+		//temp.setListener(tab3);
+		listener = tab3;
 		fragmentList.add(tab1);
 //		fragmentList.add(tab2);
 		fragmentList.add(tab3);
@@ -254,26 +288,21 @@ public class MainActivity extends FragmentActivity {
 	}
 
 	protected void setOvewflowMenu(int pos) {
-		if(menu == null){
+		if (menu == null) {
 			return;
 		}
-		MenuItem menuItem = menu.findItem(R.id.more_menu);
-		switch(pos){
+		switch (pos) {
 		case 0:
-			menuItem.setVisible(true);
-			menuItem.setActionProvider(firstProvider);
-			menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+			setAttendMenu();
 			break;
 		case 1:
-			menuItem.setVisible(true);
-			menuItem.setActionProvider(thirdProvider);
-			menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+			setTaskMenu();
 			break;
 		case 2:
-			menuItem.setVisible(false);
+			setAllMenu();
 			break;
 		case 3:
-			menuItem.setVisible(false);
+			setAllMenu();
 			break;
 		}
 	}
@@ -312,4 +341,61 @@ public class MainActivity extends FragmentActivity {
 			return null;
 		}
 	}
+	
+	private void forceShowOverflowMenu() {
+		try {
+			ViewConfiguration config = ViewConfiguration.get(this);
+			Field menuKeyField = ViewConfiguration.class
+					.getDeclaredField("sHasPermanentMenuKey");
+			if (menuKeyField != null) {
+				menuKeyField.setAccessible(true);
+				menuKeyField.setBoolean(config, false);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void setIconEnable(Menu menu, boolean enable) {
+		try {
+			Class<?> clazz = Class
+					.forName("com.android.internal.view.menu.MenuBuilder");
+			Method m = clazz.getDeclaredMethod("setOptionalIconsVisible",
+					boolean.class);
+			m.setAccessible(true);
+
+			// MenuBuilder实现Menu接口，创建菜单时，传进来的menu其实就是MenuBuilder对象(java的多态特征)
+			m.invoke(menu, enable);
+
+		} catch (Exception e) {
+		}
+	}
+
+	private void setAttendMenu() {
+		menu.findItem(R.id.menu_process_task).setVisible(false);
+		menu.findItem(R.id.menu_create_task).setVisible(false);
+		menu.findItem(R.id.menu_finish_task).setVisible(false);
+		menu.findItem(R.id.menu_query_task).setVisible(false);
+		menu.findItem(R.id.menu_attend_one).setVisible(true);
+		menu.findItem(R.id.menu_attend_two).setVisible(true);
+	}
+
+	private void setTaskMenu() {
+		menu.findItem(R.id.menu_process_task).setVisible(true);
+		menu.findItem(R.id.menu_create_task).setVisible(true);
+		menu.findItem(R.id.menu_finish_task).setVisible(true);
+		menu.findItem(R.id.menu_query_task).setVisible(true);
+		menu.findItem(R.id.menu_attend_one).setVisible(false);
+		menu.findItem(R.id.menu_attend_two).setVisible(false);
+	}
+	
+	private void setAllMenu(){
+		menu.findItem(R.id.menu_process_task).setVisible(false);
+		menu.findItem(R.id.menu_create_task).setVisible(false);
+		menu.findItem(R.id.menu_finish_task).setVisible(false);
+		menu.findItem(R.id.menu_query_task).setVisible(false);
+		menu.findItem(R.id.menu_attend_one).setVisible(false);
+		menu.findItem(R.id.menu_attend_two).setVisible(false);
+	}
+
 }

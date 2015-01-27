@@ -8,15 +8,14 @@ import android.content.Context;
 import com.htyd.fan.om.R;
 import com.htyd.fan.om.model.CustomChooser;
 import com.htyd.fan.om.util.base.BaseOverflowMenu;
-import com.htyd.fan.om.util.ui.CustomChooserView.OnItemChooserListener;
 
 public class AttendOverflowMenu extends BaseOverflowMenu {
 
-	private Context context;
+	//private Context context;
 
 	public AttendOverflowMenu(Context context) {
 		super(context);
-		this.context = context;
+	//	this.context = context;
 	}
 
 	@Override
@@ -33,7 +32,7 @@ public class AttendOverflowMenu extends BaseOverflowMenu {
 		return list;
 	}
 
-	@Override
+/*	@Override
 	public OnItemChooserListener getChoseListener() {
 		return mListener;
 	}
@@ -48,5 +47,5 @@ public class AttendOverflowMenu extends BaseOverflowMenu {
 		public void onItemChooser(int position) {
 			UItoolKit.showToastShort(context, position + "");
 		}
-	};
+	};*/
 }

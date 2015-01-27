@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:ignore="HardcodedText" >
+
+    <TextView
+        android:id="@+id/tv_test_result"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="测试结果"
+        android:textSize="15sp"
+        android:padding="5dp" />
+
+    <TextView
+        android:id="@+id/tv_test_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="测试状态"
+        android:textSize="15sp"
+        android:padding="5dp" />
+
+    <TextView
+        android:id="@+id/tv_error_result"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="error"
+        android:textSize="15sp"
+        android:padding="5dp" />
+
+    <TextView
+        android:id="@+id/tv_failure_result"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="failure"
+        android:textSize="15sp"
+        android:padding="5dp" />
+
+    <Button
+        android:id="@+id/btn_start_test"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:text="开始测试" />
+
+</LinearLayout>

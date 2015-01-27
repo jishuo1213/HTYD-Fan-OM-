@@ -9,5 +9,8 @@
     <item
         android:id="@+id/menu_delete_task"
         android:title="删除任务"/>
+    <item
+        android:id="@+id/menu_done_task"
+        android:title="完成任务"/>
 
 </menu>

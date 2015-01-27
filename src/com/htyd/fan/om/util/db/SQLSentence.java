@@ -69,21 +69,23 @@ public class SQLSentence {
 	public static final String TABLE_TASK_PROCESS = "taskprocess";
 	public static final String COLUMN_TASKPROCESS_ID = "_id";
 	public static final String COLUMN_TASKPROCESS_TASK_ID = "task_id";
+	public static final String COLUMN_TASKPROCESS_TASK_LOCAL_ID = "task_local_id";
 	public static final String COLUMN_TASKPROCESS_STARTTIME = "task_start_time";
 	public static final String COLUMN_TASKPROCESS_ENDTIME = "task_end_time";
 	public static final String COLUMN_TASKPROCESS_TASK_PROCESSWHAT = "task_process_what";
-	public static final String COLUMN_TASKPROCESS_TASK_STATE = "task_state";
+//	public static final String COLUMN_TASKPROCESS_TASK_STATE = "task_state";
 	public static final String COLUMN_TASKPROCESS_CREATE_TIME = "create_time";
 	public static final String COLUMN_TASKPROCESS_ASYNC_STATE = "process_async_state";
 
 	public static final String CREATE_TABLE_TASK_PROCESS = "create table taskprocess ("
 			+ "_id integer primary key autoincrement, task_id integer references task(task_id),"
-			+" task_start_time integer, task_end_time  integer,process_async_state integer, "
-			+ " task_process_what text , task_state integer , create_time integer)";
+			+" task_start_time integer, task_local_id integer ,task_end_time  integer,process_async_state integer, "
+			+ " task_process_what text , create_time integer)";
 
 	public static final String TABLE_TASK_ACCESSORY = "taskaccessory";
 	public static final String COLUMN_TASK_ACCESSORY_ID = "_id";
-	public static final String COLUMN_TASK_ACCESSORY_TASKID = "task_id";
+	public static final String COLUMN_TASK_ACCESSORY_TASK_NET_ID = "task_id";
+	public static final String COLUMN_TASK_ACCESSORY_TASK_LOCAL_ID = "task_local_id";
 	public static final String COLUMN_TASK_ACCESSORY_PATH = "accessory_path";
 	public static final String COLUMN_TASK_ACCESSORY_STATE = "accessory_state";
 	public static final String COLUMN_TASK_ACCESSORY_SOURCE = "accessory_type";
@@ -93,7 +95,8 @@ public class SQLSentence {
 
 	public static final String CREATE_TABLE_TASK_ACCESSORY = "create table taskaccessory ("
 			+ "_id integer primary key autoincrement, task_id integer references task(task_id), accessory_path text"
-			+ ", accessory_state integer ,accessory_type integer,accessory_net_id integer,file_size integer,file_description text)";
+			+ ", accessory_state integer ,accessory_type integer,accessory_net_id integer,file_size integer," 
+			+"file_description text,task_local_id integer)";
 	
 	public static final String TABLE_TASK_TYPE = "tasktype";
 	public static final String COLUMN_TASK_TYPE_ID = "_id";

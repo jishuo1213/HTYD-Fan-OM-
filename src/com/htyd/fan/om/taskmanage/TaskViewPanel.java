@@ -15,8 +15,10 @@ public class TaskViewPanel {
 			taskPlanEndTime, taskAccessory, taskState,taskEquipment, taskProductType, taskType;
 	public EditText taskInstallLocation, taskTitle, taskDescription, taskRecipient,
 			taskRecipientPhone;
-	private int taskId;
+	private int taskNetId,taskLocalId;
 	private long saveTime;
+	private int isSyncToServer;
+	private TaskDetailBean mBean;
 
 	public TaskViewPanel(View v) {
 		taskLocation = (TextView) v.findViewById(R.id.tv_task_location);
@@ -38,6 +40,7 @@ public class TaskViewPanel {
 		taskRecipient = (EditText) v.findViewById(R.id.edit_task_recipient);
 		taskRecipientPhone = (EditText) v
 				.findViewById(R.id.edit_task_recipient_phone);
+		mBean = new TaskDetailBean();
 	}
 
 	public void setTaskShow(TaskDetailBean mBean) {
@@ -59,8 +62,10 @@ public class TaskViewPanel {
 		taskType.setText(mBean.taskType);
 		taskRecipient.setText(mBean.recipientsName);
 		taskRecipientPhone.setText(mBean.recipientPhone);
-		taskId = mBean.taskNetId;
+		taskNetId = mBean.taskNetId;
 		saveTime = mBean.saveTime;
+		isSyncToServer = mBean.isSyncToServer;
+		taskLocalId = mBean.taskLocalId;
 	}
 
 	public void setViewEnable() {
@@ -79,28 +84,29 @@ public class TaskViewPanel {
 	}
 
 	public TaskDetailBean getTaskBean() {
-		TaskDetailBean taskBean = new TaskDetailBean();
-		taskBean.taskNetId = taskId;
-		taskBean.workLocation = taskLocation.getText().toString();
-		taskBean.installLocation = taskInstallLocation.getText().toString();
-		taskBean.taskTitle = taskTitle.getText().toString();
-		taskBean.taskDescription = taskDescription.getText().toString();
-		taskBean.planStartTime = Utils.parseDate(taskPlanStartTime.getText()
+		mBean.taskNetId = taskNetId;
+		mBean.workLocation = taskLocation.getText().toString();
+		mBean.installLocation = taskInstallLocation.getText().toString();
+		mBean.taskTitle = taskTitle.getText().toString();
+		mBean.taskDescription = taskDescription.getText().toString();
+		mBean.planStartTime = Utils.parseDate(taskPlanStartTime.getText()
 				.toString(), "yyyy年MM月dd日 HH:mm:ss");
-		taskBean.planEndTime = Utils.parseDate(taskPlanEndTime.getText()
+		mBean.planEndTime = Utils.parseDate(taskPlanEndTime.getText()
 				.toString(), "yyyy年MM月dd日 HH:mm:ss");
-		taskBean.equipment = taskEquipment.getText().toString();
-		taskBean.productType = taskProductType.getText().toString();
+		mBean.equipment = taskEquipment.getText().toString();
+		mBean.productType = taskProductType.getText().toString();
 		String stateStr = taskState.getText().toString();
 		if (TextUtils.equals(stateStr, "在处理")) {
-			taskBean.taskState = 0;
+			mBean.taskState = 0;
 		} else {
-			taskBean.taskState = 2;
+			mBean.taskState = 2;
 		}
-		taskBean.taskType = taskType.getText().toString();
-		taskBean.recipientsName = taskRecipient.getText().toString();
-		taskBean.recipientPhone = taskRecipientPhone.getText().toString();
-		taskBean.saveTime = this.saveTime;
-		return taskBean;
+		mBean.taskType = taskType.getText().toString();
+		mBean.recipientsName = taskRecipient.getText().toString();
+		mBean.recipientPhone = taskRecipientPhone.getText().toString();
+		mBean.saveTime = this.saveTime;
+		mBean.isSyncToServer = isSyncToServer;
+		mBean.taskLocalId = taskLocalId;
+		return mBean;
 	}
 }

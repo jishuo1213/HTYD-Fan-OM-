@@ -80,6 +80,8 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 	protected SparseArray<AttendBean> attendMap;//签到的Map, 0 - 当前天------ 0 为1号
 	protected Calendar selectDay;
 	protected PopupMenu popupMenu;
+	private boolean isLocation;
+	private String location;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -94,6 +96,7 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 		args.putInt(MONTHNUM, Calendar.getInstance().get(Calendar.MONTH));
 		mLoadManager.initLoader(ATTENDLOADERID, args, mCallback);
 		initMap(currentSelect - firstDayPosition + 1);
+		isLocation = false;
 	}
 
 	@Override
@@ -114,6 +117,10 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 	public void onResume() {
 		super.onResume();
 		getActivity().registerReceiver(mLocationReceiver,new IntentFilter(OMLocationManager.ACTION_LOCATION));
+		if (!isLocation && Utils.isNetWorkEnable()) {
+			OMLocationManager.get(getActivity()).setLocCilentOption(null);
+			OMLocationManager.get(getActivity()).startLocationUpdate();
+		}
 	}
 
 	@Override
@@ -125,6 +132,7 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 	public void onPause() {
 		getActivity().unregisterReceiver(mLocationReceiver);
 		Log.i("fanjishuo_____attendfragment", "onPAUSE");
+		OMLocationManager.get(getActivity()).stopLocationUpdate();
 		super.onPause();
 	}
 	
@@ -432,7 +440,7 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 		if (mBean == null) {
 			attendState.setText("未签到");
 			attendTime.setText(Utils.formatTime(selectDay.getTimeInMillis(), "yyyy年MM月dd日"));
-			attendLocation.setText(null);
+			attendLocation.setText(location);
 			return;
 		}
 		attendTime.setText(Utils.formatTime(mBean.time,"yyyy年MM月dd日"));
@@ -458,6 +466,16 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 			}
 			AttendBean mBean = new AttendBean();
 			mBean.SetValueBean(loc);
+			location = mBean.province+mBean.city+mBean.district;
+			Log.i("fanjishuo____onNetWorkLocationReceived", "location");
+			if(!isLocation){
+				if(attendLocation.getText().length() == 0){
+					attendLocation.setText(location);
+				}
+				isLocation  = true;
+				OMLocationManager.get(getActivity()).stopLocationUpdate();
+				return;
+			}
 			if(!attendTime.getText().toString().equals(Utils.formatTime(loc.time, "yyyy年MM月dd日"))){
 				mBean.state = 2;
 			}else{
@@ -466,12 +484,21 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 			mBean.time = selectDay.getTimeInMillis();
 			mBean.choseLocation = attendLocation.getText().toString();
 			mBean.month = selectDay.get(Calendar.MONTH);
+			OMLocationManager.get(getActivity()).stopLocationUpdate();
 			startTask(mBean);
 		}
 
 		@Override
 		protected void onGPSLocationReceived(Context context, OMLocationBean loc) {
 
+		}
+
+		@Override
+		protected void onNetDisableReceived(Context context) {
+			UItoolKit.showToastShort(getActivity(), "无网络连接时不能签到");
+			OMLocationManager.get(getActivity()).stopLocationUpdate();
+			signButton.setText("签到");
+			signButton.setEnabled(true);
 		}
 
 	};
@@ -553,7 +580,6 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 			}
 			signButton.setEnabled(true);
 			signButton.setText("签到");
-			OMLocationManager.get(getActivity()).stopLocationUpdate();
 			stopTask(this);
 		}
 

@@ -50,11 +50,7 @@ import com.htyd.fan.om.model.CustomChooser;
  */
 public class CustomChooserView extends ViewGroup {
 
-	public interface OnItemChooserListener {
-		public void onItemChooser(int position);
-	}
-
-	private OnItemChooserListener onItemChooserListener;
+//	private OnItemChooserListener onItemChooserListener;
 
 	/**
 	 * An adapter for displaying the activities in an {@link AdapterView}.
@@ -204,10 +200,10 @@ public class CustomChooserView extends ViewGroup {
 	 * 
 	 * @param onItemChooserListener
 	 */
-	public void setOnItemChooserListener(
+	/*public void setOnItemChooserListener(
 			OnItemChooserListener onItemChooserListener) {
 		this.onItemChooserListener = onItemChooserListener;
-	}
+	}*/
 
 	/**
 	 * Sets the background for the button that expands the activity overflow
@@ -421,9 +417,9 @@ public class CustomChooserView extends ViewGroup {
 			switch (itemViewType) {
 			case CustomViewAdapter.ITEM_VIEW_TYPE_ACTIVITY:
 				dismissPopup();
-				if (onItemChooserListener != null) {
+/*				if (onItemChooserListener != null) {
 					onItemChooserListener.onItemChooser(position);
-				}
+				}*/
 				break;
 			default:
 				throw new IllegalArgumentException();

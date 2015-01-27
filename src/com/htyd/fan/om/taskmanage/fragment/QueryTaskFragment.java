@@ -212,6 +212,7 @@ public class QueryTaskFragment extends Fragment {
 				param.put("LQR", Preferences.getUserinfo(getActivity(), "YHID"));
 				param.put("RWGL", "");
 				param.put("WDRW", "");
+				param.put("FZR", "");
 			} catch (JSONException e1) {
 				e1.printStackTrace();
 			}

@@ -227,48 +227,53 @@ public class HttpHelper {
 	
 	@SuppressWarnings("unused")
 	private static synchronized HttpClient getHttpClient() {
-		if(httpClient == null) {
-			final HttpParams httpParams = new BasicHttpParams();  
-			
-			// timeout: get connections from connection pool
-	        ConnManagerParams.setTimeout(httpParams, 1000);  
-	        // timeout: connect to the server
-	        HttpConnectionParams.setConnectionTimeout(httpParams, DEFAULT_SOCKET_TIMEOUT);
-	        // timeout: transfer data from server
-	        HttpConnectionParams.setSoTimeout(httpParams, DEFAULT_SOCKET_TIMEOUT); 
-	        
-	        // set max connections per host
-	        ConnManagerParams.setMaxConnectionsPerRoute(httpParams, new ConnPerRouteBean(DEFAULT_HOST_CONNECTIONS));  
-	        // set max total connections
-	        ConnManagerParams.setMaxTotalConnections(httpParams, DEFAULT_MAX_CONNECTIONS);
-	        
-	        // use expect-continue handshake
-	        HttpProtocolParams.setUseExpectContinue(httpParams, true);
-	        // disable stale check
-	        HttpConnectionParams.setStaleCheckingEnabled(httpParams, false);
-	        
-	        HttpProtocolParams.setVersion(httpParams, HttpVersion.HTTP_1_1);  
-	        HttpProtocolParams.setContentCharset(httpParams, HTTP.UTF_8); 
-	          
-	        HttpClientParams.setRedirecting(httpParams, false);
-	        
-	        // set user agent
-	        String userAgent = "Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN; rv:1.9.2) Gecko/20100115 Firefox/3.6";
-	        HttpProtocolParams.setUserAgent(httpParams, userAgent); 	
-	        
-	        // disable Nagle algorithm
-	        HttpConnectionParams.setTcpNoDelay(httpParams, true); 
-	        
-	        HttpConnectionParams.setSocketBufferSize(httpParams, DEFAULT_SOCKET_BUFFER_SIZE);  
-	        
-	        // scheme: http and https
-	        SchemeRegistry schemeRegistry = new SchemeRegistry();  
-	        schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));  
-	        schemeRegistry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+		if (httpClient == null) {
+			final HttpParams httpParams = new BasicHttpParams();
 
-	        ClientConnectionManager manager = new ThreadSafeClientConnManager(httpParams, schemeRegistry);  
-	        httpClient = new DefaultHttpClient(manager, httpParams); 
-		}		
+			// timeout: get connections from connection pool
+			ConnManagerParams.setTimeout(httpParams, 1000);
+			// timeout: connect to the server
+			HttpConnectionParams.setConnectionTimeout(httpParams,
+					DEFAULT_SOCKET_TIMEOUT);
+			// timeout: transfer data from server
+			HttpConnectionParams.setSoTimeout(httpParams,
+					DEFAULT_SOCKET_TIMEOUT);
+
+			// set max connections per host
+			ConnManagerParams.setMaxConnectionsPerRoute(httpParams,
+					new ConnPerRouteBean(DEFAULT_HOST_CONNECTIONS));
+			// set max total connections
+			ConnManagerParams.setMaxTotalConnections(httpParams,
+					DEFAULT_MAX_CONNECTIONS);
+
+			// use expect-continue handshake
+			HttpProtocolParams.setUseExpectContinue(httpParams, true);
+			// disable stale check
+			HttpConnectionParams.setStaleCheckingEnabled(httpParams, false);
+
+			HttpProtocolParams.setVersion(httpParams, HttpVersion.HTTP_1_1);
+			HttpProtocolParams.setContentCharset(httpParams, HTTP.UTF_8);
+
+			HttpClientParams.setRedirecting(httpParams, false);
+
+			// set user agent
+			String userAgent = "Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN; rv:1.9.2) Gecko/20100115 Firefox/3.6";
+			HttpProtocolParams.setUserAgent(httpParams, userAgent);
+
+			// disable Nagle algorithm
+			HttpConnectionParams.setTcpNoDelay(httpParams, true);
+
+			HttpConnectionParams.setSocketBufferSize(httpParams,DEFAULT_SOCKET_BUFFER_SIZE);
+
+			// scheme: http and https
+			SchemeRegistry schemeRegistry = new SchemeRegistry();
+			schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+			schemeRegistry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+
+			ClientConnectionManager manager = new ThreadSafeClientConnManager(
+					httpParams, schemeRegistry);
+			httpClient = new DefaultHttpClient(manager, httpParams);
+		}
 		return httpClient;
 	}
 	

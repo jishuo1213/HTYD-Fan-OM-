@@ -54,10 +54,11 @@ public class UploadFileDialog extends DialogFragment implements
 		LoadListener, UpLoadFinishListener, DownLoadFinishListener {
 
 	private static final String FILE = "file";
-	private static final String TASKID = "taskid";
+	private static final String TASKNETID = "taskid";
 	private static final String TASKTITLE = "taskTitle";
 	private static final String IMGPATH = "imagepath";
 	private static final String QUERYVIEW = "queryview";
+	private static final String TASKLOCALID = "tasklocalid";
 	
 	private static final int REQUESTPHOTO = 1;
 	private static final int REQUESTRECORDING = 2;
@@ -73,15 +74,16 @@ public class UploadFileDialog extends DialogFragment implements
 
 	public static DialogFragment newInstance(
 			ArrayList<AffiliatedFileBean> list, int taskNetId,
-			String taskTitle, boolean isViewQuery) {
+			String taskTitle, boolean isViewQuery,int taskLocalId) {
 		Bundle args = new Bundle();
 		if(list == null){
 			list = new ArrayList<AffiliatedFileBean>();
 		}
 		args.putParcelableArrayList(FILE, list);
-		args.putInt(TASKID, taskNetId);
+		args.putInt(TASKNETID, taskNetId);
 		args.putString(TASKTITLE, taskTitle);
 		args.putBoolean(QUERYVIEW, isViewQuery);
+		args.putInt(TASKLOCALID, taskLocalId);
 		DialogFragment fragment = new UploadFileDialog();
 		fragment.setArguments(args);
 		return fragment;
@@ -101,7 +103,6 @@ public class UploadFileDialog extends DialogFragment implements
 
 	@Override
 	public void onResume() {
-		
 		super.onResume();
 	}
 	
@@ -151,7 +152,7 @@ public class UploadFileDialog extends DialogFragment implements
 				startActivityForResult(i, REQUESTPHOTO);
 				break;
 			case R.id.tv_refresh_accessory:
-				new RefreshAccessoryTask().execute(getArguments().getInt(TASKID));
+				new RefreshAccessoryTask().execute(getArguments().getInt(TASKNETID));
 				refreshView.setEnabled(false);
 				break;
 			}
@@ -196,8 +197,9 @@ public class UploadFileDialog extends DialogFragment implements
 					listAccessory = new ArrayList<AffiliatedFileBean>();
 				mBean.filePath = imageFileUri.getPath();
 				mBean.fileSource = 0;
-				mBean.taskId = getArguments().getInt(TASKID);
+				mBean.taskId = getArguments().getInt(TASKNETID);
 				mBean.fileState = 0;
+				mBean.taskLocalId = getArguments().getInt(TASKLOCALID);
 				listAccessory.add(mBean);
 				OMUserDatabaseManager.getInstance(getActivity()).openDb(1);
 				OMUserDatabaseManager.getInstance(getActivity()).insertTaskAccessoryBean(mBean);
@@ -212,13 +214,14 @@ public class UploadFileDialog extends DialogFragment implements
 				UItoolKit.showToastShort(getActivity(),data.getStringArrayExtra(RecodingDialogFragment.FILEPATHARRAY)[0]);
 			} else if (requestCode == REQUESTPHOTODESCRIPTION) {
 				int pos = data.getIntExtra(SetPhotoDescription.POSITION, -1);
-				View v = mListView.getChildAt(pos);
-				TextView descriptionView = (TextView) v.findViewById(R.id.tv_file_name);
-				descriptionView.setText(data.getStringExtra(SetPhotoDescription.DESCRIPTION));
+				//View v = mListView.getChildAt(pos);
+				//TextView descriptionView = (TextView) v.findViewById(R.id.tv_file_name);
+				//descriptionView.setText(data.getStringExtra(SetPhotoDescription.DESCRIPTION));
 				TaskAccessoryAdapter mAdapter = (TaskAccessoryAdapter) mListView.getAdapter();
 				AffiliatedFileBean mBean = (AffiliatedFileBean) mAdapter.getItem(pos);
 				mBean.fileDescription = data.getStringExtra(SetPhotoDescription.DESCRIPTION);
 				mAdapter.notifyDataSetChanged();
+				OMUserDatabaseManager.getInstance(getActivity()).updateUploadAccessoryBean(mBean);
 			}
 		}
 	}
@@ -241,6 +244,10 @@ public class UploadFileDialog extends DialogFragment implements
 
 	@Override
 	public void onUpLoadClick(AffiliatedFileBean mBean,int position) {
+		if(mBean.taskId == 0){
+			UItoolKit.showToastShort(getActivity(), "任务还未同步至服务器，不能上传附件");
+			return;
+		}
 		if (mBean.fileSource == 0 && mBean.fileState == 0) {
 			if(mBean.fileDescription == null || mBean.fileDescription.length() == 0){
 				UItoolKit.showToastShort(getActivity(), "请输入文件描述信息");

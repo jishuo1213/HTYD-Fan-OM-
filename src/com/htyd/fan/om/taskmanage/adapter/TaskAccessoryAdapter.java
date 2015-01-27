@@ -100,7 +100,7 @@ public class TaskAccessoryAdapter extends BaseAdapter {
 		mHolder.accessoryName.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if (TextUtils.isEmpty(mBean.fileDescription)) {
+				if (!TextUtils.isEmpty(mBean.fileDescription)) {
 					return;
 				}
 				mListener.onSetPhotoDescription(position);

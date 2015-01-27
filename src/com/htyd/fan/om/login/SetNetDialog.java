@@ -64,7 +64,7 @@ public class SetNetDialog extends DialogFragment {
 	private void initView(View v) {
 		netEdit = (EditText) v.findViewById(R.id.edit_ip_address);
 		if (address.length() > 0) {
-			address = address.substring(7, address.length() - 11);
+			address = address.substring(7, address.length() - 6);
 			netEdit.setText(address);
 		}
 	}
