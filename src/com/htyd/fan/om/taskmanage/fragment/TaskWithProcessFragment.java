@@ -43,6 +43,7 @@ import com.htyd.fan.om.taskmanage.adapter.ProcessAdapter;
 import com.htyd.fan.om.util.db.OMUserDatabaseHelper.TaskProcessCursor;
 import com.htyd.fan.om.util.db.OMUserDatabaseManager;
 import com.htyd.fan.om.util.db.SQLSentence;
+import com.htyd.fan.om.util.fragment.UploadFileDialog;
 import com.htyd.fan.om.util.https.NetOperating;
 import com.htyd.fan.om.util.https.Urls;
 import com.htyd.fan.om.util.https.Utility;
@@ -161,6 +162,7 @@ public class TaskWithProcessFragment extends Fragment {
 		} else if (mBean.taskState == 2) {
 			getActivity().getActionBar().setTitle("查看已完成任务");
 		}
+		mPanel.taskAccessory.setOnClickListener(createBtnClickListener);
 		processListView.setOnItemClickListener(processItemListener);
 	}
 
@@ -204,15 +206,27 @@ public class TaskWithProcessFragment extends Fragment {
 	private OnClickListener createBtnClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			if(mBean.taskState == 2){
-				UItoolKit.showToastShort(getActivity(), "任务已经完成，不能继续创建处理项");
-				return;
+			switch (v.getId()) {
+			case R.id.btn_create_task_process:
+				if (mBean.taskState == 2) {
+					UItoolKit.showToastShort(getActivity(), "任务已经完成，不能继续创建处理项");
+					return;
+				}
+				FragmentManager fm = getActivity().getFragmentManager();
+				CreateProcessDialog dialog = (CreateProcessDialog) CreateProcessDialog
+						.newInstance(null, false, mBean.taskNetId,
+								mBean.taskLocalId);
+				dialog.setTargetFragment(TaskWithProcessFragment.this,
+						REQUEST_PROCESS);
+				dialog.show(fm, null);
+				break;
+			case R.id.tv_task_accessory:
+				UploadFileDialog fileDialog = (UploadFileDialog) UploadFileDialog
+						.newInstance(mBean.taskNetId, mBean.taskTitle, false,
+								mBean.taskLocalId);
+				fileDialog.show(getFragmentManager(), null);
+				break;
 			}
-			FragmentManager fm = getActivity().getFragmentManager();
-			CreateProcessDialog dialog = (CreateProcessDialog) CreateProcessDialog.newInstance(null, false,mBean.taskNetId,mBean.taskLocalId);
-			dialog.setTargetFragment(TaskWithProcessFragment.this,
-					REQUEST_PROCESS);
-			dialog.show(fm, null);
 		}
 	};
 

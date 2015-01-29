@@ -16,6 +16,8 @@ public class AffiliatedFileBean implements Parcelable {
 	public long fileSize;//文件大小
 	public String fileDescription;//文件描述信息
 	public int taskLocalId;//任务本地ID
+	public double longitude;//附件经度
+	public double latitude;//附件纬度
 	
 	@Override
 	public int describeContents() {
@@ -32,6 +34,8 @@ public class AffiliatedFileBean implements Parcelable {
 		dest.writeLong(fileSize);
 		dest.writeString(fileDescription);
 		dest.writeInt(taskLocalId);
+		dest.writeDouble(longitude);
+		dest.writeDouble(latitude);
 	}
 	
 	public static Parcelable.Creator<AffiliatedFileBean> CREATOR = new Creator<AffiliatedFileBean>() {
@@ -52,11 +56,13 @@ public class AffiliatedFileBean implements Parcelable {
 			mBean.fileSize = source.readLong();
 			mBean.fileDescription = source.readString();
 			mBean.taskLocalId = source.readInt();
+			mBean.longitude = source.readInt();
+			mBean.latitude = source.readInt();
 			return mBean;
 		}
 	};
 	
-	public void setFromJson(JSONObject json,int taskId) throws JSONException{
+	public void setFromJson(JSONObject json,int taskId,int taskLocalId) throws JSONException{
 		filePath = json.getString("WJDZ");
 		fileSource = 1;
 		fileState = 0;
@@ -64,5 +70,9 @@ public class AffiliatedFileBean implements Parcelable {
 		netId = Integer.parseInt(json.getString("WJID"));
 		fileSize = Long.parseLong(json.getString("WJDX"));
 		fileDescription = json.getString("LBMC");
+		String [] temp = json.getString("TEMPID").split("\\|");
+		longitude = Double.parseDouble(temp[1]);
+		latitude = Double.parseDouble(temp[0]);
+		this.taskLocalId = taskLocalId;
 	}
 }

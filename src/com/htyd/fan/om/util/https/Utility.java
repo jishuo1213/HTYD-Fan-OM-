@@ -214,14 +214,14 @@ public class Utility {
 	 */
 	
 	public static void handleAccessory(OMUserDatabaseManager mManager,
-			String response,int taskId) throws Exception {
+			String response,int taskId,int taskLocalId) throws Exception {
 		mManager.openDb(1);
 		if (!TextUtils.isEmpty(response)) {
 			AffiliatedFileBean mBean = new AffiliatedFileBean();
 			JSONArray array = (JSONArray) new JSONTokener(
 					response).nextValue();
 			for (int i = 0; i < array.length(); i++) {
-				mBean.setFromJson(array.getJSONObject(i),taskId);
+				mBean.setFromJson(array.getJSONObject(i),taskId,taskLocalId);
 				mManager.insertTaskAccessoryBean(mBean);
 			}
 		} else {
@@ -230,13 +230,13 @@ public class Utility {
 	}
 	
 	public static void handleAccessory(ArrayList<AffiliatedFileBean> accessoryList,
-			String response,int taskId) throws Exception {
+			String response,int taskId,int taskLocalId) throws Exception {
 		if (!TextUtils.isEmpty(response)) {
 			JSONArray array = (JSONArray) new JSONTokener(
 					response).nextValue();
 			for (int i = 0; i < array.length(); i++) {
 				AffiliatedFileBean mBean = new AffiliatedFileBean();
-				mBean.setFromJson(array.getJSONObject(i),taskId);
+				mBean.setFromJson(array.getJSONObject(i),taskId,taskLocalId);
 				accessoryList.add(mBean);
 			}
 		} else {

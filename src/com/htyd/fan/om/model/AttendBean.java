@@ -24,6 +24,7 @@ public class AttendBean implements Parcelable {
 	public String choseLocation;
 	public int month;
 	public int attendId;
+	public String attendRemark;//考勤备注
 
 	public AttendBean() {
 	}
@@ -47,6 +48,7 @@ public class AttendBean implements Parcelable {
 		dest.writeString(choseLocation);
 		dest.writeInt(state);
 		dest.writeInt(attendId);
+		dest.writeString(attendRemark);
 	}
 
 	public static Parcelable.Creator<AttendBean> CREATOR = new Creator<AttendBean>() {
@@ -71,6 +73,7 @@ public class AttendBean implements Parcelable {
 			mBean.choseLocation = source.readString();
 			mBean.state = source.readInt();
 			mBean.attendId = source.readInt();
+			mBean.attendRemark = source.readString();
 			return mBean;
 		}
 	};
@@ -100,6 +103,7 @@ public class AttendBean implements Parcelable {
 		json.put("QDJD", longitude);
 		json.put("QDWD", latitude);
 		json.put("RZ_MKID",Utils.ATTENDMODULE);
+		json.put("KQBZ", attendRemark);
 		return json;
 	}
 	
@@ -112,5 +116,6 @@ public class AttendBean implements Parcelable {
 			state = 2;
 		}
 		month = Utils.getCalendarField(time, Calendar.MONTH);
+		attendRemark = json.getString("KQBZ");
 	}
 }

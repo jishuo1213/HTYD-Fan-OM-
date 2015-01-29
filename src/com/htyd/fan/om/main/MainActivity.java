@@ -82,8 +82,8 @@ public class MainActivity extends FragmentActivity {
 	
 	@Override
 	protected void onDestroy() {
-		/*fragmentList.clear();
-		tabDrawable = null;*/
+		fragmentList.clear();
+		tabDrawable = null;
 		Log.i("fanjishuo____mainActivity", "onDestory");
 		super.onDestroy();
 	}
@@ -112,9 +112,9 @@ public class MainActivity extends FragmentActivity {
 		getMenuInflater().inflate(R.menu.om_over_flow_menu, menu);
 		setIconEnable(menu,true);
 		if (currentPos == 0) {
-			menu.findItem(R.id.menu_process_task).setVisible(false);
+			menu.findItem(R.id.menu_inprocess_task).setVisible(false);
 			menu.findItem(R.id.menu_create_task).setVisible(false);
-			menu.findItem(R.id.menu_finish_task).setVisible(false);
+			menu.findItem(R.id.menu_finished_task).setVisible(false);
 			menu.findItem(R.id.menu_query_task).setVisible(false);
 		} else if (currentPos == 1) {
 			menu.findItem(R.id.menu_attend_one).setVisible(false);
@@ -127,10 +127,10 @@ public class MainActivity extends FragmentActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		
 		switch(item.getItemId()){
-		case R.id.menu_process_task:
+		case R.id.menu_inprocess_task:
 			listener.onItemChooser(0);
 			return true;
-		case R.id.menu_finish_task:
+		case R.id.menu_finished_task:
 			listener.onItemChooser(1);
 			return true;
 		case R.id.menu_create_task:
@@ -372,27 +372,27 @@ public class MainActivity extends FragmentActivity {
 	}
 
 	private void setAttendMenu() {
-		menu.findItem(R.id.menu_process_task).setVisible(false);
+		menu.findItem(R.id.menu_inprocess_task).setVisible(false);
 		menu.findItem(R.id.menu_create_task).setVisible(false);
-		menu.findItem(R.id.menu_finish_task).setVisible(false);
+		menu.findItem(R.id.menu_finished_task).setVisible(false);
 		menu.findItem(R.id.menu_query_task).setVisible(false);
 		menu.findItem(R.id.menu_attend_one).setVisible(true);
 		menu.findItem(R.id.menu_attend_two).setVisible(true);
 	}
 
 	private void setTaskMenu() {
-		menu.findItem(R.id.menu_process_task).setVisible(true);
+		menu.findItem(R.id.menu_inprocess_task).setVisible(true);
 		menu.findItem(R.id.menu_create_task).setVisible(true);
-		menu.findItem(R.id.menu_finish_task).setVisible(true);
+		menu.findItem(R.id.menu_finished_task).setVisible(true);
 		menu.findItem(R.id.menu_query_task).setVisible(true);
 		menu.findItem(R.id.menu_attend_one).setVisible(false);
 		menu.findItem(R.id.menu_attend_two).setVisible(false);
 	}
 	
 	private void setAllMenu(){
-		menu.findItem(R.id.menu_process_task).setVisible(false);
+		menu.findItem(R.id.menu_inprocess_task).setVisible(false);
 		menu.findItem(R.id.menu_create_task).setVisible(false);
-		menu.findItem(R.id.menu_finish_task).setVisible(false);
+		menu.findItem(R.id.menu_finished_task).setVisible(false);
 		menu.findItem(R.id.menu_query_task).setVisible(false);
 		menu.findItem(R.id.menu_attend_one).setVisible(false);
 		menu.findItem(R.id.menu_attend_two).setVisible(false);

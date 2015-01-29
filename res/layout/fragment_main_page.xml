@@ -64,7 +64,18 @@
         android:padding="5dp"
         android:text="状       态："
         android:textSize="15sp" />
-
+    
+	<TextView
+        android:id="@+id/tv_layout_remark"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/tv_layout_state"
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="备注信息："
+        android:textSize="15sp" />
+    
     <TextView
         android:id="@+id/tv_attend_state"
         android:layout_width="wrap_content"
@@ -73,6 +84,17 @@
         android:layout_below="@id/tv_attend_address"
         android:layout_toRightOf="@id/tv_layout_state"
         android:hint="状态"
+        android:padding="5dp"
+        android:textSize="15sp" />
+    
+    <TextView
+        android:id="@+id/tv_attend_remark"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/tv_attend_state"
+        android:layout_below="@id/tv_attend_state"
+        android:layout_toRightOf="@id/tv_layout_state"
+        android:hint="签到备注信息"
         android:padding="5dp"
         android:textSize="15sp" />
 
@@ -92,7 +114,7 @@
         android:id="@+id/btn_add_attend"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/tv_attend_state"
+        android:layout_below="@id/tv_attend_remark"
         android:layout_margin="10dp"
         android:layout_toLeftOf="@id/ldepart_ine"
         android:textColor="@color/white"

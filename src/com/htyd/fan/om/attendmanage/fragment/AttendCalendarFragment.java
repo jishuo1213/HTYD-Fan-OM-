@@ -54,6 +54,8 @@ import com.htyd.fan.om.util.db.OMUserDatabaseManager;
 import com.htyd.fan.om.util.db.SQLSentence;
 import com.htyd.fan.om.util.fragment.AddressListDialog;
 import com.htyd.fan.om.util.fragment.AddressListDialog.ChooseAddressListener;
+import com.htyd.fan.om.util.fragment.InputDialogFragment;
+import com.htyd.fan.om.util.fragment.InputDialogFragment.InputDoneListener;
 import com.htyd.fan.om.util.fragment.SelectLocationDialogFragment;
 import com.htyd.fan.om.util.fragment.SelectLocationDialogFragment.SelectLocationListener;
 import com.htyd.fan.om.util.https.NetOperating;
@@ -63,7 +65,8 @@ import com.htyd.fan.om.util.loaders.SQLiteCursorLoader;
 import com.htyd.fan.om.util.ui.TextViewWithBorder;
 import com.htyd.fan.om.util.ui.UItoolKit;
 
-public class AttendCalendarFragment extends Fragment implements SelectLocationListener, ChooseAddressListener {
+public class AttendCalendarFragment extends Fragment implements
+		SelectLocationListener, ChooseAddressListener, InputDoneListener {
 
 	private static final String MONTHNUM = "monthnum";
 	private static final int ATTENDLOADERID = 12;
@@ -72,7 +75,7 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 	private LoaderManager mLoadManager;
 	private AttendLoaderCallback mCallback;
 	private GridView monthGridView;
-	private TextView attendTime, attendLocation, attendState,month;
+	private TextView attendTime, attendLocation, attendState,month,attendRemark;
 	private Button signButton;
 	public static int currentSelect;// 当前选中的天的位置
 	private int firstDayPosition;// 这个月一号的位置
@@ -156,9 +159,11 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 		attendLocation = (TextView) v.findViewById(R.id.tv_attend_address);
 		attendState = (TextView) v.findViewById(R.id.tv_attend_state);
 		signButton = (Button) v.findViewById(R.id.btn_add_attend);
+		attendRemark = (TextView) v.findViewById(R.id.tv_attend_remark);
 		signButton.setOnClickListener(mListener);
 		attendLocation.setOnClickListener(mListener);
 		month.setOnClickListener(mListener);
+		attendRemark.setOnClickListener(mListener);
 		popupMenu = new PopupMenu(getActivity(), attendLocation);
 		popupMenu.inflate(R.menu.select_address_menu);
 		popupMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
@@ -208,6 +213,11 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 			case R.id.tv_month:
 				new RefreshAttendTask().execute();
 				v.setEnabled(false);
+				break;
+			case R.id.tv_attend_remark:
+				InputDialogFragment fragment = (InputDialogFragment) InputDialogFragment.newInstance("签到备注", "输入备注信息");
+				fragment.setListener(AttendCalendarFragment.this);
+				fragment.show(getActivity().getFragmentManager(), null);
 				break;
 			}
 		}
@@ -450,6 +460,7 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 		}else if(mBean.state == 2){
 			attendState.setText("补签");
 		}
+		attendRemark.setText(mBean.attendRemark);
 	}
 
 	private BroadcastReceiver mLocationReceiver = new LocationReceiver() {
@@ -484,6 +495,7 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 			mBean.time = selectDay.getTimeInMillis();
 			mBean.choseLocation = attendLocation.getText().toString();
 			mBean.month = selectDay.get(Calendar.MONTH);
+			mBean.attendRemark = attendRemark.getText().toString();
 			OMLocationManager.get(getActivity()).stopLocationUpdate();
 			startTask(mBean);
 		}
@@ -662,5 +674,11 @@ public class AttendCalendarFragment extends Fragment implements SelectLocationLi
 		for(int i = 0;i<length;i++){
 			monthList.get(i).attendState = 0;
 		}
+	}
+
+	@Override
+	public void onInputDone(String text) {
+		Log.i("fanjishuo____onInputDone", text);
+		attendRemark.setText(text);
 	}
 }

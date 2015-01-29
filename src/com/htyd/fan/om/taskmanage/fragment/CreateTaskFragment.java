@@ -126,6 +126,7 @@ public class CreateTaskFragment extends Fragment implements ChooseAddressListene
 	@Override
 	public void onStop() {
 		getActivity().unregisterReceiver(mLocationReceiver);
+		OMLocationManager.get(getActivity()).stopLocationUpdate();
 		super.onStop();
 	}
 
@@ -146,7 +147,6 @@ public class CreateTaskFragment extends Fragment implements ChooseAddressListene
 						.getLongExtra(SpendTimePickerDialog.ENDTIME, 0)));
 				mPanel.taskNeedTime.setText( Utils.formatTime(data
 						.getLongExtra(SpendTimePickerDialog.ENDTIME, 0)));
-				
 			}else if(requestCode == REQUESTZXING){
 				UItoolKit.showToastShort(getActivity(),data.getStringExtra("result"));
 				mPanel.taskEquipment.setText(data.getStringExtra("result"));

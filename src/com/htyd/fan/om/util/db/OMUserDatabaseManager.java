@@ -49,6 +49,7 @@ public class OMUserDatabaseManager {
 		cv.put(SQLSentence.COLUMN_TIME, mBean.time);
 		cv.put(SQLSentence.COLUMN_CHOOSE_LOCATION, mBean.choseLocation);
 		cv.put(SQLSentence.COLUMN_ATTEND_STATE,mBean.state);
+		cv.put(SQLSentence.COLUMN_ATTEND_REMARK, mBean.attendRemark);
 		return db.insert(SQLSentence.TABLE_CHECK, null, cv);
 	}
 
@@ -95,6 +96,9 @@ public class OMUserDatabaseManager {
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_FILE_SIZE, mBean.fileSize);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_FILE_DESCRIPTION, mBean.fileDescription);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_TASK_LOCAL_ID, mBean.taskLocalId);
+		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_LONGITUDE, mBean.longitude);
+		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_LATITUDE, mBean.latitude);
+		Log.i("fanjishuo____insertTaskAccessoryBean", "mBean.taskLocalId"+mBean.taskLocalId);
 		return db.insert(SQLSentence.TABLE_TASK_ACCESSORY, null, cv);
 	}
 	/*-------------------------------------------数据库修改操作---------------------------------------------*/
@@ -188,6 +192,8 @@ public class OMUserDatabaseManager {
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_FILE_SIZE, mBean.fileSize);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_FILE_DESCRIPTION, mBean.fileDescription);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_TASK_LOCAL_ID, mBean.taskLocalId);
+		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_LONGITUDE, mBean.longitude);
+		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_LATITUDE, mBean.latitude);
 		openDb(1);
 		return db.update(SQLSentence.TABLE_TASK_ACCESSORY, cv, SQLSentence.COLUMN_TASK_ACCESSORY_NET_ID+" = ?",
 				new String[] { String.valueOf(mBean.netId) });
@@ -203,6 +209,8 @@ public class OMUserDatabaseManager {
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_FILE_SIZE, mBean.fileSize);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_FILE_DESCRIPTION, mBean.fileDescription);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_TASK_LOCAL_ID, mBean.taskLocalId);
+		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_LONGITUDE, mBean.longitude);
+		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_LATITUDE, mBean.latitude);
 		openDb(1);
 		return db.update(SQLSentence.TABLE_TASK_ACCESSORY, cv, SQLSentence.COLUMN_TASK_ACCESSORY_PATH+" = ?",
 				new String[] {mBean.filePath});

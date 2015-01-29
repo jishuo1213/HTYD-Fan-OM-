@@ -89,10 +89,12 @@ public class OMUserDatabaseHelper extends SQLiteOpenHelper {
 	}
 	
 	public TaskAccessoryCursor queryAccessoryByTaskLocalId(int taskLocalId) {
+		Log.i("fanjishuo____queryAccessoryByTaskLocalId", taskLocalId+"");
 		Cursor wrapper = getReadableDatabase().query(
 				SQLSentence.TABLE_TASK_ACCESSORY, null,
 				SQLSentence.COLUMN_TASK_ACCESSORY_TASK_LOCAL_ID + "= ?",
 				new String[] { String.valueOf(taskLocalId) }, null, null, null);
+		Log.i("fanjishuo____queryAccessoryByTaskLocalId", wrapper.getCount()+"");
 		return new TaskAccessoryCursor(wrapper);
 	}
 
@@ -128,6 +130,7 @@ public class OMUserDatabaseHelper extends SQLiteOpenHelper {
 			mBean.choseLocation = getString(getColumnIndex(SQLSentence.COLUMN_CHOOSE_LOCATION));
 			mBean.state = getInt(getColumnIndex(SQLSentence.COLUMN_ATTEND_STATE));
 			mBean.attendId = getInt(getColumnIndex(SQLSentence.COLUMN_CHECK_ID));
+			mBean.attendRemark = getString(getColumnIndex(SQLSentence.COLUMN_ATTEND_REMARK));
 			return mBean;
 		}
 	}
@@ -214,6 +217,8 @@ public class OMUserDatabaseHelper extends SQLiteOpenHelper {
 			mBean.fileSize = getLong(getColumnIndex(SQLSentence.COLUMN_TASK_ACCESSORY_FILE_SIZE));
 			mBean.fileDescription = getString(getColumnIndex(SQLSentence.COLUMN_TASK_ACCESSORY_FILE_DESCRIPTION));
 			mBean.taskLocalId = getInt(getColumnIndex(SQLSentence.COLUMN_TASK_ACCESSORY_TASK_LOCAL_ID));
+			mBean.longitude = getDouble(getColumnIndex(SQLSentence.COLUMN_TASK_ACCESSORY_LONGITUDE));
+			mBean.latitude = getDouble(getColumnIndex(SQLSentence.COLUMN_TASK_ACCESSORY_LATITUDE));
 			return mBean;
 		}
 	}

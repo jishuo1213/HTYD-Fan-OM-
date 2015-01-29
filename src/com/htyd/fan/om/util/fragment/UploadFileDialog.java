@@ -18,8 +18,15 @@ import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
+import android.app.LoaderManager;
+import android.app.LoaderManager.LoaderCallbacks;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.Loader;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -35,15 +42,21 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.htyd.fan.om.R;
+import com.htyd.fan.om.map.LocationReceiver;
+import com.htyd.fan.om.map.OMLocationManager;
 import com.htyd.fan.om.model.AffiliatedFileBean;
+import com.htyd.fan.om.model.OMLocationBean;
 import com.htyd.fan.om.taskmanage.adapter.TaskAccessoryAdapter;
 import com.htyd.fan.om.taskmanage.adapter.TaskAccessoryAdapter.LoadListener;
 import com.htyd.fan.om.util.base.Preferences;
 import com.htyd.fan.om.util.base.Utils;
+import com.htyd.fan.om.util.db.OMUserDatabaseHelper.TaskAccessoryCursor;
 import com.htyd.fan.om.util.db.OMUserDatabaseManager;
 import com.htyd.fan.om.util.db.SQLSentence;
 import com.htyd.fan.om.util.https.NetOperating;
 import com.htyd.fan.om.util.https.Urls;
+import com.htyd.fan.om.util.https.Utility;
+import com.htyd.fan.om.util.loaders.SQLiteCursorLoader;
 import com.htyd.fan.om.util.loadfile.DownloadTask;
 import com.htyd.fan.om.util.loadfile.DownloadTask.DownLoadFinishListener;
 import com.htyd.fan.om.util.loadfile.HttpMultipartPost;
@@ -63,23 +76,35 @@ public class UploadFileDialog extends DialogFragment implements
 	private static final int REQUESTPHOTO = 1;
 	private static final int REQUESTRECORDING = 2;
 	private static final int REQUESTPHOTODESCRIPTION = 0x03;
+	private static final int LOADERID = 0x04;
 
-	protected ArrayList<AffiliatedFileBean> listAccessory;
+	protected ArrayList<AffiliatedFileBean> accessoryList;
 	protected int state = 0;
 	private ListView mListView;
 	protected ImageView refreshView;
 	private Uri imageFileUri;
+	private LoaderManager mLoaderManager;
+	private AccessoryLoaderCallback callBacks;
 	protected boolean isViewQuery;
+	protected double longitude,latitude;
 	
 
-	public static DialogFragment newInstance(
-			ArrayList<AffiliatedFileBean> list, int taskNetId,
-			String taskTitle, boolean isViewQuery,int taskLocalId) {
+	public static DialogFragment newInstance(int taskNetId,String taskTitle, boolean isViewQuery, int taskLocalId) {
 		Bundle args = new Bundle();
-		if(list == null){
-			list = new ArrayList<AffiliatedFileBean>();
-		}
-		args.putParcelableArrayList(FILE, list);
+		args.putInt(TASKNETID, taskNetId);
+		args.putString(TASKTITLE, taskTitle);
+		args.putBoolean(QUERYVIEW, isViewQuery);
+		args.putInt(TASKLOCALID, taskLocalId);
+		DialogFragment fragment = new UploadFileDialog();
+		fragment.setArguments(args);
+		return fragment;
+	}
+	
+	public static DialogFragment newQueryTaskInstance(
+			ArrayList<AffiliatedFileBean> accessoryList, int taskNetId,
+			String taskTitle, boolean isViewQuery, int taskLocalId){
+		Bundle args = new Bundle();
+		args.putParcelableArrayList(FILE, accessoryList);
 		args.putInt(TASKNETID, taskNetId);
 		args.putString(TASKTITLE, taskTitle);
 		args.putBoolean(QUERYVIEW, isViewQuery);
@@ -89,16 +114,37 @@ public class UploadFileDialog extends DialogFragment implements
 		return fragment;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		isViewQuery = getArguments().getBoolean(QUERYVIEW);
-		listAccessory = (ArrayList<AffiliatedFileBean>) getArguments()
-				.get(FILE);
+		if (!isViewQuery) {
+			mLoaderManager = getLoaderManager();
+			Bundle args = new Bundle();
+			args.putInt(TASKNETID, getArguments().getInt(TASKNETID));
+			args.putInt(TASKLOCALID, getArguments().getInt(TASKLOCALID));
+			callBacks = new AccessoryLoaderCallback();
+			mLoaderManager.initLoader(LOADERID, args, callBacks);
+			accessoryList = new ArrayList<AffiliatedFileBean>();
+		} else {
+			accessoryList = getArguments().getParcelableArrayList(FILE);
+		}
 		if(savedInstanceState != null){
 			imageFileUri = (Uri) savedInstanceState.get(IMGPATH); 
 		}
+	}
+	
+	@Override
+	public void onStart() {
+		getActivity().registerReceiver(locationReceiver, new IntentFilter(OMLocationManager.ACTION_LOCATION));
+		super.onStart();
+	}
+	
+	@Override
+	public void onStop() {
+		super.onStop();
+		getActivity().unregisterReceiver(locationReceiver);
+		OMLocationManager.get(getActivity()).stopLocationUpdate();
 	}
 
 	@Override
@@ -115,6 +161,9 @@ public class UploadFileDialog extends DialogFragment implements
 	@SuppressLint("InflateParams")
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
+		if(Utils.isNetWorkEnable() && !isViewQuery){
+			OMLocationManager.get(getActivity()).startLocationUpdate();
+		}
 		View v = getActivity().getLayoutInflater().inflate(
 				R.layout.accessory_layout, null);
 		initView(v);
@@ -125,19 +174,41 @@ public class UploadFileDialog extends DialogFragment implements
 		return builder.create();
 	}
 
+	private BroadcastReceiver locationReceiver = new LocationReceiver() {
+		
+		@Override
+		protected void onNetWorkLocationReceived(Context context,
+				OMLocationBean loc) {
+			longitude = loc.longitude;
+			latitude = loc.latitude;
+			OMLocationManager.get(getActivity()).stopLocationUpdate();
+		}
+
+		@Override
+		protected void onNetDisableReceived(Context context) {
+			UItoolKit.showToastShort(getActivity(), "网络连接失败");
+			OMLocationManager.get(getActivity()).stopLocationUpdate();
+		}
+	};
+	
 	private void initView(View v) {
 		mListView = (ListView) v.findViewById(R.id.list_accessory);
 		refreshView = (ImageView) v.findViewById(R.id.tv_refresh_accessory);
 		TextView createAccessory = (TextView) v
 				.findViewById(R.id.tv_add_accessory);
-		if(isViewQuery){
+		if (isViewQuery) {
 			createAccessory.setVisibility(View.GONE);
+			refreshView.setVisibility(View.GONE);
 		}
 		createAccessory.setOnClickListener(accessoryListener);
 		refreshView.setOnClickListener(accessoryListener);
-		if(listAccessory.size() > 0){
-			mListView.setAdapter(new TaskAccessoryAdapter(listAccessory, getActivity(), this));
+		if(isCanSetAdapter()){
+			mListView.setAdapter(new TaskAccessoryAdapter(accessoryList, getActivity(), this));
 		}
+	}
+
+	protected boolean isCanSetAdapter() {
+		return accessoryList != null && accessoryList.size() > 0 && mListView.getAdapter() == null;
 	}
 
 	private OnClickListener accessoryListener = new OnClickListener() {
@@ -152,7 +223,7 @@ public class UploadFileDialog extends DialogFragment implements
 				startActivityForResult(i, REQUESTPHOTO);
 				break;
 			case R.id.tv_refresh_accessory:
-				new RefreshAccessoryTask().execute(getArguments().getInt(TASKNETID));
+				new RefreshAccessoryTask().execute(getArguments().getInt(TASKNETID),getArguments().getInt(TASKLOCALID));
 				refreshView.setEnabled(false);
 				break;
 			}
@@ -193,19 +264,21 @@ public class UploadFileDialog extends DialogFragment implements
 		if (resultCode == Activity.RESULT_OK) {
 			if (requestCode == REQUESTPHOTO) {
 				AffiliatedFileBean mBean  = new AffiliatedFileBean();
-				if(listAccessory == null)
-					listAccessory = new ArrayList<AffiliatedFileBean>();
+				if(accessoryList == null)
+					accessoryList = new ArrayList<AffiliatedFileBean>();
 				mBean.filePath = imageFileUri.getPath();
 				mBean.fileSource = 0;
 				mBean.taskId = getArguments().getInt(TASKNETID);
 				mBean.fileState = 0;
 				mBean.taskLocalId = getArguments().getInt(TASKLOCALID);
-				listAccessory.add(mBean);
+				mBean.longitude = longitude;
+				mBean.latitude = latitude;
+				accessoryList.add(mBean);
 				OMUserDatabaseManager.getInstance(getActivity()).openDb(1);
 				OMUserDatabaseManager.getInstance(getActivity()).insertTaskAccessoryBean(mBean);
 				if (mListView.getAdapter() == null) {
 					mListView.setAdapter(new TaskAccessoryAdapter(
-							listAccessory, getActivity(), this));
+							accessoryList, getActivity(), this));
 				} else {
 					TaskAccessoryAdapter mAdapter = (TaskAccessoryAdapter) mListView.getAdapter();
 					mAdapter.notifyDataSetChanged();
@@ -238,11 +311,6 @@ public class UploadFileDialog extends DialogFragment implements
 	};
 
 	@Override
-	public void onStop() {
-		super.onStop();
-	}
-
-	@Override
 	public void onUpLoadClick(AffiliatedFileBean mBean,int position) {
 		if(mBean.taskId == 0){
 			UItoolKit.showToastShort(getActivity(), "任务还未同步至服务器，不能上传附件");
@@ -258,10 +326,12 @@ public class UploadFileDialog extends DialogFragment implements
 			}
 			HttpMultipartPost post = new HttpMultipartPost(getActivity(),
 					mBean.filePath, this);
+			StringBuilder sb = new StringBuilder();
+			sb.append(mBean.latitude).append("|").append(mBean.longitude);
 			post.execute(Preferences.getUserinfo(getActivity(), "YHID"),
 					Preferences.getUserinfo(getActivity(), "YHMC"),
 					mBean.taskId + "", getArguments().getString(TASKTITLE),
-					position + "",mBean.fileDescription);
+					position + "",mBean.fileDescription,sb.toString());
 		} else if (mBean.fileSource == 1 && mBean.fileState == 0) {
 			String [] array = mBean.filePath.split("\\\\" +Preferences.getUserinfo(getActivity(), "YHID") + "\\\\");
 			String sdCardDir = "";
@@ -280,7 +350,7 @@ public class UploadFileDialog extends DialogFragment implements
 
 	@Override
 	public void onDeleteClick(AffiliatedFileBean mBean, int position) {
-			listAccessory.remove(position);
+			accessoryList.remove(position);
 			TaskAccessoryAdapter mAdapter = (TaskAccessoryAdapter) mListView
 					.getAdapter();
 			mAdapter.notifyDataSetChanged();
@@ -315,11 +385,12 @@ public class UploadFileDialog extends DialogFragment implements
 		if(position == -1){
 			return;
 		}
-		listAccessory.get(position).fileState = 1;
-		listAccessory.get(position).netId = fileId;
+		accessoryList.get(position).fileState = 1;
+		accessoryList.get(position).netId = fileId;
+		Log.i("fanjishuo____onUpLoadFinish", accessoryList.get(position).taskLocalId+"");
 		TaskAccessoryAdapter mAdapter = (TaskAccessoryAdapter)mListView.getAdapter();
 		mAdapter.notifyDataSetChanged();
-		OMUserDatabaseManager.getInstance(getActivity()).updateUploadAccessoryBean(listAccessory.get(position));
+		OMUserDatabaseManager.getInstance(getActivity()).updateUploadAccessoryBean(accessoryList.get(position));
 	}
 	
 	@Override
@@ -383,6 +454,7 @@ public class UploadFileDialog extends DialogFragment implements
 	private class RefreshAccessoryTask extends AsyncTask<Integer,Void, Boolean>{
 
 		private int taskNetId;
+		private int taskLocalId;
 
 		@Override
 		protected void onPostExecute(Boolean result) {
@@ -399,6 +471,7 @@ public class UploadFileDialog extends DialogFragment implements
 		protected Boolean doInBackground(Integer... params) {
 			JSONObject param = new JSONObject();
 			taskNetId = params[0];
+			taskLocalId = params[1];
 			String result = "";
 			try {
 				param.put("JLID", taskNetId);
@@ -410,12 +483,12 @@ public class UploadFileDialog extends DialogFragment implements
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			refreshAccessoryList(result,taskNetId,listAccessory);
+			refreshAccessoryList(result,taskNetId,accessoryList,taskLocalId);
 			return true;
 		}
 	}
 	
-	public void refreshAccessoryList(String result,int taskId,ArrayList<AffiliatedFileBean> listAccessory) {
+	public void refreshAccessoryList(String result,int taskId,ArrayList<AffiliatedFileBean> listAccessory,int taskLocalId) {
 		OMUserDatabaseManager mManager = OMUserDatabaseManager.getInstance(getActivity());
 		if(result.length() == 0){
 			if (listAccessory.size() == 0) {
@@ -457,7 +530,7 @@ public class UploadFileDialog extends DialogFragment implements
 			listAccessory.clear();
 			for (int i = 0; i < array.length(); i++) {
 				AffiliatedFileBean mBean = new AffiliatedFileBean();
-				mBean.setFromJson(array.getJSONObject(i), taskId);
+				mBean.setFromJson(array.getJSONObject(i), taskId,taskLocalId);
 				String [] fileName = mBean.filePath.split("\\\\" +Preferences.getUserinfo(getActivity(), "YHID") + "\\\\");
 				if(Utils.isAccessoryFileExist(fileName[1])){
 					mBean.fileState = 1;
@@ -482,7 +555,7 @@ public class UploadFileDialog extends DialogFragment implements
 			}
 		}
 		Arrays.sort(accessoryId);
-		Iterator<AffiliatedFileBean> it = listAccessory.iterator();
+		Iterator<AffiliatedFileBean> it = accessoryList.iterator();
 		AffiliatedFileBean mBean;
 		while(it.hasNext()){
 			mBean = it.next();
@@ -509,5 +582,76 @@ public class UploadFileDialog extends DialogFragment implements
 		}
 		return false;
 	}
+	private static class AccessoryLoader extends SQLiteCursorLoader {
 
+		private OMUserDatabaseManager mManager;
+		private int taskNetId;
+		private int taskLocalId;
+
+		public AccessoryLoader(Context context, int taskNetId,int taskLocalId) {
+			super(context);
+			mManager = OMUserDatabaseManager.getInstance(context);
+			this.taskNetId = taskNetId;
+			this.taskLocalId = taskLocalId;
+		}
+
+		@Override
+		protected Cursor loadCursor() {
+				mManager.openDb(0);
+				return mManager.queryAccessoryByTaskLocalId(taskLocalId);
+		}
+
+		@Override
+		protected Cursor loadFromNet() {
+			JSONObject param = new JSONObject();
+			String result = "";
+			try {
+				param.put("JLID", taskNetId);
+				result = NetOperating.getResultFromNet(getContext(), param,
+						Urls.FILE, "Operate=getWjdz");
+			} catch (JSONException e) {
+				e.printStackTrace();
+				return null;
+			} catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}
+			try {
+				Utility.handleAccessory(mManager, result,taskNetId,taskLocalId);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}
+			return loadCursor();
+		}
+	}
+	
+	private class AccessoryLoaderCallback implements LoaderCallbacks<Cursor>{
+
+		@Override
+		public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+			return new AccessoryLoader(getActivity(),args.getInt(TASKNETID),args.getInt(TASKLOCALID));
+		}
+
+		@Override
+		public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+			TaskAccessoryCursor cursor = (TaskAccessoryCursor) data;
+			if(cursor != null && cursor.moveToFirst()){
+				Log.i("fanjishuo____onLoadFinished", cursor.getCount()+"");
+				if(accessoryList == null){
+					accessoryList = new ArrayList<AffiliatedFileBean>();
+				}
+				do{
+					accessoryList.add(cursor.getAccessory());
+				}while(cursor.moveToNext());
+				if(mListView != null && mListView.getAdapter() == null){
+					mListView.setAdapter(new TaskAccessoryAdapter(accessoryList, getActivity(), UploadFileDialog.this));
+				}
+			}
+		}
+
+		@Override
+		public void onLoaderReset(Loader<Cursor> loader) {
+		}
+	}
 }

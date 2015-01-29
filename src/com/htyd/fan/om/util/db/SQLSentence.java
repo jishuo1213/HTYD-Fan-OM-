@@ -36,10 +36,11 @@ public class SQLSentence {
 	public static final String COLUMN_MONTH = "month";
 	public static final String COLUMN_ATTEND_STATE = "attend_state";
 	public static final String COLUMN_CHOOSE_LOCATION = "choose_location";
+	public static final String COLUMN_ATTEND_REMARK = "attendremark";
 	
 	public static final String CREATE_TABLE_CHECK = "create table attend_check ("
 			+ "_id integer primary key autoincrement, time integer ,latitude real ,attend_state integer,"
-			+ " longitude real  , location text ,month integer,choose_location text)";
+			+ " longitude real  , location text ,month integer,choose_location text,attendremark text)";
 
 	public static final String TABLE_TASK = "task";
 	public static final String COLUMN_TASK_ID = "_id";
@@ -92,11 +93,13 @@ public class SQLSentence {
 	public static final String COLUMN_TASK_ACCESSORY_NET_ID = "accessory_net_id";
 	public static final String COLUMN_TASK_ACCESSORY_FILE_SIZE = "file_size";
 	public static final String COLUMN_TASK_ACCESSORY_FILE_DESCRIPTION = "file_description";
+	public static final String COLUMN_TASK_ACCESSORY_LONGITUDE = "longitude";
+	public static final String COLUMN_TASK_ACCESSORY_LATITUDE = "latitude";
 
 	public static final String CREATE_TABLE_TASK_ACCESSORY = "create table taskaccessory ("
 			+ "_id integer primary key autoincrement, task_id integer references task(task_id), accessory_path text"
 			+ ", accessory_state integer ,accessory_type integer,accessory_net_id integer,file_size integer," 
-			+"file_description text,task_local_id integer)";
+			+"file_description text,task_local_id integer,longitude real,latitude real)";
 	
 	public static final String TABLE_TASK_TYPE = "tasktype";
 	public static final String COLUMN_TASK_TYPE_ID = "_id";

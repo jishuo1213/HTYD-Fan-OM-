@@ -10,14 +10,10 @@ import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.Instrumentation;
-import android.app.LoaderManager;
-import android.app.LoaderManager.LoaderCallbacks;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.Loader;
-import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -49,7 +45,6 @@ import com.htyd.fan.om.taskmanage.netthread.CreateTaskThread;
 import com.htyd.fan.om.taskmanage.netthread.CreateTaskThread.SaveSuccessListener;
 import com.htyd.fan.om.util.base.ThreadPool;
 import com.htyd.fan.om.util.base.Utils;
-import com.htyd.fan.om.util.db.OMUserDatabaseHelper.TaskAccessoryCursor;
 import com.htyd.fan.om.util.db.OMUserDatabaseManager;
 import com.htyd.fan.om.util.fragment.AddressListDialog;
 import com.htyd.fan.om.util.fragment.AddressListDialog.ChooseAddressListener;
@@ -61,8 +56,6 @@ import com.htyd.fan.om.util.fragment.TaskTypeDialogFragment;
 import com.htyd.fan.om.util.fragment.UploadFileDialog;
 import com.htyd.fan.om.util.https.NetOperating;
 import com.htyd.fan.om.util.https.Urls;
-import com.htyd.fan.om.util.https.Utility;
-import com.htyd.fan.om.util.loaders.SQLiteCursorLoader;
 import com.htyd.fan.om.util.ui.UItoolKit;
 import com.htyd.fan.om.util.zxing.CaptureActivity;
 
@@ -72,7 +65,7 @@ public class EditTaskFragment extends Fragment implements ChooseAddressListener,
 	private static final String TASKNETID = "taskid";
 	private static final String TASKLOCALID = "tasklocalid";
 	
-	private static final int LOADERID = 0x15;
+//	private static final int LOADERID = 0x15;
 	
 	private static final int REQUESTSTARTTIME = 1;//开始时间
 	private static final int REQUESTENDTIME = 2;//结束时间
@@ -87,8 +80,8 @@ public class EditTaskFragment extends Fragment implements ChooseAddressListener,
 	protected TaskDetailBean mBean;
 	private long startTime;
 	protected ArrayList<AffiliatedFileBean> accessoryList;
-	private LoaderManager mLoaderManager;
-	private AccessoryLoaderCallback mCallback;
+//	private LoaderManager mLoaderManager;
+//	private AccessoryLoaderCallback mCallback;
 	protected PopupMenu popupMenu,barcodePopMenu;
 	protected Handler handler;
 	private SaveTaskListener listener;
@@ -119,13 +112,13 @@ public class EditTaskFragment extends Fragment implements ChooseAddressListener,
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
 		handler = new Handler();
-		mLoaderManager = getActivity().getLoaderManager();
+	//	mLoaderManager = getActivity().getLoaderManager();
 		mBean = (TaskDetailBean) getArguments().get(SELECTTASK);
 		Bundle args = new Bundle();
 		args.putInt(TASKNETID, mBean.taskNetId);
 		args.putInt(TASKLOCALID, mBean.taskLocalId);
-		mCallback = new AccessoryLoaderCallback();
-		mLoaderManager.initLoader(LOADERID, args, mCallback);
+//		mCallback = new AccessoryLoaderCallback();
+	//	mLoaderManager.initLoader(LOADERID, args, mCallback);
 	}
 
 	@Override
@@ -145,7 +138,11 @@ public class EditTaskFragment extends Fragment implements ChooseAddressListener,
 	
 	@Override
 	public void onPause() {
-		getActivity().unregisterReceiver(mLocationReceiver);
+		Log.i("fanjishuo____onPause", "onPause");
+		try {
+			getActivity().unregisterReceiver(mLocationReceiver);
+		} catch (Exception e) {
+		}
 		OMLocationManager.get(getActivity()).stopLocationUpdate();
 		super.onPause();
 	}
@@ -358,8 +355,13 @@ public class EditTaskFragment extends Fragment implements ChooseAddressListener,
 				spendDialog.show(fm, null);
 				break;
 			case R.id.tv_task_accessory:
+				try {
+					getActivity().unregisterReceiver(mLocationReceiver);
+				} catch (Exception e) {
+				}
+				OMLocationManager.get(getActivity()).stopLocationUpdate();
 				UploadFileDialog uploadDialog = (UploadFileDialog) UploadFileDialog
-						.newInstance(accessoryList, mBean.taskNetId, mBean.taskTitle,false,mBean.taskLocalId);
+						.newInstance(mBean.taskNetId, mBean.taskTitle,false,mBean.taskLocalId);
 				uploadDialog.show(fm, null);
 				break;
 			case R.id.edit_task_equipment:
@@ -417,7 +419,7 @@ public class EditTaskFragment extends Fragment implements ChooseAddressListener,
 
 	
 
-	private static class AccessoryLoader extends SQLiteCursorLoader {
+	/*private static class AccessoryLoader extends SQLiteCursorLoader {
 
 		private OMUserDatabaseManager mManager;
 		private int taskNetId;
@@ -432,12 +434,8 @@ public class EditTaskFragment extends Fragment implements ChooseAddressListener,
 
 		@Override
 		protected Cursor loadCursor() {
-			mManager.openDb(0);
-	//		if (taskNetId > 0) {
-//				return mManager.queryAccessoryByTaskNetId(taskNetId);
-//			} else {
+				mManager.openDb(0);
 				return mManager.queryAccessoryByTaskLocalId(taskLocalId);
-//			}
 		}
 
 		@Override
@@ -456,7 +454,7 @@ public class EditTaskFragment extends Fragment implements ChooseAddressListener,
 				return null;
 			}
 			try {
-				Utility.handleAccessory(mManager, result,taskNetId);
+				Utility.handleAccessory(mManager, result,taskNetId,taskLocalId);
 			} catch (Exception e) {
 				e.printStackTrace();
 				return null;
@@ -488,7 +486,7 @@ public class EditTaskFragment extends Fragment implements ChooseAddressListener,
 		@Override
 		public void onLoaderReset(Loader<Cursor> loader) {
 		}
-	}
+	}*/
 	
 	private class UpdateTask extends AsyncTask<TaskDetailBean, Void, Boolean>{
 

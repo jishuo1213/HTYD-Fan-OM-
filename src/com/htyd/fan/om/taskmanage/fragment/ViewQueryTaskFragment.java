@@ -103,7 +103,7 @@ public class ViewQueryTaskFragment extends Fragment {
 					UItoolKit.showToastShort(getActivity(), "数据还未加载完成");
 					return;
 				}
-				DialogFragment dialog = UploadFileDialog.newInstance(accessoryList, mBean.taskNetId, mBean.taskTitle,true,mBean.taskLocalId);
+				DialogFragment dialog = UploadFileDialog.newQueryTaskInstance(accessoryList,mBean.taskNetId, mBean.taskTitle,true,mBean.taskLocalId);
 				dialog.show(getFragmentManager(), null);
 			}
 		});
@@ -166,7 +166,7 @@ public class ViewQueryTaskFragment extends Fragment {
 				accessoryList = new ArrayList<AffiliatedFileBean>();
 			}
 			try {
-				Utility.handleAccessory(accessoryList, result, taskId);
+				Utility.handleAccessory(accessoryList, result, taskId,0);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

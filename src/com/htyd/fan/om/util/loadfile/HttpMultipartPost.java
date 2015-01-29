@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.htyd.fan.om.main.OMApp;
 import com.htyd.fan.om.util.base.Utils;
@@ -88,6 +89,7 @@ public class HttpMultipartPost extends AsyncTask<String, Integer, String> {
 			StringBody sb4 = new StringBody(params[3],Charset.defaultCharset());
 			StringBody sb5 = new StringBody(Utils.TASKMODULE+"");
 			StringBody sb6 = new StringBody(params[5],Charset.defaultCharset());
+			StringBody sb7 = new StringBody(params[6]);
 			
 			multipartContent.addPart("image", new FileBody(new File(
 					filePath)));
@@ -96,7 +98,9 @@ public class HttpMultipartPost extends AsyncTask<String, Integer, String> {
 			multipartContent.addPart("rwid", sb3);
 			multipartContent.addPart("rwbt", sb4);
 			multipartContent.addPart("rz_mkid", sb5);
-			multipartContent.addPart("lbmc", sb6);
+			multipartContent.addPart("lbmc", sb6); 
+			Log.i("fanjishuo____doInBackground", params[4]);
+			multipartContent.addPart("tempid", sb7);
 			totalSize = multipartContent.getContentLength();
 			
 			// Send it

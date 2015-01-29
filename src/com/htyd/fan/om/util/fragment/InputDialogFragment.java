@@ -23,7 +23,11 @@ public class InputDialogFragment extends DialogFragment {
 	public static final String INPUTTEXT = "inputtext";
 	
 	private EditText editText;
+	private InputDoneListener listener;
 	
+	public interface InputDoneListener{
+		public void onInputDone(String text);
+	}
 	
 	public static DialogFragment newInstance(String title,String hint){
 		DialogFragment fragment = new InputDialogFragment();
@@ -41,7 +45,7 @@ public class InputDialogFragment extends DialogFragment {
 		View v = getActivity().getLayoutInflater().inflate(R.layout.set_net_dialog_layout, null);
 		initView(v);
 		builder.setView(v);
-		builder.setTitle("手动输入内容");
+		builder.setTitle("输入"+getArguments().getString(TITLE));
 		builder.setPositiveButton("确定", new OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -53,7 +57,11 @@ public class InputDialogFragment extends DialogFragment {
 	}
 
 	protected void sendResult() {
-		if(getTargetFragment() == null){
+		if(getTargetFragment() == null && listener == null){
+			return;
+		}
+		if(listener != null){
+			listener.onInputDone(editText.getText().toString());
 			return;
 		}
 		Intent i = new Intent();
@@ -68,5 +76,8 @@ public class InputDialogFragment extends DialogFragment {
 		editText.setHint(getArguments().getString(HINT));
 	}
 
+	public void setListener(InputDoneListener listener){
+		this.listener = listener;
+	}
 	
 }
