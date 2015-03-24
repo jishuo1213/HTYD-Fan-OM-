@@ -1,5 +1,7 @@
 package com.htyd.fan.om.util.db;
 
+import java.io.UnsupportedEncodingException;
+
 import android.content.Context;
 import android.database.Cursor;
 import android.database.CursorWrapper;
@@ -30,9 +32,6 @@ public class OMDatabaseHelper extends SQLiteOpenHelper {
 	
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		db.execSQL(SQLSentence.CREATE_TABLE_PROVINCE);
-		db.execSQL(SQLSentence.CREATE_TABLE_CITY);
-		db.execSQL(SQLSentence.CREATE_TABLE_DISTRICT);
 		db.execSQL(SQLSentence.CREATE_TABLE_TASK_TYPE);
 	}
 
@@ -41,11 +40,26 @@ public class OMDatabaseHelper extends SQLiteOpenHelper {
 
 	}
 
-	public ProvinceCursor queryProvince() {
+/*	public ProvinceCursor queryProvince() {
 		Cursor wrapped = getReadableDatabase().query(
 				SQLSentence.TABLE_PROVINCE, null, null, null, null, null, null);
 		return new ProvinceCursor(wrapped);
+	}*/
+	/*	public CityCursor queryCity(int provinceId) {
+		Cursor wrapped = getReadableDatabase().query(SQLSentence.TABLE_CITY,
+				null, SQLSentence.COLUMN_CITY_PROVINCE_ID + "= ?",
+				new String[] { String.valueOf(provinceId) }, null, null, null);
+		return new CityCursor(wrapped);
 	}
+	 */
+	
+	/*	public DistrictCursor queryDistrict(int cityId) {
+		Cursor wrapped = getReadableDatabase().query(
+				SQLSentence.TABLE_DISTRICT, null,
+				SQLSentence.COLUMN_DISTRICT_CITY_ID + "= ?",
+				new String[] { String.valueOf(cityId) }, null, null, null);
+		return new DistrictCursor(wrapped);
+	}*/
 
 	public static class ProvinceCursor extends CursorWrapper {
 
@@ -59,18 +73,16 @@ public class OMDatabaseHelper extends SQLiteOpenHelper {
 			ProvinceBean mBean = new ProvinceBean();
 			mBean.id = (int) getLong(getColumnIndex(SQLSentence.COLUMN_PROVINCE_ID));
 			mBean.provinceCode = getString(getColumnIndex(SQLSentence.COLUMN_PROVINCE_CODE));
-			mBean.provinceName = getString(getColumnIndex(SQLSentence.COLUMN_PROVINCE_NAME));
+//			byte[] bs = getString(getColumnIndex(SQLSentence.COLUMN_PROVINCE_NAME)).getBytes();
+			byte[] bs = getBlob(getColumnIndex(SQLSentence.COLUMN_PROVINCE_NAME));
+			  try {
+				mBean.provinceName =  new String(bs, "gbk");
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
 			return mBean;
 		}
 	}
-
-	public CityCursor queryCity(int provinceId) {
-		Cursor wrapped = getReadableDatabase().query(SQLSentence.TABLE_CITY,
-				null, SQLSentence.COLUMN_CITY_PROVINCE_ID + "= ?",
-				new String[] { String.valueOf(provinceId) }, null, null, null);
-		return new CityCursor(wrapped);
-	}
-	
 
 	public static class CityCursor extends CursorWrapper {
 
@@ -85,18 +97,16 @@ public class OMDatabaseHelper extends SQLiteOpenHelper {
 			mBean.provinceID = (int) getLong(getColumnIndex(SQLSentence.COLUMN_CITY_PROVINCE_ID));
 			mBean.Id = (int) getLong(getColumnIndex(SQLSentence.COLUMN_CITY_ID));
 			mBean.cityCode = getString(getColumnIndex(SQLSentence.COLUMN_CITY_CODE));
-			mBean.cityName = getString(getColumnIndex(SQLSentence.COLUMN_CITY_NAME));
+			byte[] bs = getBlob(getColumnIndex(SQLSentence.COLUMN_CITY_NAME));
+			try {
+				mBean.cityName =  new String(bs, "gbk");
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
 			return mBean;
 		}
 	}
 
-	public DistrictCursor queryDistrict(int cityId) {
-		Cursor wrapped = getReadableDatabase().query(
-				SQLSentence.TABLE_DISTRICT, null,
-				SQLSentence.COLUMN_DISTRICT_CITY_ID + "= ?",
-				new String[] { String.valueOf(cityId) }, null, null, null);
-		return new DistrictCursor(wrapped);
-	}
 
 	public static class DistrictCursor extends CursorWrapper {
 
@@ -110,7 +120,12 @@ public class OMDatabaseHelper extends SQLiteOpenHelper {
 			DistrictBean mBean = new DistrictBean();
 			mBean.cityID = (int) getLong(getColumnIndex(SQLSentence.COLUMN_DISTRICT_CITY_ID));
 			mBean.districtCode = getString(getColumnIndex(SQLSentence.COLUMN_DISTRICT_CODE));
-			mBean.districtName = getString(getColumnIndex(SQLSentence.COLUMN_DISTRICT_NAME));
+			byte[] bs = getBlob(getColumnIndex(SQLSentence.COLUMN_DISTRICT_NAME));
+			try {
+				mBean.districtName =  new String(bs, "gbk");
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
 			return mBean;
 		}
 	}

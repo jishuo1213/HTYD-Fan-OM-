@@ -17,7 +17,7 @@ import com.htyd.fan.om.util.ui.UItoolKit;
 public class CreateTaskThread extends BaseConnectNetThread<TaskDetailBean> {
 
 
-	private double longitude,latitude;
+//	private double longitude,latitude;
 	private TaskDetailBean mBean;
 	private OMUserDatabaseManager manager;
 	private SaveSuccessListener listener;
@@ -27,13 +27,10 @@ public class CreateTaskThread extends BaseConnectNetThread<TaskDetailBean> {
 	}
 	
 	public CreateTaskThread(Handler handler, Context context,
-			TaskDetailBean param, double longitude, double latitude,
-			SaveSuccessListener listener) {
+			TaskDetailBean param,SaveSuccessListener listener) {
 		super(handler, context, param);
 		mBean = param;
 		manager = OMUserDatabaseManager.getInstance(context);
-		this.longitude = longitude;
-		this.latitude = latitude;
 		this.listener = listener;
 	}
 
@@ -44,8 +41,6 @@ public class CreateTaskThread extends BaseConnectNetThread<TaskDetailBean> {
 			try {
 				param = params.toJson();
 				param.put("LQR", Preferences.getUserinfo(context, "YHID"));
-				param.put("RWJD", longitude);
-				param.put("RWWD", latitude);
 			} catch (JSONException e1) {
 				e1.printStackTrace();
 			}

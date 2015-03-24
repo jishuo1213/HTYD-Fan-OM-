@@ -117,7 +117,6 @@ public class HttpHelper {
 				UItoolKit.showToastShort(context, "网络连接超时");
 				return "false";
 			} else {
-				UItoolKit.showToastShort(context, "无网络连接");
 				return "false";
 			}
 		}
@@ -169,7 +168,6 @@ public class HttpHelper {
 				strResult = "false";
 			}
 		} else {
-			UItoolKit.showToastShort(context, "检查网络连接先");
 			strResult = "false";
 		}
 		return strResult;
@@ -257,7 +255,8 @@ public class HttpHelper {
 			HttpClientParams.setRedirecting(httpParams, false);
 
 			// set user agent
-			String userAgent = "Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN; rv:1.9.2) Gecko/20100115 Firefox/3.6";
+			String userAgent = 	"Mozilla/5.0(Linux;U;Android 2.2.1;en-us;Nexus One Build.FRG83) "
+					+ "AppleWebKit/553.1(KHTML,like Gecko) Version/4.0 Mobile Safari/533.1";
 			HttpProtocolParams.setUserAgent(httpParams, userAgent);
 
 			// disable Nagle algorithm

@@ -29,7 +29,7 @@ import android.view.ViewConfiguration;
 import android.widget.TextView;
 
 import com.htyd.fan.om.R;
-import com.htyd.fan.om.attendmanage.fragment.AttendCalendarFragment;
+import com.htyd.fan.om.attendmanage.fragment.AttendCalendarNewFragment;
 import com.htyd.fan.om.main.fragment.SettingFragment;
 import com.htyd.fan.om.taskmanage.fragment.TaskListFragment;
 import com.htyd.fan.om.util.base.Utils;
@@ -157,15 +157,11 @@ public class MainActivity extends FragmentActivity {
 		Resources r = getResources();
 		tabDrawable = new Drawable[8];
 		TypedArray imgs = r.obtainTypedArray(R.array.tab_drawable_id);
-		AttendCalendarFragment tab1 = new AttendCalendarFragment();
-//		TodoReminde tab2 = new TodoReminde();
+		AttendCalendarNewFragment tab1 = new AttendCalendarNewFragment();
 		TaskListFragment tab3 = new TaskListFragment();
 		SettingFragment tab4 = new SettingFragment();
-	//	TaskOvewflowMenu temp = (TaskOvewflowMenu)thirdProvider;
-		//temp.setListener(tab3);
 		listener = tab3;
 		fragmentList.add(tab1);
-//		fragmentList.add(tab2);
 		fragmentList.add(tab3);
 		fragmentList.add(tab4);
 		for (int i = 0; i < 8; i++) {

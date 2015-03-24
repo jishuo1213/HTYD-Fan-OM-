@@ -107,8 +107,17 @@
         android:gravity="center"
         android:padding="5dp"
         android:text="测试"
-        android:drawableRight="@drawable/refreshicon_titlebar"
         android:textSize="20sp" />
+    
+    <ImageButton android:id="@+id/img_refresh"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@id/tv_month"
+         android:src="@drawable/refreshicon_titlebar"
+         android:background="@null"
+         android:layout_margin="3dp"
+         android:contentDescription="刷新"
+        />
 
     <Button
         android:id="@+id/btn_add_attend"

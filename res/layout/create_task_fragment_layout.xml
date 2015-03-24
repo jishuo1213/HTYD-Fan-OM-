@@ -12,6 +12,7 @@
         android:orientation="vertical"
         tools:ignore="HardcodedText" >
 
+        <!--
         <TextView
             android:id="@+id/create_title"
             style="?android:listSeparatorTextViewStyle"
@@ -29,6 +30,7 @@
             android:layout_marginRight="16dp"
             android:hint="请输入任务标题"
             android:textSize="18sp" />
+        -->
 
         <TextView
             android:id="@+id/description"
@@ -36,7 +38,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="任务描述"
+            android:text="任务信息"
             android:textSize="18sp" />
 
         <EditText
@@ -81,21 +83,23 @@
                     android:textSize="18sp" />
 
                 <TextView
-                    android:id="@+id/install_location"
+                    android:id="@+id/task_type"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:gravity="left|center_vertical"
-                    android:text="安装地点："
+                    android:gravity="center_vertical"
+                    android:text="任务归类："
                     android:textColor="@color/key_text"
                     android:textSize="18sp" />
 
-                <EditText
-                    android:id="@+id/edit_install_location"
+                <com.htyd.fan.om.util.ui.TextViewWithBottomLine
+                    android:id="@+id/tv_task_type"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginRight="16dp"
                     android:layout_weight="1"
-                    android:hint="输入安装地点"
+                    android:gravity="center_vertical"
+                    android:hint="选择任务归类"
+                    android:inputType="phone"
                     android:textSize="18sp" />
             </TableRow>
 
@@ -140,11 +144,11 @@
                     android:layout_marginRight="16dp"
                     android:layout_weight="1"
                     android:gravity="center_vertical"
-                    android:hint="选择工作需要时间"
+                    android:hint="工作耗时"
                     android:textSize="18sp" />
             </TableRow>
 
-            <!-- <TableRow
+            <TableRow
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1" >
@@ -159,12 +163,13 @@
                     android:textColor="@color/key_text"
                     android:textSize="18sp" />
 
-                <EditText
-                    android:id="@+id/edit_contacts"
+                <com.htyd.fan.om.util.ui.TextViewWithBottomLine
+                    android:id="@+id/tv_contacts"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginRight="10dp"
                     android:layout_weight="1"
+                    android:gravity="left|center_vertical"
                     android:hint="输入联系人"
                     android:textSize="18sp" />
 
@@ -177,16 +182,70 @@
                     android:textColor="@color/key_text"
                     android:textSize="18sp" />
 
-                <EditText
-                    android:id="@+id/edit_contacts_phone"
+                <com.htyd.fan.om.util.ui.TextViewWithBottomLine
+                    android:id="@+id/tv_contacts_phone"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginRight="16dp"
                     android:layout_weight="1"
-                    android:hint="输入联系人电话"
-                    android:inputType="phone"
+                    android:gravity="center_vertical"
+                    android:hint="联系人电话"
                     android:textSize="18sp" />
-            </TableRow> -->
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" >
+
+                <TextView
+                    android:id="@+id/customer_unit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="10dp"
+                    android:gravity="right|center_vertical"
+                    android:paddingBottom="5dp"
+                    android:paddingTop="5dp"
+                    android:text="客户单位："
+                    android:textColor="@color/key_text"
+                    android:textSize="18sp" />
+
+                <com.htyd.fan.om.util.ui.TextViewWithBottomLine
+                    android:id="@+id/tv_customer_unit"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="16dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:hint="输入客户单位"
+                    android:textSize="18sp" />
+            </TableRow>
+        </TableLayout>
+
+        <EditText
+            android:id="@+id/edit_task_remark"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:hint="任务备注"
+            android:lines="3"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/equipment_info"
+            style="?android:listSeparatorTextViewStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="装置信息"
+            android:textSize="18sp" />
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:measureWithLargestChild="true"
+            android:orientation="vertical" >
 
             <TableRow
                 android:layout_width="match_parent"
@@ -199,12 +258,14 @@
                     android:layout_height="match_parent"
                     android:layout_marginLeft="10dp"
                     android:gravity="right|center_vertical"
-                    android:text="相关设备："
+                    android:paddingBottom="5dp"
+                    android:paddingTop="5dp"
+                    android:text="设备条码："
                     android:textColor="@color/key_text"
                     android:textSize="18sp" />
 
                 <com.htyd.fan.om.util.ui.TextViewWithBottomLine
-                    android:id="@+id/tv_task_equipment"
+                    android:id="@+id/tv_task_equipment_num"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginRight="10dp"
@@ -214,56 +275,125 @@
                     android:textSize="18sp" />
 
                 <TextView
-                    android:id="@+id/task_type"
+                    android:id="@+id/install_location"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:gravity="center_vertical"
-                    android:text="任务归类："
+                    android:gravity="left|center_vertical"
+                    android:text="安装地点："
                     android:textColor="@color/key_text"
                     android:textSize="18sp" />
 
                 <com.htyd.fan.om.util.ui.TextViewWithBottomLine
-                    android:id="@+id/tv_task_type"
+                    android:id="@+id/edit_install_location"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_marginRight="16dp"
+                    android:layout_marginRight="10dp"
                     android:layout_weight="1"
                     android:gravity="center_vertical"
-                    android:hint="选择任务归类"
-                    android:inputType="phone"
+                    android:hint="设备安装地点"
                     android:textSize="18sp" />
-                
-                <!-- <EditText
-                    android:id="@+id/tv_task_type"
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" >
+
+                <TextView
+                    android:id="@+id/equipment_factory"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="10dp"
+                    android:gravity="right|center_vertical"
+                    android:text="设备厂家："
+                    android:textColor="@color/key_text"
+                    android:textSize="18sp" />
+
+                <com.htyd.fan.om.util.ui.TextViewWithBottomLine
+                    android:id="@+id/tv_task_equipment_factory"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_marginRight="16dp"
+                    android:layout_marginRight="10dp"
                     android:layout_weight="1"
                     android:gravity="center_vertical"
-                    android:hint="选择任务归类"
-                    android:textSize="18sp" /> -->
+                    android:hint="输入设备厂家"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/equipment_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="left|center_vertical"
+                    android:text="设备类型："
+                    android:textColor="@color/key_text"
+                    android:textSize="18sp" />
+
+                <com.htyd.fan.om.util.ui.TextViewWithBottomLine
+                    android:id="@+id/tv_equipment_type"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="10dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:hint="设备类型"
+                    android:textSize="18sp" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" >
+
+                <TextView
+                    android:id="@+id/asset_number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="10dp"
+                    android:gravity="right|center_vertical"
+                    android:text="资产编号："
+                    android:textColor="@color/key_text"
+                    android:textSize="18sp" />
+
+                <com.htyd.fan.om.util.ui.TextViewWithBottomLine
+                    android:id="@+id/tv_asset_number"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="10dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:hint="扫描资产编号"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/logical_address"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="left|center_vertical"
+                    android:text="逻辑地址："
+                    android:textColor="@color/key_text"
+                    android:textSize="18sp" />
+
+                <com.htyd.fan.om.util.ui.TextViewWithBottomLine
+                    android:id="@+id/tv_logical_address"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="10dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:hint="扫描逻辑地址"
+                    android:textSize="18sp" />
             </TableRow>
         </TableLayout>
 
-        <!-- <TextView
-            android:id="@+id/tv_add_accessory"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="10dp"
-            android:drawableLeft="@drawable/add"
-            android:drawablePadding="5dp"
-            android:gravity="center"
-            android:hint="点击添加附件"
-            android:textColor="@color/key_text"
-            android:textSize="18sp" /> -->
-
-        <com.htyd.fan.om.util.ui.ListViewForScrollView
-            android:id="@+id/list_accessory"
+        <EditText
+            android:id="@+id/edit_equipment_remark"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:divider="@color/key_text"
-            android:dividerHeight="1px" />
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:hint="装置备注"
+            android:lines="3"
+            android:textSize="18sp" />
     </LinearLayout>
 
 </ScrollView>

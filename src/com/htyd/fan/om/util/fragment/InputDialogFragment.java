@@ -21,15 +21,17 @@ public class InputDialogFragment extends DialogFragment {
 	private static final String TITLE = "title";
 	private static final String HINT = "hint";
 	public static final String INPUTTEXT = "inputtext";
-	
+	private static final String TEXT = "text";
+
 	private EditText editText;
 	private InputDoneListener listener;
-	
-	public interface InputDoneListener{
+	private TextView textView;
+
+	public interface InputDoneListener {
 		public void onInputDone(String text);
 	}
-	
-	public static DialogFragment newInstance(String title,String hint){
+
+	public static DialogFragment newInstance(String title, String hint) {
 		DialogFragment fragment = new InputDialogFragment();
 		Bundle args = new Bundle();
 		args.putString(TITLE, title);
@@ -38,14 +40,25 @@ public class InputDialogFragment extends DialogFragment {
 		return fragment;
 	}
 	
+	public static DialogFragment newInstance(String title, String hint,String text) {
+		DialogFragment fragment = new InputDialogFragment();
+		Bundle args = new Bundle();
+		args.putString(TITLE, title);
+		args.putString(HINT, hint);
+		args.putString(TEXT, text);
+		fragment.setArguments(args);
+		return fragment;
+	}
+
 	@SuppressLint("InflateParams")
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		Builder builder = new AlertDialog.Builder(getActivity());
-		View v = getActivity().getLayoutInflater().inflate(R.layout.set_net_dialog_layout, null);
+		View v = getActivity().getLayoutInflater().inflate(
+				R.layout.set_net_dialog_layout, null);
 		initView(v);
 		builder.setView(v);
-		builder.setTitle("输入"+getArguments().getString(TITLE));
+		builder.setTitle("输入" + getArguments().getString(TITLE));
 		builder.setPositiveButton("确定", new OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -57,27 +70,40 @@ public class InputDialogFragment extends DialogFragment {
 	}
 
 	protected void sendResult() {
-		if(getTargetFragment() == null && listener == null){
+		if (getTargetFragment() == null && listener == null) {
 			return;
 		}
-		if(listener != null){
+		if (listener != null) {
 			listener.onInputDone(editText.getText().toString());
 			return;
 		}
 		Intent i = new Intent();
 		i.putExtra(INPUTTEXT, editText.getText().toString());
-		getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, i);
+		getTargetFragment().onActivityResult(getTargetRequestCode(),
+				Activity.RESULT_OK, i);
 	}
 
 	private void initView(View v) {
-		TextView textView = (TextView) v.findViewById(R.id.tv_dialog_title);
+		textView = (TextView) v.findViewById(R.id.tv_dialog_title);
 		editText = (EditText) v.findViewById(R.id.edit_ip_address);
 		textView.setText(getArguments().getString(TITLE));
 		editText.setHint(getArguments().getString(HINT));
+		if(getArguments().containsKey(TEXT)){
+			editText.setText(getArguments().getString(TEXT));
+		}
 	}
 
-	public void setListener(InputDoneListener listener){
+	public void setListener(InputDoneListener listener) {
 		this.listener = listener;
 	}
-	
+/*
+	public void setView(String text,String hint) {
+		
+		Bundle args = new Bundle();
+		args.putString(TITLE, text);
+		args.putString(HINT, hint);
+		this.setArguments(args);
+		textView.setText(text);
+		editText.setHint(hint);
+	}*/
 }

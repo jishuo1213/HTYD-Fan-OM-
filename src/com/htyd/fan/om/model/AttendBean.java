@@ -7,25 +7,23 @@ import org.json.JSONObject;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import com.htyd.fan.om.util.base.Utils;
 
 public class AttendBean implements Parcelable {
 
-	public String province;
-	public String city;
-	public String district;
-	public String street;
-	public String streetNum;
+	public String address;
 	public long time;
 	public double latitude;// 纬度
 	public double longitude;// 经度
 	public int state;// 签到状态，0未签到 1 正常签到 2 补签
 	public String choseLocation;
-	public int month;
+	public int month;                                              
 	public int attendId;
 	public String attendRemark;//考勤备注
-
+	public int year;
+	
 	public AttendBean() {
 	}
 
@@ -36,11 +34,7 @@ public class AttendBean implements Parcelable {
 
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
-		dest.writeString(province);
-		dest.writeString(city);
-		dest.writeString(district);
-		dest.writeString(street);
-		dest.writeString(streetNum);
+		dest.writeString(address);
 		dest.writeLong(time);
 		dest.writeDouble(latitude);
 		dest.writeDouble(longitude);
@@ -49,6 +43,7 @@ public class AttendBean implements Parcelable {
 		dest.writeInt(state);
 		dest.writeInt(attendId);
 		dest.writeString(attendRemark);
+		dest.writeInt(year);
 	}
 
 	public static Parcelable.Creator<AttendBean> CREATOR = new Creator<AttendBean>() {
@@ -61,11 +56,7 @@ public class AttendBean implements Parcelable {
 		@Override
 		public AttendBean createFromParcel(Parcel source) {
 			AttendBean mBean = new AttendBean();
-			mBean.province = source.readString();
-			mBean.city = source.readString();
-			mBean.district = source.readString();
-			mBean.street = source.readString();
-			mBean.streetNum = source.readString();
+			mBean.address = source.readString();
 			mBean.time = source.readLong();
 			mBean.latitude = source.readDouble();
 			mBean.longitude = source.readDouble();
@@ -74,25 +65,20 @@ public class AttendBean implements Parcelable {
 			mBean.state = source.readInt();
 			mBean.attendId = source.readInt();
 			mBean.attendRemark = source.readString();
+			mBean.year = source.readInt();
 			return mBean;
 		}
 	};
 
 	public void SetValueBean(OMLocationBean component) {
-		this.province = component.province;
-		this.city = component.city;
-		this.district = component.district;
-		this.street = component.street;
-		this.streetNum = component.streetNum;
 		this.latitude = component.latitude;
 		this.longitude = component.longitude;
 		this.time = component.time;
+		this.address = component.address;
 	}
 
 	public String getAddress() {
-		StringBuilder sb = new StringBuilder();
-		return sb.append(province).append(city).append(district).append(street)
-				.append(streetNum).toString();
+		return address;
 	}
 	
 	public JSONObject toJson() throws JSONException{
@@ -110,12 +96,14 @@ public class AttendBean implements Parcelable {
 	public void setFromJson(JSONObject json) throws JSONException{
 		choseLocation = json.getString("TXWZ");
 		time = Utils.parseDate(json.getString("QDRQ"),"yyyy-MM-dd");
-		if(Integer.parseInt(json.getString("SFBQ")) == 0){
+		if (Integer.parseInt(json.getString("SFBQ")) == 0) {
 			state = 1;
-		}else{
+		} else {
 			state = 2;
 		}
 		month = Utils.getCalendarField(time, Calendar.MONTH);
+		year = Utils.getCalendarField(time, Calendar.YEAR);
+		Log.i("fanjishuo_____setFromJson", "year"+year+"month"+month);
 		attendRemark = json.getString("KQBZ");
 	}
 }

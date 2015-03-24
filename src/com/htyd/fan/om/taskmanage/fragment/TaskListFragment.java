@@ -365,7 +365,7 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener,
 			
 			JSONObject params = new JSONObject();
 			try {
-				params.put("RWBT", "");
+				params.put("RWMS", "");
 				params.put("TXSJ", "");
 				params.put("RWID", "");
 				params.put("RWZT", "");
@@ -457,7 +457,7 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener,
 		protected Boolean doInBackground(String... params) {
 			JSONObject param = new JSONObject();
 			try {
-				param.put("RWBT", "");
+				param.put("RWMS", "");
 				param.put("TXSJ", "");
 				param.put("RWID", "");
 				param.put("RWZT", "");

@@ -6,8 +6,10 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import android.annotation.SuppressLint;
 import android.app.LoaderManager;
@@ -20,9 +22,10 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -34,6 +37,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.PopupMenu.OnMenuItemClickListener;
 import android.widget.TextView;
@@ -65,9 +69,13 @@ import com.htyd.fan.om.util.loaders.SQLiteCursorLoader;
 import com.htyd.fan.om.util.ui.TextViewWithBorder;
 import com.htyd.fan.om.util.ui.UItoolKit;
 
+@Deprecated
 public class AttendCalendarFragment extends Fragment implements
 		SelectLocationListener, ChooseAddressListener, InputDoneListener {
 
+	public static final int MESSAGESUCCESSID = 0x01;
+	public static final int MESSAGEFAILID = 0x02;
+	
 	private static final String MONTHNUM = "monthnum";
 	private static final int ATTENDLOADERID = 12;
 
@@ -76,29 +84,30 @@ public class AttendCalendarFragment extends Fragment implements
 	private AttendLoaderCallback mCallback;
 	private GridView monthGridView;
 	private TextView attendTime, attendLocation, attendState,month,attendRemark;
+	private ImageButton refreshImgButton;
 	private Button signButton;
-	public static int currentSelect;// 当前选中的天的位置
-	private int firstDayPosition;// 这个月一号的位置
 	private boolean isFinish;// 数据是否加载完成
-	protected SparseArray<AttendBean> attendMap;//签到的Map, 0 - 当前天------ 0 为1号
+	protected SparseArray<AttendBean> currentMonthAttendMap;//签到的Map, 0到当前天       0 为1号
+	protected SparseArray<AttendBean> otherMonthAttendMap;
 	protected Calendar selectDay;
 	protected PopupMenu popupMenu;
 	private boolean isLocation;
 	private String location;
-
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Calendar c = Calendar.getInstance();
 		selectDay = new GregorianCalendar(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DATE));
 		isFinish = false;
-		monthList = getMonth(c);
+		monthList = new ArrayList<DateBean>();
+		getMonth(c);
 		mLoadManager = getActivity().getLoaderManager();
 		mCallback = new AttendLoaderCallback();
 		Bundle args = new Bundle();
 		args.putInt(MONTHNUM, Calendar.getInstance().get(Calendar.MONTH));
 		mLoadManager.initLoader(ATTENDLOADERID, args, mCallback);
-		initMap(currentSelect - firstDayPosition + 1);
+		initMap(selectDay.get(Calendar.DATE));
 		isLocation = false;
 	}
 
@@ -134,7 +143,6 @@ public class AttendCalendarFragment extends Fragment implements
 	@Override
 	public void onPause() {
 		getActivity().unregisterReceiver(mLocationReceiver);
-		Log.i("fanjishuo_____attendfragment", "onPAUSE");
 		OMLocationManager.get(getActivity()).stopLocationUpdate();
 		super.onPause();
 	}
@@ -151,6 +159,7 @@ public class AttendCalendarFragment extends Fragment implements
 		mGridView.setAdapter(new MainPageGridAdapter());
 		monthGridView.setAdapter(new AttendCalendarGridAdapter(monthList,
 				getActivity()));
+		((AttendCalendarGridAdapter)monthGridView.getAdapter()).setSelectPos(selectDay.get(Calendar.DATE) - 1);
 		monthGridView.setOnItemClickListener(new OnDayClickListener());
 		month = (TextView) v.findViewById(R.id.tv_month);
 		month.setText(selectDay.get(Calendar.YEAR) + "年"
@@ -160,6 +169,8 @@ public class AttendCalendarFragment extends Fragment implements
 		attendState = (TextView) v.findViewById(R.id.tv_attend_state);
 		signButton = (Button) v.findViewById(R.id.btn_add_attend);
 		attendRemark = (TextView) v.findViewById(R.id.tv_attend_remark);
+		refreshImgButton  = (ImageButton) v.findViewById(R.id.img_refresh);
+		refreshImgButton.setOnClickListener(mListener);
 		signButton.setOnClickListener(mListener);
 		attendLocation.setOnClickListener(mListener);
 		month.setOnClickListener(mListener);
@@ -187,9 +198,58 @@ public class AttendCalendarFragment extends Fragment implements
 	}
 	
 	private void initMap(int count){
-		attendMap = new SparseArray<AttendBean>(count);
+		currentMonthAttendMap = new SparseArray<AttendBean>(count);
 		for(int i = 0;i <  count;i++){
-			attendMap.put(i, null);
+			currentMonthAttendMap.put(i, null);
+		}
+	}
+
+	
+	@SuppressLint("HandlerLeak")
+	private class AttendHandler extends Handler {
+
+		@Override
+		public void dispatchMessage(Message msg) {
+
+			switch (msg.what) {
+			case MESSAGESUCCESSID:
+				String result = (String) msg.obj;
+				monthList.clear();
+				Calendar c = Calendar.getInstance();
+				c.set(2015, 0, 1);
+				getMonth(c);
+				int count =  c.getActualMaximum(Calendar.DAY_OF_MONTH);
+				if (otherMonthAttendMap == null) {
+					otherMonthAttendMap = new SparseArray<AttendBean>();
+				} else {
+					otherMonthAttendMap.clear();
+				}
+				for(int i = 0 ;i < count;i++){
+					otherMonthAttendMap.put(i, null);
+				}
+				try {
+					JSONObject	resultJson = new JSONObject(result);
+					JSONArray array = (JSONArray) new JSONTokener(
+							resultJson.getString("Rows")).nextValue();
+					int jsonCount = array.length();
+					int pos;
+					for (int i = 0; i < jsonCount; i++) {
+						AttendBean mBean = new AttendBean();
+						mBean.setFromJson(array.getJSONObject(i));
+						pos = Utils.getCalendarField(mBean.time,Calendar.DAY_OF_WEEK) - 1;
+						otherMonthAttendMap.put(pos, mBean);
+						monthList.get(pos).attendState = mBean.state;
+					}
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				break;
+			case MESSAGEFAILID:
+				UItoolKit.showToastShort(getActivity(), "加载考勤信息失败");
+				break;
+			default:
+				super.dispatchMessage(msg);
+			}
 		}
 	}
 
@@ -210,7 +270,7 @@ public class AttendCalendarFragment extends Fragment implements
 			case  R.id.tv_attend_address:
 				popupMenu.show();
 				break;
-			case R.id.tv_month:
+			case R.id.img_refresh:
 				new RefreshAttendTask().execute();
 				v.setEnabled(false);
 				break;
@@ -278,33 +338,22 @@ public class AttendCalendarFragment extends Fragment implements
 		}
 	}
 
-	private List<DateBean> getMonth(Calendar c) {
-		List<DateBean> monthList;
+	private void getMonth(Calendar c) {
+//		List<DateBean> monthList;
 		int currentMonth = c.get(Calendar.MONTH);
 		int weeks = c.get(Calendar.WEEK_OF_MONTH);
-		int currentDate = c.get(Calendar.DATE);
 		int currentYear = c.get(Calendar.YEAR);
-		c.add(Calendar.DATE, -currentDate);
-		firstDayPosition = c.get(Calendar.DAY_OF_WEEK);
-		currentSelect = firstDayPosition + currentDate - 1;
-		c.add(Calendar.DATE, currentDate);
-		int week = 0;
 		c.add(Calendar.DATE, -(c.get(Calendar.DAY_OF_WEEK) - 1));
-		c.add(Calendar.DATE, -(weeks - 1) * 7);
-		if (c.get(Calendar.YEAR) < currentYear) {
-			while (c.get(Calendar.MONTH) % 11 <= currentMonth) {
-				c.add(Calendar.DATE, 7);
-				week++;
-			}
-		} else {
-			while (c.get(Calendar.MONTH) <= currentMonth && c.get(Calendar.YEAR) == currentYear) {
-				c.add(Calendar.DATE, 7);
-				week++;
+		while(true){
+			c.add(Calendar.DATE, 7);
+			weeks++;
+			if (c.get(Calendar.MONTH) > currentMonth	|| c.get(Calendar.YEAR) > currentYear){
+				break;
 			}
 		}
-		c.add(Calendar.DATE, -week * 7);
-		int size = week * 7;
-		monthList = new ArrayList<DateBean>(size);
+		c.add(Calendar.DATE, -(weeks - 1) * 7);
+		int size = (weeks - 1) * 7;
+//		monthList = new ArrayList<DateBean>(size);
 		for (int i = 0; i < size; i++) {
 			DateBean mBean = new DateBean();
 			mBean.day = c.get(Calendar.DATE);
@@ -316,7 +365,7 @@ public class AttendCalendarFragment extends Fragment implements
 			monthList.add(mBean);
 			c.add(Calendar.DATE, 1);
 		}
-		return monthList;
+//		return monthList;
 	}
 
 	private class OnDayClickListener implements OnItemClickListener {
@@ -346,9 +395,8 @@ public class AttendCalendarFragment extends Fragment implements
 			parent.setTag(view);
 			view.setBackgroundColor(getActivity().getResources().getColor(
 					R.color.orange));
-			 setDetailView(attendMap.get(mBean.day - 1));
-			//setDetailView(null);
-			currentSelect = position;
+			 setDetailView(currentMonthAttendMap.get(mBean.day - 1));
+			((AttendCalendarGridAdapter) parent.getAdapter()).setSelectPos(position);
 		}
 	}
 
@@ -366,7 +414,7 @@ public class AttendCalendarFragment extends Fragment implements
 		@Override
 		protected Cursor loadCursor() {
 			mManager.openDb(0);
-			return mManager.queryAttendCursor(monthNum);
+			return mManager.queryAttendCursor(monthNum,Calendar.getInstance().get(Calendar.YEAR));
 		}
 
 		@Override
@@ -385,6 +433,9 @@ public class AttendCalendarFragment extends Fragment implements
 				result = NetOperating.getResultFromNet(getContext(), param,
 						Urls.SAVEATTENDURL, "Operate=getAllKqxxByyhidAndqdrq");
 				Utility.handleAttend(mManager, result);
+				if(new JSONObject(result).get("Rows").equals("0")){
+					return null;
+				}
 			} catch (JSONException e) {
 				e.printStackTrace();
 				return null;
@@ -413,14 +464,13 @@ public class AttendCalendarFragment extends Fragment implements
 				do {
 					AttendBean tempBean = attendCursor.getAttend();
 					pos = Utils.getCalendarField(tempBean.time, Calendar.DATE) - 1;
-					attendMap.put(pos, tempBean);
-				//	setGridView(tempBean,firstDayPosition+pos);
-					monthList.get(firstDayPosition+pos).attendState = tempBean.state;
+					currentMonthAttendMap.put(pos, tempBean);
+					monthList.get(pos).attendState = tempBean.state;
 				} while (attendCursor.moveToNext());
 				isFinish = true;
 				((AttendCalendarGridAdapter)monthGridView.getAdapter()).notifyDataSetChanged();
-				setDetailView(attendMap.get(currentSelect - firstDayPosition));
-				OMUserDatabaseManager.getInstance(getActivity()).closeDb();
+				setDetailView(currentMonthAttendMap.get(selectDay.get(Calendar.DATE) - 1));
+//				OMUserDatabaseManager.getInstance(getActivity()).closeDb();
 			} else {
 				setDetailView(null);
 				UItoolKit.showToastShort(getActivity(), "还没有可加载的数据");
@@ -433,7 +483,7 @@ public class AttendCalendarFragment extends Fragment implements
 		}
 	}
 
-	void setGridView(AttendBean attendBean, int pos) {
+protected	void setGridView(AttendBean attendBean, int pos) {
 		View v = monthGridView.getChildAt(pos);
 		if(v == null){
 			return;
@@ -454,7 +504,11 @@ public class AttendCalendarFragment extends Fragment implements
 			return;
 		}
 		attendTime.setText(Utils.formatTime(mBean.time,"yyyy年MM月dd日"));
-		attendLocation.setText(mBean.choseLocation);
+		if(mBean.choseLocation.length() > 0){
+			attendLocation.setText(mBean.choseLocation);
+		} else {
+			attendLocation.setText(location);
+		}
 		if(mBean.state == 1){
 			attendState.setText("已签到");
 		}else if(mBean.state == 2){
@@ -477,8 +531,7 @@ public class AttendCalendarFragment extends Fragment implements
 			}
 			AttendBean mBean = new AttendBean();
 			mBean.SetValueBean(loc);
-			location = mBean.province+mBean.city+mBean.district;
-			Log.i("fanjishuo____onNetWorkLocationReceived", "location");
+			location = loc.province+loc.city+loc.district;
 			if(!isLocation){
 				if(attendLocation.getText().length() == 0){
 					attendLocation.setText(location);
@@ -495,16 +548,12 @@ public class AttendCalendarFragment extends Fragment implements
 			mBean.time = selectDay.getTimeInMillis();
 			mBean.choseLocation = attendLocation.getText().toString();
 			mBean.month = selectDay.get(Calendar.MONTH);
+			mBean.year = selectDay.get(Calendar.YEAR);
 			mBean.attendRemark = attendRemark.getText().toString();
 			OMLocationManager.get(getActivity()).stopLocationUpdate();
 			startTask(mBean);
 		}
-
-		@Override
-		protected void onGPSLocationReceived(Context context, OMLocationBean loc) {
-
-		}
-
+		
 		@Override
 		protected void onNetDisableReceived(Context context) {
 			UItoolKit.showToastShort(getActivity(), "无网络连接时不能签到");
@@ -512,7 +561,6 @@ public class AttendCalendarFragment extends Fragment implements
 			signButton.setText("签到");
 			signButton.setEnabled(true);
 		}
-
 	};
 
 	private class SaveAttendTask extends AsyncTask<AttendBean, Void, String> {
@@ -568,19 +616,19 @@ public class AttendCalendarFragment extends Fragment implements
 					UItoolKit.showToastShort(getActivity(), "补签成功");
 				}
 				attendState.setText("已签到");
-				int pos = Utils.getCalendarField(mBean.time, Calendar.DATE) - 1;
-				monthList.get(firstDayPosition + pos).attendState = mBean.state;
+				int pos = Utils.getCalendarField(mBean.time, Calendar.DAY_OF_WEEK) - 1;
+				monthList.get(pos).attendState = mBean.state;
 				((AttendCalendarGridAdapter)monthGridView.getAdapter()).notifyDataSetChanged();
-				setGridView(mBean, firstDayPosition + pos);
-				attendMap.put(pos, mBean);
+				setGridView(mBean,pos);
+				currentMonthAttendMap.put(pos, mBean);
 			} else if (result.equals("REPEAT")){
 				UItoolKit.showToastShort(getActivity(), "重复签到");
 			} else if (result.equals("REPEAT_TRUE")){
 				UItoolKit.showToastShort(getActivity(), "签到又成功");
 				int pos = Utils.getCalendarField(mBean.time, Calendar.DATE) - 1;
-				int id = attendMap.get(pos).attendId;
+				int id = currentMonthAttendMap.get(pos).attendId;
 				mBean.attendId = id;
-				attendMap.put(pos, mBean);
+				currentMonthAttendMap.put(pos, mBean);
 				ThreadPool.runMethod(new Runnable() {
 					@Override
 						public void run() {
@@ -657,28 +705,27 @@ public class AttendCalendarFragment extends Fragment implements
 				Bundle args = new Bundle();
 				args.putInt(MONTHNUM, Calendar.getInstance()
 						.get(Calendar.MONTH));
-				attendMap.clear();
+				currentMonthAttendMap.clear();
 				resetAttendList();
 				mLoadManager.restartLoader(ATTENDLOADERID, args, mCallback);
 				UItoolKit.showToastShort(getActivity(), "刷新成功");
 			} else {
 				UItoolKit.showToastShort(getActivity(), "加载数据失败");
 			}
-			month.setEnabled(true);
+			refreshImgButton.setEnabled(true);
 			cancel(false);
 		}
 	}
 	
 	protected void resetAttendList(){
 		int length = monthList.size();
-		for(int i = 0;i<length;i++){
+		for (int i = 0; i < length; i++) {
 			monthList.get(i).attendState = 0;
 		}
 	}
 
 	@Override
 	public void onInputDone(String text) {
-		Log.i("fanjishuo____onInputDone", text);
-		attendRemark.setText(text);
+ 		attendRemark.setText(text);
 	}
 }

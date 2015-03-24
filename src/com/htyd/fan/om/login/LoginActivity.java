@@ -48,7 +48,7 @@ public class LoginActivity extends Activity {
 
 	private void initView() {
 		context = this;
-		userNameEditText = (EditText) findViewById(R.id.edit_login_username);
+		userNameEditText = (EditText) findViewById(R.id.edit_login_username_new);
 		passwordEditText = (EditText) findViewById(R.id.edit_login_password);
 		checkBox = (CheckBox) findViewById(R.id.check_auto_login);
 		checkRemberPwd = (CheckBox) findViewById(R.id.check_remember_pasword);
@@ -94,21 +94,13 @@ public class LoginActivity extends Activity {
 		}
 	};
 
-/*	private void initActionBar() {
-		ActionBar actionBar = getActionBar();
-		actionBar.setBackgroundDrawable(getResources().getDrawable(
-				R.drawable.bg_top_navigation_bar));
-		actionBar.setTitle("登录");
-		actionBar.setDisplayShowHomeEnabled(false);
-	}*/
-
 	protected boolean checkCanLogin() {
 		if (TextUtils.isEmpty(userNameEditText.getText())
 				|| TextUtils.isEmpty(passwordEditText.getText())) {
 			UItoolKit.showToastShort(getBaseContext(), "用户名或密码不能为空");
 			return false;
 		}
-		return true;
+		return true;    
 	}
 
 	protected void offLineLogin() {

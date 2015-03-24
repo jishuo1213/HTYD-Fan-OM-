@@ -13,6 +13,7 @@ public class OMLocationBean implements Parcelable {
 	public String district;
 	public String street;
 	public String streetNum;
+	public String address;
 	public long time;
 	public float direction;
 	public double latitude;
@@ -36,6 +37,7 @@ public class OMLocationBean implements Parcelable {
 		dest.writeDouble(latitude);
 		dest.writeDouble(longitude);
 		dest.writeInt(result);
+		dest.writeString(address);
 	}
 
 	public static Parcelable.Creator<OMLocationBean> CREATOR = new Creator<OMLocationBean>() {
@@ -58,6 +60,7 @@ public class OMLocationBean implements Parcelable {
 			mBean.latitude = source.readDouble();
 			mBean.longitude = source.readDouble();
 			mBean.result = source.readInt();
+			mBean.address = source.readString();
 			return mBean;
 		}
 	};
@@ -73,5 +76,6 @@ public class OMLocationBean implements Parcelable {
 		longitude = loc.getLongitude();
 		result = loc.getLocType();
 		time = Utils.parseDate(loc.getTime());
+		address = loc.getAddrStr();
 	}
 }

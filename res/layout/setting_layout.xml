@@ -44,11 +44,20 @@
         android:textColor="@color/white"/>
     
     <TextView
+        android:id="@+id/tv_modify_password"
+        style="@style/style_normal_textview"
+        android:layout_width="match_parent"
+        android:layout_below="@id/tv_person_info"
+        android:layout_margin="5dp"
+        android:background="@color/skyblue"
+        android:text="修改密码" />
+    
+    <TextView
         android:id="@+id/tv_log_out"
         style="@style/style_normal_textview"
         android:layout_alignParentLeft="true"
         android:layout_width="match_parent"
-        android:layout_below="@id/tv_person_info"
+        android:layout_below="@id/tv_modify_password"
         android:layout_margin="5dp"
         android:background="@color/red"
         android:text="退出登录"

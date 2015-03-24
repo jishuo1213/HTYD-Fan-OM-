@@ -14,6 +14,8 @@ public class Urls {
 	
 	public static  String TASKURL;
 	
+	public static String USERURL;
+	
 	public static  String TASKPROCESSURL;
 	
 	public static  String UPLOADFILE ;
@@ -24,6 +26,9 @@ public class Urls {
 	
 	public static String ACCESSORYFILEPATH;
 	
+	public static String EQUIPMENTFACTORYURL;
+	
+	
 	public Urls(String baseUrl) {
 		BASEURL = baseUrl;
 		SAVEATTENDURL = BASEURL + "kqAction?";
@@ -33,5 +38,7 @@ public class Urls {
 		UPLOADFILE = BASEURL + "uploadAction?Operate=upload";
 		FILE = BASEURL + "wjAction?";
 		COMMONDATA = BASEURL + "zdAction?";
+		EQUIPMENTFACTORYURL = BASEURL + "cjAction?";
+		USERURL = BASEURL + "yhAction?";
 	}
 }

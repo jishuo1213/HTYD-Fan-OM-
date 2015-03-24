@@ -51,6 +51,8 @@ public class CaptureActivity extends Activity implements Callback {
     private boolean playBeep;
     private static final float BEEP_VOLUME = 0.10f;
     private boolean vibrate;
+    
+    private boolean isLightOpen;
 
     private TextView mTitle;
     private ImageView mGoHome;
@@ -72,7 +74,22 @@ public class CaptureActivity extends Activity implements Callback {
     private void initControl() {
         viewfinderView = (ViewfinderView) findViewById(R.id.viewfinder_view);
         mTitle = (TextView) findViewById(R.id.details_textview_title);
-        mTitle.setText("扫描设备条码");
+        mTitle.setText("扫描条码");
+        
+        ImageView openLight = (ImageView) findViewById(R.id.img_light);
+        openLight.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if (!isLightOpen) {
+					CameraManager.get().openLight();
+					isLightOpen = true;
+				} else {
+					CameraManager.get().closeLight();
+					isLightOpen = false;
+				}
+			}
+		});
         mGoHome = (ImageView) findViewById(R.id.details_imageview_gohome);
         mGoHome.setOnClickListener(new OnClickListener() {
             @Override
@@ -235,4 +252,40 @@ public class CaptureActivity extends Activity implements Callback {
         }
     };
 
+	/**
+	 * 设置闪光灯的开启和关闭
+	 * @param isEnable
+	 * @author linc
+	 * @date 2012-3-18
+	 */
+/*	private void setFlashlightEnabled(boolean isEnable) {
+		try {
+			Method method = Class.forName("android.os.ServiceManager")
+					.getMethod("getService", String.class);
+			IBinder binder = (IBinder) method.invoke(null,
+					new Object[] { "hardware" });
+
+			IHardwareService localhardwareservice = IHardwareService.Stub
+					.asInterface(binder);
+			localhardwareservice.setFlashlightEnabled(isEnable);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private boolean getFlashlightEnabled(){
+		Method method;
+		try {
+			method = Class.forName("android.os.ServiceManager")
+					.getMethod("getService", String.class);
+			IBinder binder = (IBinder) method.invoke(null,
+					new Object[] { "hardware" });
+			IHardwareService localhardwareservice = IHardwareService.Stub
+					.asInterface(binder);
+			return localhardwareservice.getFlashlightEnabled();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		} 
+	}*/
 }

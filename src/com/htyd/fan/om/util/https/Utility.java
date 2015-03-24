@@ -11,12 +11,9 @@ import android.text.TextUtils;
 
 import com.htyd.fan.om.model.AffiliatedFileBean;
 import com.htyd.fan.om.model.AttendBean;
-import com.htyd.fan.om.model.CityBean;
-import com.htyd.fan.om.model.DistrictBean;
-import com.htyd.fan.om.model.ProvinceBean;
+import com.htyd.fan.om.model.CommonDataBean;
 import com.htyd.fan.om.model.TaskDetailBean;
 import com.htyd.fan.om.model.TaskProcessBean;
-import com.htyd.fan.om.model.CommonDataBean;
 import com.htyd.fan.om.util.db.OMDatabaseManager;
 import com.htyd.fan.om.util.db.OMUserDatabaseManager;
 
@@ -30,7 +27,7 @@ public class Utility {
 
 	/**
 	 * 解析和处理服务器返回的省级数据
-	 */
+	 *//*
 	public  static boolean handleProvincesResponse(
 			OMDatabaseManager mManager, String response) {
 		mManager.openDb(1);
@@ -41,7 +38,7 @@ public class Utility {
 					String[] array = p.split("\\|");
 					ProvinceBean mBean = new ProvinceBean();
 					mBean.provinceCode = array[0];
-					if(array.length >= 1)
+					if(array.length > 1)
 						mBean.provinceName = array[1];
 					// 将解析出来的数据存储到Province表
 					mManager.insertProvince(mBean);
@@ -52,9 +49,9 @@ public class Utility {
 		return false;
 	}
 
-	/**
+	*//**
 	 * 解析和处理服务器返回的市级数据
-	 */
+	 *//*
 	public static boolean handleCitiesResponse(OMDatabaseManager mManager,
 			String response, int provinceId) {
 		mManager.openDb(1);
@@ -65,7 +62,7 @@ public class Utility {
 					String[] array = c.split("\\|");
 					CityBean city = new CityBean();
 					city.cityCode = array[0];
-					if(array.length >= 1)
+					if(array.length > 1)
 						city.cityName = array[1];
 					city.provinceID = provinceId;
 					// 将解析出来的数据存储到City表
@@ -77,9 +74,9 @@ public class Utility {
 		return false;
 	}
 
-	/**
+	*//**
 	 * 解析和处理服务器返回的县级数据
-	 */
+	 *//*
 	public static boolean handleCountiesResponse(OMDatabaseManager mManager,
 			String response, int cityId) {
 		mManager.openDb(1);
@@ -90,7 +87,7 @@ public class Utility {
 					String[] array = c.split("\\|");
 					DistrictBean county = new DistrictBean();
 					county.districtCode = array[0];
-					if(array.length >= 1)
+					if(array.length > 1)
 						county.districtName = array[1];
 					county.cityID = cityId;
 					// 将解析出来的数据存储到County表
@@ -101,7 +98,7 @@ public class Utility {
 		}
 		return false;
 	}
-	
+	*/
 	/**
 	 * 解析返回的任务数据
 	 * @param mManager
@@ -151,14 +148,14 @@ public class Utility {
 	 */
 	
 	public static boolean handleTaskProcessResponse(OMUserDatabaseManager mManager,
-			String response) throws JSONException {
+			String response,int taskLocalId) throws JSONException {
 		mManager.openDb(1);
 		if (!TextUtils.isEmpty(response)) {
 			TaskProcessBean mBean = new TaskProcessBean();
 			JSONObject resultJson = new JSONObject(response);
 			JSONArray array = (JSONArray) new JSONTokener(resultJson.getString("Rows")).nextValue();
 			for(int i = 0;i<array.length();i++){
-				mBean.setFromJson(array.getJSONObject(i));
+				mBean.setFromJson(array.getJSONObject(i),taskLocalId);
 				mManager.insertTaskProcessBean(mBean);
 			}
 				return true;
@@ -173,7 +170,7 @@ public class Utility {
 			JSONArray array = (JSONArray) new JSONTokener(resultJson.getString("Rows")).nextValue();
 			for(int i = 0;i<array.length();i++){
 				TaskProcessBean mBean = new TaskProcessBean();
-				mBean.setFromJson(array.getJSONObject(i));
+				mBean.setFromJson(array.getJSONObject(i),0);
 				processList.add(mBean);
 			}
 				return true;

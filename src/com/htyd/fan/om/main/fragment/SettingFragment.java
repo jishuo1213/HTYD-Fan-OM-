@@ -14,6 +14,8 @@ import com.htyd.fan.om.login.LoginActivity;
 import com.htyd.fan.om.util.base.Preferences;
 import com.htyd.fan.om.util.db.OMUserDatabaseManager;
 import com.htyd.fan.om.util.fragment.CommonAddressDialog;
+import com.htyd.fan.om.util.fragment.ModifyPassword;
+import com.htyd.fan.om.util.fragment.ModifyPersonalInfo;
 
 public class SettingFragment extends Fragment {
 
@@ -26,13 +28,17 @@ public class SettingFragment extends Fragment {
 	}
 
 	private void initView(View v) {
-		TextView userName,commonLocation,logOut;
+		TextView userName,commonLocation,logOut,modifyPersonalInfo,modifyPassword;
 		userName = (TextView) v.findViewById(R.id.tv_user_name);
 		commonLocation = (TextView) v.findViewById(R.id.tv_common_address);
+		modifyPersonalInfo = (TextView) v.findViewById(R.id.tv_person_info);
+		modifyPassword = (TextView) v.findViewById(R.id.tv_modify_password);
 		logOut = (TextView) v.findViewById(R.id.tv_log_out);
 		userName.setText(Preferences.getUserinfo(getActivity(), "YHMC"));
 		commonLocation.setOnClickListener(settingListener);
+		modifyPersonalInfo.setOnClickListener(settingListener);
 		logOut.setOnClickListener(settingListener);
+		modifyPassword.setOnClickListener(settingListener);
 	}
 	
 	private OnClickListener settingListener = new OnClickListener() {
@@ -50,6 +56,12 @@ public class SettingFragment extends Fragment {
 				getActivity().finish();
 				break;
 			case R.id.tv_person_info:
+				ModifyPersonalInfo modifyPersonalInfo = new ModifyPersonalInfo();
+				modifyPersonalInfo.show(getActivity().getFragmentManager(), null);
+				break;
+			case R.id.tv_modify_password:
+				ModifyPassword modifyPassword  = new ModifyPassword();
+				modifyPassword.show(getActivity().getFragmentManager(), null);
 				break;
 			}
 		}

@@ -4,10 +4,13 @@ import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.app.Instrumentation;
 import android.content.Context;
+import android.hardware.Camera;
+import android.hardware.Camera.Parameters;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
@@ -124,7 +127,6 @@ public class Utils {
 	}
 	
 	public static boolean isNetWorkEnable() {
-		Log.i("fanjishuo____isNetWorkEnable", Preferences.netType);
 		return !Preferences.netType.equals(NetWorkUtils.NETWORK_TYPE_DISCONNECT);
 	}
 	
@@ -146,4 +148,58 @@ public class Utils {
 			Log.e("Exception when onBack", e.toString());
 		}
 	}
+		/**
+		 * 通过设置Camera打开闪光灯
+		 * @param mCamera
+		 */
+		public static void turnLightOn(Camera mCamera) {
+			if (mCamera == null) {
+				return;
+			}
+			Parameters parameters = mCamera.getParameters();
+			if (parameters == null) {
+				return;
+			}
+		List<String> flashModes = parameters.getSupportedFlashModes();
+			// Check if camera flash exists
+			if (flashModes == null) {
+				// Use the screen as a flashlight (next best thing)
+				return;
+			}
+			String flashMode = parameters.getFlashMode();
+			if (!Parameters.FLASH_MODE_TORCH.equals(flashMode)) {
+				// Turn on the flash
+				if (flashModes.contains(Parameters.FLASH_MODE_TORCH)) {
+					parameters.setFlashMode(Parameters.FLASH_MODE_TORCH);
+					mCamera.setParameters(parameters);
+				} else {
+				}
+			}
+		}
+		/**
+		 * 通过设置Camera关闭闪光灯
+		 * @param mCamera
+		 */
+		public static void turnLightOff(Camera mCamera) {
+			if (mCamera == null) {
+				return;
+			}
+			Parameters parameters = mCamera.getParameters();
+			if (parameters == null) {
+				return;
+			}
+			List<String> flashModes = parameters.getSupportedFlashModes();
+			String flashMode = parameters.getFlashMode();
+			// Check if camera flash exists
+			if (flashModes == null) {
+				return;
+			}
+			if (!Parameters.FLASH_MODE_OFF.equals(flashMode)) {
+				// Turn off the flash
+				if (flashModes.contains(Parameters.FLASH_MODE_OFF)) {
+					parameters.setFlashMode(Parameters.FLASH_MODE_OFF);
+					mCamera.setParameters(parameters);
+				} 
+			}
+		}
 }

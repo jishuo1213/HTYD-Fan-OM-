@@ -223,9 +223,10 @@ public class CreateProcessDialog extends DialogFragment implements SyncTaskProce
 			public void run() {
 				OMUserDatabaseManager.getInstance(getActivity()).openDb(1);
 				mBean.isSyncToServer = 0;
-				if (OMUserDatabaseManager.getInstance(getActivity())
-						.insertTaskProcessBean(mBean) > 0) {
+				long temp = OMUserDatabaseManager.getInstance(getActivity()).insertTaskProcessBean(mBean);
+				if (temp > 0) {
 					handler.post(saveSuccess);
+					mBean.processLocalId = (int) temp;
 				} else {
 					handler.post(saveFail);
 				}
@@ -294,7 +295,7 @@ public class CreateProcessDialog extends DialogFragment implements SyncTaskProce
 				e.printStackTrace();
 				return false;
 			}
-			return parseResult(result);
+			return parseResult(result,mBean);
 		}
 
 		@Override
@@ -305,7 +306,8 @@ public class CreateProcessDialog extends DialogFragment implements SyncTaskProce
 					@Override
 					public void run() {
 						OMUserDatabaseManager.getInstance(getActivity()).openDb(1);
-						OMUserDatabaseManager.getInstance(getActivity()).insertTaskProcessBean(mBean);
+						long temp = OMUserDatabaseManager.getInstance(getActivity()).insertTaskProcessBean(mBean);
+						mBean.processLocalId = (int) temp;
 					}
 				});
 				UItoolKit.showToastShort(getActivity(), "保存至网络成功");
@@ -326,9 +328,12 @@ public class CreateProcessDialog extends DialogFragment implements SyncTaskProce
 		task.cancel(false);
 	}
 
-	protected boolean parseResult(String result) {
+	protected boolean parseResult(String result, TaskProcessBean mBean) {
 		try {
 			JSONObject json = new JSONObject(result);
+			if(json.has("MAXCLID")){
+				mBean.processNetId = json.getInt("MAXCLID");
+			}
 			return json.getBoolean("RESULT");
 		} catch (JSONException e) {
 			e.printStackTrace();

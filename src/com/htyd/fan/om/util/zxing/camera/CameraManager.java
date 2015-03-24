@@ -18,6 +18,8 @@ package com.htyd.fan.om.util.zxing.camera;
 
 import java.io.IOException;
 
+import com.htyd.fan.om.util.base.Utils;
+
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
@@ -324,4 +326,10 @@ public final class CameraManager {
 		return context;
 	}
 
+	public void openLight(){
+		Utils.turnLightOn(camera);
+	}
+	public void closeLight(){
+		Utils.turnLightOff(camera);
+	}
 }

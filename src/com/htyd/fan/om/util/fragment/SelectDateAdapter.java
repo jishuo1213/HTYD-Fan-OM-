@@ -77,16 +77,6 @@ public class SelectDateAdapter extends BaseAdapter {
 					convertView.setBackgroundColor(context.getResources()
 							.getColor(R.color.orange));
 				}
-				/*if (mBean.attendState == 0) {
-					mHolder.mTextView.setTextColor(context.getResources()
-							.getColor(R.color.key_text));
-				} else if (mBean.attendState == 1) {
-					mHolder.mTextView.setTextColor(context.getResources()
-							.getColor(R.color.green));
-				} else {
-					mHolder.mTextView.setTextColor(context.getResources()
-							.getColor(R.color.blue));
-				}*/
 			}
 		} else {
 			mHolder.mTextView.setText("");

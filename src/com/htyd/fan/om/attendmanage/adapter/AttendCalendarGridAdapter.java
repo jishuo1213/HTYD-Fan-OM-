@@ -11,7 +11,6 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.htyd.fan.om.R;
-import com.htyd.fan.om.attendmanage.fragment.AttendCalendarFragment;
 import com.htyd.fan.om.model.DateBean;
 
 public class AttendCalendarGridAdapter extends BaseAdapter {
@@ -19,6 +18,7 @@ public class AttendCalendarGridAdapter extends BaseAdapter {
 	private List<DateBean> monthList;
 	private Context context;
 	private DateBean mBean;
+	private int selectPosititon;
 
 	public AttendCalendarGridAdapter(List<DateBean> attendList, Context context) {
 		this.monthList = attendList;
@@ -57,7 +57,7 @@ public class AttendCalendarGridAdapter extends BaseAdapter {
 		}
 
 		mBean = (DateBean) getItem(position);
-		if (position == AttendCalendarFragment.currentSelect) {
+		if (position == selectPosititon) {
 			parent.setTag(convertView);
 		}
 		if (mBean != null) {
@@ -70,7 +70,7 @@ public class AttendCalendarGridAdapter extends BaseAdapter {
 			} else {
 				mHolder.mTextView.setTextColor(context.getResources().getColor(
 						R.color.key_text));
-				if (position != AttendCalendarFragment.currentSelect) {
+				if (position != selectPosititon) {
 					convertView.setBackgroundColor(context.getResources()
 							.getColor(R.color.activity_bg_color));
 				} else {
@@ -96,6 +96,10 @@ public class AttendCalendarGridAdapter extends BaseAdapter {
 	
 	private class ViewHolder {
 		public TextView mTextView;
+	}
+	
+	public void setSelectPos(int position){
+		this.selectPosititon = position;
 	}
 
 }

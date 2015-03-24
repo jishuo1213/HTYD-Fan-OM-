@@ -440,7 +440,7 @@ public class UploadFileDialog extends DialogFragment implements
 
 	private Uri getOutputPictureFileUri() {
 		String filename = UUID.randomUUID().toString() + ".jpg";
-		File file = new File(Utils.getAccessoryPath() +File.separator + filename);
+		File file = new File(Utils.getAccessoryPath() + File.separator + filename);
 		return Uri.fromFile(file);
 	}
 
@@ -638,8 +638,10 @@ public class UploadFileDialog extends DialogFragment implements
 			TaskAccessoryCursor cursor = (TaskAccessoryCursor) data;
 			if(cursor != null && cursor.moveToFirst()){
 				Log.i("fanjishuo____onLoadFinished", cursor.getCount()+"");
-				if(accessoryList == null){
+				if (accessoryList == null) {
 					accessoryList = new ArrayList<AffiliatedFileBean>();
+				} else {
+					accessoryList.clear();
 				}
 				do{
 					accessoryList.add(cursor.getAccessory());

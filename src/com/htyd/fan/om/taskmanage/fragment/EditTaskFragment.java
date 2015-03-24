@@ -18,8 +18,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -65,8 +63,6 @@ public class EditTaskFragment extends Fragment implements ChooseAddressListener,
 	private static final String TASKNETID = "taskid";
 	private static final String TASKLOCALID = "tasklocalid";
 	
-//	private static final int LOADERID = 0x15;
-	
 	private static final int REQUESTSTARTTIME = 1;//开始时间
 	private static final int REQUESTENDTIME = 2;//结束时间
 	private static final int REQUESTLOCATION = 0;//工作地点
@@ -75,16 +71,22 @@ public class EditTaskFragment extends Fragment implements ChooseAddressListener,
 	private static final int REQUESTPROTUCT = 0x11;//产品类型
 	private static final int REQUESTINPUT = 0x12;//手动输入地点
 	private static final int REQUESTCODETINPUT = 0x13;//手动输入条码
+	protected static final int REQUESTASSETNUM = 0x14;//资产编号
+	protected static final int REQUESTASSETINPUT = 0x15;//手动输入资产编号
+	protected static final int REQUESTLOGICALADDRESS = 0x16;//逻辑地址
+	protected static final int REQUESTLOGICALINPUT = 0x17;//手动输入逻辑地址
+	protected static final int REQUESTINSTALLINPUT = 0x18;//手动输入安装地点
+	private static final int REQUESTCUSTOMERUNIT = 0x19;//客户单位
+	protected static final int REQUESTFACTORY = 0x20;//设备厂家
 
 	protected TaskViewPanel mPanel;
 	protected TaskDetailBean mBean;
 	private long startTime;
 	protected ArrayList<AffiliatedFileBean> accessoryList;
-//	private LoaderManager mLoaderManager;
-//	private AccessoryLoaderCallback mCallback;
-	protected PopupMenu popupMenu,barcodePopMenu;
+	protected PopupMenu popupMenu,barcodePopMenu,assetNumPopMenu,logicalAddressPopMenu,equipmentInstallLocation;
 	protected Handler handler;
 	private SaveTaskListener listener;
+	protected double longitude,latitude;
 	
 	public static Fragment newInstance(Parcelable mBean) {
 		Bundle args = new Bundle();
@@ -112,13 +114,10 @@ public class EditTaskFragment extends Fragment implements ChooseAddressListener,
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
 		handler = new Handler();
-	//	mLoaderManager = getActivity().getLoaderManager();
 		mBean = (TaskDetailBean) getArguments().get(SELECTTASK);
 		Bundle args = new Bundle();
 		args.putInt(TASKNETID, mBean.taskNetId);
 		args.putInt(TASKLOCALID, mBean.taskLocalId);
-//		mCallback = new AccessoryLoaderCallback();
-	//	mLoaderManager.initLoader(LOADERID, args, mCallback);
 	}
 
 	@Override
@@ -138,7 +137,6 @@ public class EditTaskFragment extends Fragment implements ChooseAddressListener,
 	
 	@Override
 	public void onPause() {
-		Log.i("fanjishuo____onPause", "onPause");
 		try {
 			getActivity().unregisterReceiver(mLocationReceiver);
 		} catch (Exception e) {
@@ -150,16 +148,25 @@ public class EditTaskFragment extends Fragment implements ChooseAddressListener,
 	private void initView(View v) {
 		mPanel = new TaskViewPanel(v);
 		mPanel.setTaskShow(mBean);
-		// mPanel.setViewEnable();
-		mPanel.taskLocation.setOnClickListener(dialogClickListener);
-		mPanel.taskPlanStartTime.setOnClickListener(dialogClickListener);
-		mPanel.taskPlanEndTime.setOnClickListener(dialogClickListener);
-		mPanel.taskAccessory.setOnClickListener(dialogClickListener);
-		mPanel.taskEquipment.setOnClickListener(dialogClickListener);
-		mPanel.taskType.setOnClickListener(dialogClickListener);
-		mPanel.taskProductType.setOnClickListener(dialogClickListener);
-		mPanel.taskInstallLocation.addTextChangedListener(installLocationWatcher);
+		mPanel.taskLocation.setOnClickListener(editTaskClickListener);
+		mPanel.taskPlanStartTime.setOnClickListener(editTaskClickListener);
+		mPanel.taskPlanEndTime.setOnClickListener(editTaskClickListener);
+		mPanel.taskAccessory.setOnClickListener(editTaskClickListener);
+		mPanel.taskEquipment.setOnClickListener(editTaskClickListener);
+		mPanel.taskType.setOnClickListener(editTaskClickListener);
 		
+		mPanel.taskEquipmentType.setOnClickListener(editTaskClickListener);
+		mPanel.customerUnit.setOnClickListener(editTaskClickListener);
+		mPanel.taskInstallLocation.setOnClickListener(editTaskClickListener);
+		mPanel.assetNumber.setOnClickListener(editTaskClickListener);
+		mPanel.logicalAddress.setOnClickListener(editTaskClickListener);
+		mPanel.equipmentFactory.setOnClickListener(editTaskClickListener);
+		
+		initPopMenu();
+		getActivity().getActionBar().setTitle("编辑任务");
+	}
+
+	protected void initPopMenu() {
 		barcodePopMenu = new PopupMenu(getActivity(), mPanel.taskEquipment);
 		barcodePopMenu.inflate(R.menu.qrcode_menu);
 		barcodePopMenu
@@ -209,7 +216,76 @@ public class EditTaskFragment extends Fragment implements ChooseAddressListener,
 				}
 			}
 		});
-		getActivity().getActionBar().setTitle("编辑任务");
+		assetNumPopMenu = new PopupMenu(getActivity(), mPanel.assetNumber);
+		assetNumPopMenu.inflate(R.menu.qrcode_menu);
+		assetNumPopMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				switch (item.getItemId()) {
+				case R.id.menu_scan:
+					Intent i = new Intent(getActivity(),
+							CaptureActivity.class);
+					startActivityForResult(i, REQUESTASSETNUM);
+					return true;
+				case R.id.menu_input_qrcode:
+					InputDialogFragment inputFragment = (InputDialogFragment) InputDialogFragment.newInstance("资产编号", "输入资产编号");
+					inputFragment.setTargetFragment(EditTaskFragment.this,
+							REQUESTASSETINPUT);
+					inputFragment.show(getFragmentManager(), null);
+					return true;
+				default:
+					return true;
+				}
+			}
+		});
+		logicalAddressPopMenu = new PopupMenu(getActivity(), mPanel.logicalAddress);
+		logicalAddressPopMenu.inflate(R.menu.qrcode_menu);
+		logicalAddressPopMenu
+				.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+					@Override
+					public boolean onMenuItemClick(MenuItem item) {
+						switch (item.getItemId()) {
+						case R.id.menu_scan:
+							Intent i = new Intent(getActivity(),
+									CaptureActivity.class);
+							startActivityForResult(i, REQUESTLOGICALADDRESS);
+							return true;
+						case R.id.menu_input_qrcode:
+							InputDialogFragment inputFragment = (InputDialogFragment) InputDialogFragment.newInstance("逻辑地址", "输入逻辑地址");
+							inputFragment.setTargetFragment(
+									EditTaskFragment.this, REQUESTLOGICALINPUT);
+							inputFragment.show(getFragmentManager(), null);
+							return true;
+						default:
+							return true;
+						}
+					}
+				});
+		equipmentInstallLocation = new PopupMenu(getActivity(), mPanel.taskInstallLocation);
+		equipmentInstallLocation.inflate(R.menu.equipment_install_address);
+		equipmentInstallLocation.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				switch (item.getItemId()) {
+				case R.id.menu_autoget:
+							if (Utils.isNetWorkEnable()) {
+								OMLocationManager.get(getActivity()).setLocCilentOption(null);
+								OMLocationManager.get(getActivity()).startLocationUpdate();
+							} else {
+								UItoolKit.showToastShort(getActivity(),"网络连接不可用，不能自动获取");
+							}
+					return true;
+				case R.id.menu_input_install:
+					InputDialogFragment inputFragment = (InputDialogFragment) InputDialogFragment.newInstance("安装地点", "输入安装地点");
+					inputFragment.setTargetFragment(
+							EditTaskFragment.this, REQUESTINSTALLINPUT);
+					inputFragment.show(getFragmentManager(), null);
+					return true;
+				default:
+					return true;
+				}
+			}
+		});
 	}
 	
 	@Override
@@ -224,9 +300,8 @@ public class EditTaskFragment extends Fragment implements ChooseAddressListener,
 		case R.id.save_or_receive:
 			final TaskDetailBean tempBean;
 			tempBean = mPanel.getTaskBean();
-			if (tempBean.equals(mBean)) {
-				UItoolKit.showToastShort(getActivity(), "保存成功");
-				return true;
+			if (longitude != 0 || latitude != 0) {
+				tempBean.taskInstallInfo = longitude + "|" + latitude;
 			}
 			if (Utils.isNetWorkEnable()) {
 				if (tempBean.taskNetId != 0) {
@@ -243,8 +318,13 @@ public class EditTaskFragment extends Fragment implements ChooseAddressListener,
 				UItoolKit.showToastShort(getActivity(), "该任务已经同步至服务器");
 				return true;
 			}
-			OMLocationManager.get(getActivity()).setLocCilentOption(null);
-			OMLocationManager.get(getActivity()).startLocationUpdate();
+			TaskDetailBean mBean = mPanel.getTaskBean();
+			if (longitude != 0 || latitude != 0) {
+				mBean.taskInstallInfo = longitude + "|" + latitude;
+			}
+			ThreadPool.runMethod(new CreateTaskThread(handler, getActivity(), mBean,EditTaskFragment.this));
+/*			OMLocationManager.get(getActivity()).setLocCilentOption(null);
+			OMLocationManager.get(getActivity()).startLocationUpdate();*/
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -256,10 +336,11 @@ public class EditTaskFragment extends Fragment implements ChooseAddressListener,
 		@Override
 		protected void onNetWorkLocationReceived(Context context,
 				OMLocationBean loc) {
-			Log.i("fanjishuo____onNetWorkLocationReceived", "1111");
+			longitude = loc.longitude;
+			latitude = loc.latitude;
+			mPanel.taskLocation.setText(loc.province+loc.city+loc.district);
+			mPanel.taskInstallLocation.setText(loc.address);
 			OMLocationManager.get(getActivity()).stopLocationUpdate();
-			TaskDetailBean mBean = mPanel.getTaskBean();
-			ThreadPool.runMethod(new CreateTaskThread(handler, context, mBean, loc.longitude, loc.latitude,EditTaskFragment.this));
 		}
 		
 		@Override
@@ -310,25 +391,7 @@ public class EditTaskFragment extends Fragment implements ChooseAddressListener,
 		}
 	};
 
-
-	private TextWatcher installLocationWatcher = new TextWatcher() {
-		
-		@Override
-		public void onTextChanged(CharSequence s, int start, int before, int count) {
-		}
-		
-		@Override
-		public void beforeTextChanged(CharSequence s, int start, int count,
-				int after) {
-		}
-		
-		@Override
-		public void afterTextChanged(Editable s) {
-			mPanel.taskAddress.setText(mPanel.taskLocation.getText().toString()+s.toString());
-		}
-	};
-	
-	private OnClickListener dialogClickListener = new OnClickListener() {
+	private OnClickListener editTaskClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
 			FragmentManager fm = getActivity().getFragmentManager();
@@ -365,8 +428,6 @@ public class EditTaskFragment extends Fragment implements ChooseAddressListener,
 				uploadDialog.show(fm, null);
 				break;
 			case R.id.edit_task_equipment:
-				/*Intent i = new Intent(getActivity(),CaptureActivity.class);
-				startActivityForResult(i, REQUESTZXING);*/
 				barcodePopMenu.show();
 				break;
 			case R.id.edit_task_type:
@@ -374,10 +435,29 @@ public class EditTaskFragment extends Fragment implements ChooseAddressListener,
 				taskTypeDialog.setTargetFragment(EditTaskFragment.this, REQUESTTYPE);
 				taskTypeDialog.show(getFragmentManager(), null);
 				break;
-			case R.id.edit_task_product_type:
-				DialogFragment dialog = TaskTypeDialogFragment.newInstance("产品类型");
+			case R.id.edit_task_equipment_type:
+				DialogFragment dialog = TaskTypeDialogFragment.newInstance("设备类型");
 				dialog.setTargetFragment(EditTaskFragment.this, REQUESTPROTUCT);
 				dialog.show(getFragmentManager(), null);
+				break;
+			case R.id.tv_customer_unit:
+				InputDialogFragment inputCustomer = (InputDialogFragment) InputDialogFragment.newInstance("客户单位", "输入客户单位");
+				inputCustomer.setTargetFragment(EditTaskFragment.this, REQUESTCUSTOMERUNIT);
+				inputCustomer.show(getFragmentManager(), null);
+				break;
+			case R.id.edit_task_install_location:
+				equipmentInstallLocation.show();
+				break;
+			case R.id.tv_asset_number:
+				assetNumPopMenu.show();
+				break;
+			case R.id.tv_task_logical_address:
+				logicalAddressPopMenu.show();
+				break;
+			case R.id.tv_task_equipment_factory:
+				DialogFragment factoryEquipment = new EquipmentFactoryDialog();
+				factoryEquipment.setTargetFragment(EditTaskFragment.this, REQUESTFACTORY);
+				factoryEquipment.show(getFragmentManager(), null);
 				break;
 			}
 		}
@@ -388,9 +468,6 @@ public class EditTaskFragment extends Fragment implements ChooseAddressListener,
 			if (requestCode == REQUESTLOCATION) {
 				mPanel.taskLocation.setText(data
 						.getStringExtra(SelectLocationDialogFragment.LOCATION));
-				mPanel.taskAddress.setText(data
-						.getStringExtra(SelectLocationDialogFragment.LOCATION)
-						+ mPanel.taskInstallLocation.getText().toString());
 			} else if (requestCode == REQUESTSTARTTIME) {
 				startTime = data
 						.getLongExtra(DateTimePickerDialog.EXTRATIME, 0);
@@ -406,87 +483,30 @@ public class EditTaskFragment extends Fragment implements ChooseAddressListener,
 						.setText(((CommonDataBean) data
 								.getParcelableExtra(TaskTypeDialogFragment.TYPENAME)).typeName);
 			} else if (requestCode == REQUESTPROTUCT) {
-				mPanel.taskProductType
+				mPanel.taskEquipmentType
 						.setText(((CommonDataBean) data
 								.getParcelableExtra(TaskTypeDialogFragment.TYPENAME)).typeName);
 			}else if(requestCode == REQUESTINPUT){
 				mPanel.taskLocation.setText(data.getStringExtra(InputDialogFragment.INPUTTEXT));
 			}else if(requestCode == REQUESTCODETINPUT){
 				mPanel.taskEquipment.setText(data.getStringExtra(InputDialogFragment.INPUTTEXT));
+			} else if (requestCode == REQUESTCUSTOMERUNIT) {
+				mPanel.customerUnit.setText(data.getStringExtra(InputDialogFragment.INPUTTEXT));
+			} else if (requestCode == REQUESTASSETNUM){
+				mPanel.assetNumber.setText(data.getStringExtra("result"));
+			} else if (requestCode == REQUESTASSETINPUT){
+				mPanel.assetNumber.setText(data.getStringExtra(InputDialogFragment.INPUTTEXT));
+			} else if (requestCode == REQUESTLOGICALADDRESS){
+				mPanel.logicalAddress.setText(data.getStringExtra("result"));
+			} else if (requestCode == REQUESTLOGICALINPUT){
+				mPanel.logicalAddress.setText(data.getStringExtra(InputDialogFragment.INPUTTEXT));
+			} else if (requestCode == REQUESTINSTALLINPUT){
+				mPanel.taskInstallLocation.setText(data.getStringExtra(InputDialogFragment.INPUTTEXT));
+			} else if(requestCode == REQUESTFACTORY){
+				mPanel.equipmentFactory.setText(data.getStringExtra(EquipmentFactoryDialog.FACTORYNAME));
 			}
 		}
 	};
-
-	
-
-	/*private static class AccessoryLoader extends SQLiteCursorLoader {
-
-		private OMUserDatabaseManager mManager;
-		private int taskNetId;
-		private int taskLocalId;
-
-		public AccessoryLoader(Context context, int taskNetId,int taskLocalId) {
-			super(context);
-			mManager = OMUserDatabaseManager.getInstance(context);
-			this.taskNetId = taskNetId;
-			this.taskLocalId = taskLocalId;
-		}
-
-		@Override
-		protected Cursor loadCursor() {
-				mManager.openDb(0);
-				return mManager.queryAccessoryByTaskLocalId(taskLocalId);
-		}
-
-		@Override
-		protected Cursor loadFromNet() {
-			JSONObject param = new JSONObject();
-			String result = "";
-			try {
-				param.put("JLID", taskNetId);
-				result = NetOperating.getResultFromNet(getContext(), param,
-						Urls.FILE, "Operate=getWjdz");
-			} catch (JSONException e) {
-				e.printStackTrace();
-				return null;
-			} catch (Exception e) {
-				e.printStackTrace();
-				return null;
-			}
-			try {
-				Utility.handleAccessory(mManager, result,taskNetId,taskLocalId);
-			} catch (Exception e) {
-				e.printStackTrace();
-				return null;
-			}
-			return loadCursor();
-		}
-	}
-	
-	private class AccessoryLoaderCallback implements LoaderCallbacks<Cursor>{
-
-		@Override
-		public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-			return new AccessoryLoader(getActivity(),args.getInt(TASKNETID),args.getInt(TASKLOCALID));
-		}
-
-		@Override
-		public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-			TaskAccessoryCursor cursor = (TaskAccessoryCursor) data;
-			if(cursor != null && cursor.moveToFirst()){
-				if(accessoryList == null){
-					accessoryList = new ArrayList<AffiliatedFileBean>();
-				}
-				do{
-					accessoryList.add(cursor.getAccessory());
-				}while(cursor.moveToNext());
-			}
-		}
-
-		@Override
-		public void onLoaderReset(Loader<Cursor> loader) {
-		}
-	}*/
 	
 	private class UpdateTask extends AsyncTask<TaskDetailBean, Void, Boolean>{
 
@@ -531,7 +551,6 @@ public class EditTaskFragment extends Fragment implements ChooseAddressListener,
 	@Override
 	public void onAddressChoose(String address) {
 		mPanel.taskLocation.setText(address);
-		mPanel.taskAddress.setText(address + mPanel.taskInstallLocation.getText().toString());
 	}
 
 	protected void back() {
@@ -553,20 +572,4 @@ public class EditTaskFragment extends Fragment implements ChooseAddressListener,
 	public void onSaveSuccess(TaskDetailBean mBean,boolean isLocal) {
 		listener.onSaveSuccess(mBean,isLocal);
 	}
-	
-	/*private class SyncSuccessRunnable implements Runnable{
-		
-		private TaskDetailBean mBean;
-		private OMUserDatabaseManager mManager;
-		
-		public SyncSuccessRunnable(TaskDetailBean mBean) {
-			super();
-			this.mBean = mBean;
-		}
-
-		@Override
-		public void run() {
-			mManager.updateUnSyncTask(mBean);
-		}
-	}*/
 }

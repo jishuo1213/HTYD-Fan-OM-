@@ -201,7 +201,7 @@ public class QueryTaskFragment extends Fragment {
 		protected String doInBackground(String... params) {
 			JSONObject param = new JSONObject();
 			try {
-				param.put("RWBT", "");
+				param.put("RWMS", "");
 				param.put("TXSJ", "");
 				param.put("RWID", "");
 				param.put("RWZT", "");

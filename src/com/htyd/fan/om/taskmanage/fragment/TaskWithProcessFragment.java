@@ -6,6 +6,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.LoaderManager;
@@ -20,6 +21,8 @@ import android.os.Handler;
 import android.os.Parcelable;
 import android.text.format.DateUtils;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,8 +31,10 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
+import android.widget.HeaderViewListAdapter;
 import android.widget.ListView;
 
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
@@ -40,9 +45,11 @@ import com.htyd.fan.om.model.TaskDetailBean;
 import com.htyd.fan.om.model.TaskProcessBean;
 import com.htyd.fan.om.taskmanage.TaskViewPanel;
 import com.htyd.fan.om.taskmanage.adapter.ProcessAdapter;
+import com.htyd.fan.om.taskmanage.netthread.DeleteProcessThread;
+import com.htyd.fan.om.taskmanage.netthread.DeleteProcessThread.DeleteProcessListener;
+import com.htyd.fan.om.util.base.ThreadPool;
 import com.htyd.fan.om.util.db.OMUserDatabaseHelper.TaskProcessCursor;
 import com.htyd.fan.om.util.db.OMUserDatabaseManager;
-import com.htyd.fan.om.util.db.SQLSentence;
 import com.htyd.fan.om.util.fragment.UploadFileDialog;
 import com.htyd.fan.om.util.https.NetOperating;
 import com.htyd.fan.om.util.https.Urls;
@@ -50,12 +57,13 @@ import com.htyd.fan.om.util.https.Utility;
 import com.htyd.fan.om.util.loaders.SQLiteCursorLoader;
 import com.htyd.fan.om.util.ui.UItoolKit;
 
-public class TaskWithProcessFragment extends Fragment {
+public class TaskWithProcessFragment extends Fragment  implements DeleteProcessListener{
 
 	private static final String SELECTTASK = "selecttask";
 	private static final String TASKNETID = "taskid";
 	private static final int REQUEST_PROCESS = 0x01;
 	private static final int REQUEST_PROCESS_SYNC = 0x02;
+	private static final int REQUEST_EDIT_PROCESS = 0x03;
 	private static final String TASKLOCALID = "tasklocalid";
 
 	private TaskViewPanel mPanel;
@@ -82,6 +90,7 @@ public class TaskWithProcessFragment extends Fragment {
 		mBean = getArguments().getParcelable(SELECTTASK);
 		mManager = getActivity().getLoaderManager();
 		mCallback = new TaskProcessCursorCallback();
+		handler = new Handler();  
 		Bundle args = new Bundle();
 		args.putInt(TASKNETID, mBean.taskNetId);
 		args.putInt(TASKLOCALID, mBean.taskLocalId);
@@ -104,6 +113,40 @@ public class TaskWithProcessFragment extends Fragment {
 	}
 
 	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+		getActivity().getMenuInflater().inflate(R.menu.process_context_menu, menu);
+	}
+	
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
+				.getMenuInfo();
+		int position = info.position;
+		TaskProcessBean mBean =  (TaskProcessBean) processListView.getAdapter().getItem(position);
+		switch (item.getItemId()) {
+		case R.id.menu_delete_task_process:
+			if(mBean.isSyncToServer == 0){
+				OMUserDatabaseManager.getInstance(getActivity()).deleteSingleTaskProcess(mBean);
+				listProcess.remove(mBean);
+				mAdapter.notifyDataSetChanged();
+				return true;
+			}
+			DeleteProcessThread thread = new DeleteProcessThread(handler, getActivity(), mBean);
+			thread.setListener(this);
+			ThreadPool.runMethod(thread);
+			return true;
+		case R.id.menu_edit_task_process:
+			DialogFragment editDialog = EditProcessDialog.newInstance(mBean);
+			editDialog.setTargetFragment(TaskWithProcessFragment.this, REQUEST_EDIT_PROCESS);
+			editDialog.show(getFragmentManager(), null);
+			return true;
+		default:
+			return super.onContextItemSelected(item);
+		}
+	}
+	
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_create_task_process:
@@ -117,21 +160,6 @@ public class TaskWithProcessFragment extends Fragment {
 					REQUEST_PROCESS);
 			dialog.show(fm, null);
 			return true;
-		/*case R.id.menu_sync_process:
-			if(mBean.isSyncToServer == 0){
-				UItoolKit.showToastShort(getActivity(), "该任务还未同步至服务器,请先同步任务");
-				return true;
-			}
-			if(listProcess.size() == 0){
-				UItoolKit.showToastShort(getActivity(), "没有需要同步的内容");
-				return true;
-			}
-			if(listProcess.get(listProcess.size() - 1).isSyncToServer == 1){
-				UItoolKit.showToastShort(getActivity(), "处理项已全部同步");
-				return true;
-			}*/
-//			ThreadPool.runMethod(new SaveTaskProcessThread(handler, getActivity(), null, listProcess, mBean.taskNetId));
-//			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
@@ -164,6 +192,7 @@ public class TaskWithProcessFragment extends Fragment {
 		}
 		mPanel.taskAccessory.setOnClickListener(createBtnClickListener);
 		processListView.setOnItemClickListener(processItemListener);
+		registerForContextMenu(processListView);
 	}
 
 	@Override
@@ -178,12 +207,9 @@ public class TaskWithProcessFragment extends Fragment {
 				} else {
 					mAdapter.notifyDataSetChanged();
 				}
-/*				if(proBean.taskState == 2){
-					mPanel.taskState.setText("已完成");
-					mBean.taskState = 2;
-					OMUserDatabaseManager.getInstance(getActivity()).updateSyncTask(mBean);
-				}*/
 			}else if(requestCode == REQUEST_PROCESS_SYNC){
+				mAdapter.notifyDataSetChanged();
+			}else if(requestCode == REQUEST_EDIT_PROCESS){
 				mAdapter.notifyDataSetChanged();
 			}
 		}
@@ -261,7 +287,7 @@ public class TaskWithProcessFragment extends Fragment {
 				param.put("CLID", "");
 				param.put("RWID", taskNetId);
 				result = NetOperating.getResultFromNet(getContext(), param, Urls.TASKPROCESSURL, "Operate=getAllRwclxx");
-				Utility.handleTaskProcessResponse(mManager, result);
+				Utility.handleTaskProcessResponse(mManager, result,taskLocalId);
 			} catch (JSONException e) {
 				e.printStackTrace();
 				return null;
@@ -283,9 +309,9 @@ public class TaskWithProcessFragment extends Fragment {
 
 		@Override
 		public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-			if(listProcess == null)
+			if (listProcess == null)
 				listProcess = new ArrayList<TaskProcessBean>();
-			else{
+			else {
 				listProcess.clear();
 			}
 			TaskProcessCursor cursor = (TaskProcessCursor) data;
@@ -296,6 +322,12 @@ public class TaskWithProcessFragment extends Fragment {
 				mAdapter = new ProcessAdapter(listProcess,getActivity());
 				if (processListView != null) {
 					processListView.setAdapter(mAdapter);
+				}
+			} else {
+				if(processListView.getAdapter() != null){
+					HeaderViewListAdapter ha = (HeaderViewListAdapter) processListView.getAdapter();
+					ProcessAdapter adapter = (ProcessAdapter)ha.getWrappedAdapter();
+					adapter.notifyDataSetChanged();
 				}
 			}
 		}
@@ -342,13 +374,20 @@ public class TaskWithProcessFragment extends Fragment {
 				e.printStackTrace();
 				return false;
 			}
-			mDbManger.clearFeedTable(SQLSentence.TABLE_TASK_PROCESS);
+			mDbManger.refreshTaskProcess(mBean.taskLocalId);
 			try {
-				return Utility.handleTaskProcessResponse(mDbManger, result);
+				return Utility.handleTaskProcessResponse(mDbManger, result,mBean.taskLocalId);
 			} catch (JSONException e) {
 				e.printStackTrace();
 				return false;
 			}
 		}
+	}
+
+	@Override
+	public void onDeleteSuccess(TaskProcessBean mBean) {
+		listProcess.remove(mBean);
+		mAdapter.notifyDataSetChanged();
+		UItoolKit.showToastShort(getActivity(), "删除任务处理成功");
 	}
 }

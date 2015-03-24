@@ -104,6 +104,10 @@ public class Preferences {
 		editor.apply();
 	}
 	
+	public static String getUserinfo(Context context){
+		return context.getSharedPreferences(PREFERENCENAME, Context.MODE_PRIVATE).getString(USERINFO, "");
+	}
+	
 	public static String getUserinfo(Context context,String key){
 		String userInfo = context.getSharedPreferences(PREFERENCENAME, Context.MODE_PRIVATE).getString(USERINFO, "");
 		if(userInfo.length() == 0){

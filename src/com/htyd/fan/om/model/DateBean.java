@@ -5,8 +5,6 @@ import android.os.Parcelable;
 
 public class DateBean implements Parcelable {
 
-	// public int year;
-	// public int month;
 	public int day;
 	public int state;// 是否为当前月的天 0:不是 1:是
 	public int attendState;
@@ -20,6 +18,7 @@ public class DateBean implements Parcelable {
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeInt(day);
 		dest.writeInt(state);
+		dest.writeInt(attendState);
 	}
 
 	public static Parcelable.Creator<DateBean> CREATOR = new Creator<DateBean>() {
@@ -34,6 +33,7 @@ public class DateBean implements Parcelable {
 			DateBean mBean = new DateBean();
 			mBean.day = source.readInt();
 			mBean.state = source.readInt();
+			mBean.attendState = source.readInt();
 			return mBean;
 		}
 	};

@@ -16,9 +16,11 @@
         android:id="@+id/edit_process_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@id/content"
         android:layout_marginRight="10dp"
+        android:layout_alignTop="@id/content"
         android:layout_toRightOf="@id/content"
+        android:lines="3"
+        android:scrollbars="vertical"
         android:hint="请输入本次处理内容"
         android:textSize="15sp" />
 
@@ -60,7 +62,7 @@
             style="@style/style_task_detail_textview"
             android:layout_height="wrap_content"
             android:gravity="bottom"
-            android:text="本次处理耗时：" />
+            android:text="处理结束时间：" />
 
         <com.htyd.fan.om.util.ui.TextViewWithBottomLine
             android:id="@+id/tv_process_end_time"
@@ -68,7 +70,7 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="10dp"
             android:layout_weight="1"
-            android:hint="请选择本次处理耗时："
+            android:hint="请选择处理结束时间"
             android:padding="5dp"
             android:textSize="15sp" />
     </TableRow>

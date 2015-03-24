@@ -55,6 +55,9 @@ public class TaskTypeDialogFragment extends DialogFragment {
 		super.onCreate(savedInstanceState);
 		typeList = new ArrayList<CommonDataBean>();
 		cat = getArguments().getString(CAT);
+		if(cat.equals("设备类型")){
+			cat = "产品类型";
+		}
 		queryTaskType(typeList,cat);
 	}
 
@@ -187,7 +190,6 @@ public class TaskTypeDialogFragment extends DialogFragment {
 				}
 				cursor.close();
 				getActivity().runOnUiThread(new Runnable() {
-					
 					@Override
 					public void run() {
 						setAdapter();

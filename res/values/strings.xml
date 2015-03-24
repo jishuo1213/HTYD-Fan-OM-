@@ -15,11 +15,11 @@
 	<string name="task_plan_starttime">计划开始时间：</string>
 	<string name="task_plan_endtime">计划结束时间：</string>
 	<string name="task_equipment">设备编号：</string>
-	<string name="task_product_type">产品类型：</string>
+	<string name="task_product_type">设备类型：</string>
 	<string name="task_state">任务状态：</string>
 	<string name="task_type">任务归类：</string>
-	<string name="task_recipient">领取人：</string>
-	<string name="task_recipient_phone">领取人电话：</string>
+	<string name="task_recipient">接受人：</string>
+	<string name="task_recipient_phone">接受人电话：</string>
 	<string name="task_accessory">附件：</string>
 	<string name="login_botton_text">Copyright © 2006–2014 济南汇通远德科技有限公司 All Rights Reserved</string>
 	<string name="start_upload">开始上传</string>

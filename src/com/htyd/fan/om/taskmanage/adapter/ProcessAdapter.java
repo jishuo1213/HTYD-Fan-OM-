@@ -54,7 +54,11 @@ public class ProcessAdapter extends BaseAdapter {
 			mHolder = (ViewHolder) convertView.getTag();
 		}
 		TaskProcessBean mBean = (TaskProcessBean) getItem(position);
-		mHolder.processContent.setText(mBean.processContent);
+		if (mBean.processContent.length() > 10) {
+			mHolder.processContent.setText(mBean.processContent.substring(0, 10) + "...");
+		} else {
+			mHolder.processContent.setText(mBean.processContent);
+		}
 		mHolder.processCreateTime.setText(Utils
 				.formatTime(mBean.createTime));
 /*		if (mBean.taskState == 0) {

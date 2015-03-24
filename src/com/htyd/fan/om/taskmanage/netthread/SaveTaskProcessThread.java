@@ -85,6 +85,9 @@ public class SaveTaskProcessThread extends BaseConnectNetThread<TaskProcessBean>
 	protected boolean praseResult(String result) {
 		try {
 			JSONObject json = new JSONObject(result);
+			if (json.has("MAXCLID")) {
+				mBean.processNetId = json.getInt("MAXCLID");
+			}
 			return json.getBoolean("RESULT");
 		} catch (JSONException e) {
 			e.printStackTrace();

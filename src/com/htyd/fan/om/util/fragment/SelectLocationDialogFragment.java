@@ -20,8 +20,6 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -38,9 +36,6 @@ import com.htyd.fan.om.util.db.OMDatabaseHelper.CityCursor;
 import com.htyd.fan.om.util.db.OMDatabaseHelper.DistrictCursor;
 import com.htyd.fan.om.util.db.OMDatabaseHelper.ProvinceCursor;
 import com.htyd.fan.om.util.db.OMDatabaseManager;
-import com.htyd.fan.om.util.https.HttpUtil;
-import com.htyd.fan.om.util.https.Urls;
-import com.htyd.fan.om.util.https.Utility;
 import com.htyd.fan.om.util.loaders.SQLiteCursorLoader;
 
 public class SelectLocationDialogFragment extends DialogFragment {
@@ -168,56 +163,16 @@ public class SelectLocationDialogFragment extends DialogFragment {
 		}
 		StringBuilder sb = new StringBuilder();
 		Intent i = new Intent();
-		Pattern p = Pattern.compile("[0][1-4]");
-		Pattern p2 = Pattern.compile("[0][8]||[1][3]||[1][4]||[1][7]||[3][0]");
+		Pattern p = Pattern.compile("[1][1-2].+||[3][1].+||[5][0].+");
 		ProvinceBean pBean = (ProvinceBean) provinceSpinner.getSelectedItem();
 		CityBean cBean = (CityBean) citySpinner.getSelectedItem();
 		DistrictBean dBean = (DistrictBean) districtSpinner.getSelectedItem();
-		if (p.matcher(pBean.provinceCode).matches()) {
-			if (dBean.districtCode.endsWith("01")) {
-				sb.append(cBean.cityName);
-				sb.append("市");
-				i.putExtra(LOCATION, sb.toString());
-			} else {
-				sb.append(cBean.cityName);
-				sb.append("市");
-				sb.append(dBean.districtName);
-				sb.append("区");
-				i.putExtra(LOCATION, sb.toString());
-			}
-		} else if (p2.matcher(pBean.provinceCode).matches()) {
-			if (dBean.districtCode.endsWith("01")) {
-				sb.append(pBean.provinceName);
-				sb.append("");
-				sb.append(cBean.cityName);
-				sb.append("市");
-				i.putExtra(LOCATION, sb.toString());
-			} else {
-				sb.append(((ProvinceBean) provinceSpinner.getSelectedItem()).provinceName);
-				sb.append("");
-				sb.append(((CityBean) citySpinner.getSelectedItem()).cityName);
-				sb.append("市");
-				sb.append(((DistrictBean) districtSpinner.getSelectedItem()).districtName);
-				sb.append("");
-				i.putExtra(LOCATION, sb.toString());
-			}
-		} else {
-			if (dBean.districtCode.endsWith("01")) {
-				sb.append(pBean.provinceName);
-				sb.append("省");
-				sb.append(cBean.cityName);
-				sb.append("市");
-				i.putExtra(LOCATION, sb.toString());
-			} else {
-				sb.append(((ProvinceBean) provinceSpinner.getSelectedItem()).provinceName);
-				sb.append("省");
-				sb.append(((CityBean) citySpinner.getSelectedItem()).cityName);
-				sb.append("市");
-				sb.append(((DistrictBean) districtSpinner.getSelectedItem()).districtName);
-				sb.append("县");
-				i.putExtra(LOCATION, sb.toString());
-			}
+		if(p.matcher(pBean.provinceCode).matches()){
+			sb.append(pBean.provinceName).append(dBean.districtName);
+		}else{
+			sb.append(pBean.provinceName).append(cBean.cityName).append(dBean.districtName);
 		}
+		i.putExtra(LOCATION, sb.toString());
 		if(mListener != null){
 			mListener.OnSelectLocation(sb.toString());
 			return;
@@ -267,14 +222,13 @@ public class SelectLocationDialogFragment extends DialogFragment {
 			switch (type) {
 			case 0:// 省
 				ProvinceBean mProvinceBean = (ProvinceBean) getItem(position);
-				mHolder.mTextView.setText(mProvinceBean.provinceName+"\t"+mProvinceBean.provinceCode);
+				mHolder.mTextView.setText(mProvinceBean.provinceName+"\t"+mProvinceBean.provinceCode.substring(0, 2));
 				break;
 			case 1:// 市
 				CityBean mCityBean = (CityBean) getItem(position);
 				mHolder.mTextView.setText(mCityBean.cityName
 						+ "\t"
-						+ mCityBean.cityCode.substring(mCityBean.cityCode
-								.length() - 2));
+						+ mCityBean.cityCode.substring(2,4));
 				break;
 			case 2:// 县
 				DistrictBean mDistrictBean = (DistrictBean) getItem(position);
@@ -302,16 +256,12 @@ public class SelectLocationDialogFragment extends DialogFragment {
 	private static class LocationCursorLoader extends SQLiteCursorLoader {
 
 		private int type;// 0 省份 1 市 2 县区
-		private int parentId;
 		private String parentCode;
 		private OMDatabaseManager mManger;
-		boolean result = false;
 
-		public LocationCursorLoader(Context context, int type, int parentId,
-				String parentCode) {
+		public LocationCursorLoader(Context context, int type,String parentCode) {
 			super(context);
 			this.type = type;
-			this.parentId = parentId;
 			this.parentCode = parentCode;
 			mManger = OMDatabaseManager.getInstance(getContext());
 		}
@@ -319,40 +269,12 @@ public class SelectLocationDialogFragment extends DialogFragment {
 		@Override
 		public Cursor loadCursor() {
 			mManger.openDb(0);
-			return mManger.queryCursor(parentId, type);
+			return mManger.queryCursor(parentCode, type);
 		}
 
 		@Override
 		protected Cursor loadFromNet() {
-			String address;
-			Log.i("fanjishuo_____locationLoader", "loadFromNet");
-			if (!TextUtils.isEmpty(parentCode)) {
-				address = Urls.LOCATIONURL + parentCode + ".xml";
-			} else {
-				address = Urls.LOCATIONURL + ".xml";
-			}
-			String response = HttpUtil.sendHttpRequest(address);
-			if (TextUtils.isEmpty(response)) {
-				return null;
-			}
-			switch (type) {
-			case 0:
-				result = Utility.handleProvincesResponse(mManger, response);
-				break;
-			case 1:
-				result = Utility.handleCitiesResponse(mManger, response,
-						parentId);
-				break;
-			case 2:
-				result = Utility.handleCountiesResponse(mManger, response,
-						parentId);
-				break;
-			}
-			if (!result) {
-				return null;
-			} else {
-				return loadCursor();
-			}
+			return null;
 		}
 	}
 
@@ -360,8 +282,7 @@ public class SelectLocationDialogFragment extends DialogFragment {
 
 		@Override
 		public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-			return new LocationCursorLoader(getActivity(), id,
-					args.getInt(PARENTID), args.getString(PARENTCODE));
+			return new LocationCursorLoader(getActivity(), id, args.getString(PARENTCODE));
 
 		}
 

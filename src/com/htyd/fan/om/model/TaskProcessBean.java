@@ -12,6 +12,8 @@ public class TaskProcessBean implements Parcelable {
 
 	public int taskNetid;//任务网络id
 	public int taskLocalId;//任务本地Id
+	public int processNetId;//任务处理网络ID
+	public int processLocalId;//任务处理本地ID
 //	public int taskState;//本次处理后任务状态
 	public long startTime;//本次处理开始时间
 	public long endTime;//本次处理结束时间
@@ -34,6 +36,8 @@ public class TaskProcessBean implements Parcelable {
 		dest.writeString(processContent);
 		dest.writeInt(isSyncToServer);
 		dest.writeInt(taskLocalId);
+		dest.writeInt(processNetId);
+		dest.writeInt(processLocalId);
 	}
 
 	public static Parcelable.Creator<TaskProcessBean> CREATOR = new Creator<TaskProcessBean>() {
@@ -54,17 +58,21 @@ public class TaskProcessBean implements Parcelable {
 			mBean.processContent = source.readString();
 			mBean.isSyncToServer = source.readInt();
 			mBean.taskLocalId = source.readInt();
+			mBean.processNetId = source.readInt();
+			mBean.processLocalId = source.readInt();
 			return mBean;
 		}
 	};
 
-	public void setFromJson(JSONObject json) throws NumberFormatException, JSONException{
+	public void setFromJson(JSONObject json,int taskLocalId) throws NumberFormatException, JSONException{
 		taskNetid = Integer.parseInt(json.getString("RWID"));
 		startTime = Utils.parseDate(json.getString("KSSJ"));
 		endTime = Utils.parseDate(json.getString("JSSJ"));
 		createTime = Utils.parseDate(json.getString("TXSJ"));
 		processContent = json.getString("CLNR");
+		processNetId = json.getInt("CLID");
 		isSyncToServer = 1;
+		this.taskLocalId = taskLocalId;
 /*		if((int) Integer.parseInt(json.getString("WCBZ")) == 1){
 			taskState = 0;
 			return;
@@ -83,6 +91,7 @@ public class TaskProcessBean implements Parcelable {
 		json.put("TXR", "");
 		json.put("TXRDH", "");
 		json.put("RZ_MKID", Utils.TASKMODULE);
+		json.put("CLID", processNetId);
 		return json;
 	}
 }

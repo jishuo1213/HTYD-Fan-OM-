@@ -20,8 +20,22 @@
         android:layout_height="fill_parent"
         android:layout_gravity="center" >
 
-        <include layout="@layout/details_title" />
+        <include 
+            android:id="@+id/title"
+            layout="@layout/details_title" />
 
+		<ImageView
+		    android:id="@+id/img_light"
+		    android:layout_width="40dp"
+		    android:layout_height="40dp"
+		    android:layout_below="@id/title"
+		    android:contentDescription="light"
+		    android:layout_alignParentLeft="true"
+		    android:paddingTop="10dp"
+		    android:paddingLeft = "10dp"
+		    android:src="@drawable/dp"
+		    tools:ignore="HardcodedText" />
+        
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
