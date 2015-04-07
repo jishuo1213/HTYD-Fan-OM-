@@ -97,7 +97,6 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
-		Log.i("fanjishuo___mainActivity", "onConfigurationChanged");
 	}
 	
 	@Override

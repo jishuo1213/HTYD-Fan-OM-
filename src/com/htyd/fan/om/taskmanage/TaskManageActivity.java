@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.content.Loader;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.MenuItem;
 
 import com.htyd.fan.om.R;
@@ -80,7 +79,6 @@ public class TaskManageActivity extends SingleFragmentActivity implements SaveTa
 			fragment = TaskWithProcessFragment.newInstance(data);
 			break;
 		case -2:// 编辑任务
-			Log.i("fanjishuo___showFragment", (data == null) +"");
 			fragment = EditTaskFragment.newInstance(data);
 			break;
 		case 2:// 已完成
@@ -138,7 +136,6 @@ public class TaskManageActivity extends SingleFragmentActivity implements SaveTa
 	@Override
 	public void onSaveSuccess(TaskDetailBean mBean, boolean isLocal) {
 		Intent i = new Intent();
-		Log.i("fanjishuo___onSaveSuccess", mBean.taskLocalId+"");
 		i.putExtra(TASKDETAIL, mBean);
 		i.putExtra(ISLOCAL, isLocal);
 		setResult(Activity.RESULT_OK,i);

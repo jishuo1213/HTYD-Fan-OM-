@@ -5,7 +5,6 @@ import org.json.JSONObject;
 
 import android.content.Context;
 import android.os.Handler;
-import android.util.Log;
 
 import com.htyd.fan.om.model.TaskDetailBean;
 import com.htyd.fan.om.util.base.Preferences;
@@ -70,7 +69,6 @@ public class CreateTaskThread extends BaseConnectNetThread<TaskDetailBean> {
 			JSONObject json = new JSONObject(result);
 			if(json.has("RWID"))
 				mBean.taskNetId = Integer.parseInt(json.getString("RWID"));
-			Log.i("fanjishuo___praseResult", json.getBoolean("RESULT")+"");
 			return json.getBoolean("RESULT");
 		} catch (JSONException e) {
 			e.printStackTrace();

@@ -2,13 +2,12 @@ package com.htyd.fan.om.taskmanage.netthread;
 
 import org.json.JSONObject;
 
-import com.htyd.fan.om.util.https.NetOperating;
-import com.htyd.fan.om.util.ui.UItoolKit;
-
 import android.content.Context;
 import android.os.Handler;
 import android.os.Parcelable;
-import android.util.Log;
+
+import com.htyd.fan.om.util.https.NetOperating;
+import com.htyd.fan.om.util.ui.UItoolKit;
 
 public abstract class BaseConnectNetThread <T extends Parcelable> extends Thread {
 	
@@ -33,9 +32,7 @@ public abstract class BaseConnectNetThread <T extends Parcelable> extends Thread
 		try {
 			String result = NetOperating.getResultFromNet(context, getParams(param), getUrl(), getOperate());
 			boolean success = praseResult(result);
-			Log.i("fanjishuo___run", success+"");
 			if (success) {
-				Log.i("fanjishuo_____run", "success");
 				handler.post(getSuccessRunnable());
 			} else {
 				handler.post(getFailRunnable());

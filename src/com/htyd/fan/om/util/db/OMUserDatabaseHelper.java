@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.database.CursorWrapper;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import com.htyd.fan.om.model.AffiliatedFileBean;
 import com.htyd.fan.om.model.AttendBean;
@@ -89,12 +88,10 @@ public class OMUserDatabaseHelper extends SQLiteOpenHelper {
 	}
 	
 	public TaskAccessoryCursor queryAccessoryByTaskLocalId(int taskLocalId) {
-		Log.i("fanjishuo____queryAccessoryByTaskLocalId", taskLocalId+"");
 		Cursor wrapper = getReadableDatabase().query(
 				SQLSentence.TABLE_TASK_ACCESSORY, null,
 				SQLSentence.COLUMN_TASK_ACCESSORY_TASK_LOCAL_ID + "= ?",
 				new String[] { String.valueOf(taskLocalId) }, null, null, null);
-		Log.i("fanjishuo____queryAccessoryByTaskLocalId", wrapper.getCount()+"");
 		return new TaskAccessoryCursor(wrapper);
 	}
 

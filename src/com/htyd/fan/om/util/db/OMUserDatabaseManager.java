@@ -51,7 +51,6 @@ public class OMUserDatabaseManager {
 		cv.put(SQLSentence.COLUMN_ATTEND_STATE,mBean.state);
 		cv.put(SQLSentence.COLUMN_ATTEND_REMARK, mBean.attendRemark);
 		cv.put(SQLSentence.COLUMN_ATTEND_YEAR, mBean.year);
-		Log.i("fanjishuo_____insertAttendBean", mBean.year+"");
 		return db.insert(SQLSentence.TABLE_CHECK, null, cv);
 	}
 
@@ -112,7 +111,6 @@ public class OMUserDatabaseManager {
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_TASK_LOCAL_ID, mBean.taskLocalId);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_LONGITUDE, mBean.longitude);
 		cv.put(SQLSentence.COLUMN_TASK_ACCESSORY_LATITUDE, mBean.latitude);
-		Log.i("fanjishuo____insertTaskAccessoryBean", "mBean.taskLocalId"+mBean.taskLocalId);
 		return db.insert(SQLSentence.TABLE_TASK_ACCESSORY, null, cv);
 	}
 	/*-------------------------------------------数据库修改操作---------------------------------------------*/
@@ -355,10 +353,9 @@ public class OMUserDatabaseManager {
 	
 	public void refreshTaskProcess(int taskLocalId){
 		openDb(1);
-		int num =db.delete(SQLSentence.TABLE_TASK_PROCESS,
+		db.delete(SQLSentence.TABLE_TASK_PROCESS,
 				SQLSentence.COLUMN_TASKPROCESS_TASK_LOCAL_ID+" = ?",
 				new String[] { String.valueOf(taskLocalId) });
-		Log.i("fanjishuo____refreshTaskProcess", "num"+num+"taskLocalId"+taskLocalId);
 	}
 	/*-------------------------------------------数据库查询操作---------------------------------------------*/
 	public Cursor queryAttendCursor(int monthNum,int year) {
@@ -391,7 +388,6 @@ public class OMUserDatabaseManager {
 	
 	public TaskDetailBean getSingleTask(int taskLocald){
 		openDb(0);
-		Log.i("fanjishuo____getSingleTask", "taskLocald"+taskLocald);
 		TaskCursor cursor = mHelper.queryUserSingleTask(taskLocald);
 		return cursor.getTask();
 	}

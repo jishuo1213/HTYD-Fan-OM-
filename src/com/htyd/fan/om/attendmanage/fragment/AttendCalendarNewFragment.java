@@ -22,7 +22,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -176,7 +175,6 @@ SelectLocationListener, ChooseAddressListener, InputDoneListener,SelectAttendDat
 	}
 
 	private void setMonthTitle() {
-		Log.i("fanjishuo____setMonthTitle", selectDay.get(Calendar.MONTH)+"");
 		month.setText(selectDay.get(Calendar.YEAR) + "年"
 				+ (selectDay.get(Calendar.MONTH) + 1) + "月");
 	}
@@ -308,7 +306,6 @@ SelectLocationListener, ChooseAddressListener, InputDoneListener,SelectAttendDat
 				ThreadPool.runMethod(new Runnable() {
 					@Override
 					public void run() {
-						Log.i("fanjishuo_____dispatchMessage", "-----"+result);
 						parentFragment.netLoadSuccess(result);
 					}
 				});
@@ -665,7 +662,6 @@ SelectLocationListener, ChooseAddressListener, InputDoneListener,SelectAttendDat
 	public void queryAttendLocal() {
 		int year = selectDay.get(Calendar.YEAR);
 		int month = selectDay.get(Calendar.MONTH);
-		Log.i("fanjishuo_____queryAttendLocal", "year"+year + "month"+month);
 		ThreadPool.runMethod(new LoadAttendFromLocal(handler, year, month, getActivity()));
 	}
 	
@@ -728,7 +724,6 @@ SelectLocationListener, ChooseAddressListener, InputDoneListener,SelectAttendDat
 	
 	private void localLoadSuccess(AttendCursor cursor){
 		int firstDayPos = getFirstDayPos();
-		Log.i("fanjishuo_____localLoadSuccess", cursor.getCount()+"");
 		int pos;
 		if (cursor.moveToFirst()) {
 			do {

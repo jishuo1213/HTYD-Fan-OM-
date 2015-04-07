@@ -123,7 +123,6 @@ public class CreateTaskFragment extends Fragment implements ChooseAddressListene
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		if (Utils.isNetWorkEnable()) {
-			Log.i("fanjishuo___onActivityCreated", "onActivityCreated");
 			OMLocationManager.get(getActivity()).setLocCilentOption(null);
 			OMLocationManager.get(getActivity()).startLocationUpdate();
 		}
@@ -132,7 +131,6 @@ public class CreateTaskFragment extends Fragment implements ChooseAddressListene
 	@Override
 	public void onStart() {
 		super.onStart();
-		Log.i("fanjishuo___onStart", "onStarts");
 		getActivity().registerReceiver(mLocationReceiver, new IntentFilter(OMLocationManager.ACTION_LOCATION));
 	}
 	

@@ -7,7 +7,6 @@ import org.json.JSONObject;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import com.htyd.fan.om.util.base.Utils;
 
@@ -103,7 +102,6 @@ public class AttendBean implements Parcelable {
 		}
 		month = Utils.getCalendarField(time, Calendar.MONTH);
 		year = Utils.getCalendarField(time, Calendar.YEAR);
-		Log.i("fanjishuo_____setFromJson", "year"+year+"month"+month);
 		attendRemark = json.getString("KQBZ");
 	}
 }

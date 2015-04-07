@@ -51,8 +51,10 @@ public class OMLocationManager {
 	}
 
 	public void stopLocationUpdate() {
-		mLocClient.unRegisterLocationListener(myListener);
-		mLocClient.stop();
+		if (mLocClient.isStarted()) {
+			mLocClient.unRegisterLocationListener(myListener);
+			mLocClient.stop();
+		}
 	}
 
 	private class MyLocationListener implements BDLocationListener {

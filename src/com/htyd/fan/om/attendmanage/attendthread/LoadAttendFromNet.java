@@ -5,7 +5,6 @@ import org.json.JSONObject;
 
 import android.content.Context;
 import android.os.Handler;
-import android.util.Log;
 
 import com.htyd.fan.om.attendmanage.fragment.AttendCalendarNewFragment;
 import com.htyd.fan.om.util.base.Preferences;
@@ -40,7 +39,6 @@ public class LoadAttendFromNet implements Runnable {
 			}
 			json.put("YHID", Preferences.getUserinfo(context, "YHID"));
 			String result = NetOperating.getResultFromNet(context, json,Urls.SAVEATTENDURL, "Operate=getAllKqxxByyhidAndqdrq");
-			Log.i("fanjishuo_____netthread", result+"-------");
 			handler.sendMessage(handler.obtainMessage(AttendCalendarNewFragment.NETSUCCESS, result));
 		} catch (JSONException e) {
 			e.printStackTrace();

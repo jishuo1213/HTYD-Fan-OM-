@@ -127,7 +127,7 @@ public class DateTimePickerDialog extends DialogFragment {
 					sendResult();
 					return;
 				}
-				if (mDate.getTimeInMillis() < currentTime) {
+/*				if (mDate.getTimeInMillis() < currentTime) {
 					mDate.setTimeInMillis(currentTime);
 					if(mDate.get(Calendar.MINUTE) <= 30){
 						mDate.set(Calendar.MINUTE, 30);
@@ -135,7 +135,7 @@ public class DateTimePickerDialog extends DialogFragment {
 						mDate.add(Calendar.HOUR_OF_DAY, 1);
 						mDate.set(Calendar.MINUTE, 0);
 					}
-				}
+				}*/
 				sendResult();
 				break;
 			case DialogInterface.BUTTON_NEGATIVE:
@@ -162,12 +162,10 @@ public class DateTimePickerDialog extends DialogFragment {
 					mDate.set(Calendar.YEAR,mDate.get(Calendar.YEAR) + 1);
 					dayAdapter.setCount(mDate.getActualMaximum(Calendar.DATE));
 					dayAdapter.notifyDataSetChanged();
-		//			setSpinner(mDate, 1);
 				} else {
 					mDate.setTimeInMillis(currentTime);
 					dayAdapter.setCount(mDate.getActualMaximum(Calendar.DATE));
 					dayAdapter.notifyDataSetChanged();
-		//			setSpinner(mDate, 1);
 					
 				}
 				break;
@@ -179,11 +177,9 @@ public class DateTimePickerDialog extends DialogFragment {
 				if(lastmonthnum == (int) parent.getSelectedItem()){
 					return;
 				}
-//				mDate.set(year, position, 1, 0, 0);
 				mDate.set(Calendar.MONTH, position);
 				dayAdapter.setCount(mDate.getActualMaximum(Calendar.DATE));
 				dayAdapter.notifyDataSetChanged();
-		//		setSpinner(mDate, 2);
 				break;
 			case R.id.spinner_day:
 				if(lastdaynum == -1){
@@ -194,14 +190,9 @@ public class DateTimePickerDialog extends DialogFragment {
 					return;
 				}
 				mDate.set(Calendar.DATE, position + 1);
-	//			mDate.set(Calendar.HOUR_OF_DAY, 0);
-	//			mDate.set(Calendar.MINUTE, 0);
-		//		setSpinner(mDate, 3);
 				break;
 			case R.id.spinner_hour:
 				mDate.set(Calendar.HOUR_OF_DAY, position);
-//				mDate.set(Calendar.MINUTE, 0);
-	//			setSpinner(mDate, 4);
 				break;
 			case R.id.spinner_minute:
 				mDate.set(Calendar.MINUTE, position);

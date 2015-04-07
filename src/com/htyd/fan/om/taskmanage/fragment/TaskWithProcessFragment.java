@@ -20,7 +20,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -274,7 +273,6 @@ public class TaskWithProcessFragment extends Fragment  implements DeleteProcessL
 			if (taskNetId > 0) {
 				return mManager.queryProcessByTaskNetId(taskNetId);
 			} else {
-				Log.i("fanjishuo___loadCursor", taskLocalId+"");
 				return mManager.queryProcessByTaskLocalId(taskLocalId);
 			}
 		}

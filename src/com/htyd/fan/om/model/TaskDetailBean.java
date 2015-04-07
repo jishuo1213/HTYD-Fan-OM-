@@ -5,7 +5,6 @@ import org.json.JSONObject;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import com.htyd.fan.om.util.base.Utils;
 
@@ -218,7 +217,6 @@ public class TaskDetailBean implements Parcelable {
 		json.put("GZDD", workLocation);
 		json.put("AZDD", installLocation);
 		json.put("XXDZ", getDetailAddress());
-		Log.i("fanjishuo___toEditJson", taskTitle);
 		json.put("RWBT", taskTitle);
 		json.put("RWMS", taskDescription);
 		json.put("LXR", taskContact);

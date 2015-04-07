@@ -19,7 +19,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -268,7 +267,6 @@ public class CreateProcessDialog extends DialogFragment implements SyncTaskProce
 		mBean.endTime = endTime;
 		mBean.taskNetid = getArguments().getInt(TASKNETID);
 		mBean.taskLocalId = getArguments().getInt(TASKLOCALID);
-		Log.i("fanjishuo___getProcessBean", mBean.taskLocalId+"");
 		mBean.createTime = System.currentTimeMillis();
 		return mBean;
 	}

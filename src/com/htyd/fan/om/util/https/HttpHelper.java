@@ -84,7 +84,6 @@ public class HttpHelper {
 						UrlEncodedFormEntity urlEncoded = new UrlEncodedFormEntity(
 								params, CHARSET_UTF8);
 						
-						Log.d("fanjishuo____GetResponse", url);
 						HttpPost httpPost = new HttpPost(url);
 						httpPost.setEntity(urlEncoded);
 

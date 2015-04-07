@@ -21,7 +21,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -228,7 +227,6 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener,
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
-			Log.e("fanjishuo____onItemClick", "position------"+position);
 			TaskListBean mBean = (TaskListBean) parent.getAdapter()
 					.getItem(position);
 			Intent i = new Intent(getActivity(), TaskManageActivity.class);
@@ -267,7 +265,6 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener,
 
 		@Override
 		public Object getItem(int position) {
-			Log.e("fanjishuo____getItem", "position------"+position);
 			switch (type) {
 			case 0:
 				return taskMap.get(INPROCESSINGTASK).get(position);

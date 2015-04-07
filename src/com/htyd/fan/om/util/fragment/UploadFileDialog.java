@@ -31,7 +31,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuItem;
@@ -340,7 +339,6 @@ public class UploadFileDialog extends DialogFragment implements
 			} else {
 				sdCardDir = Utils.getCachePath();
 			}
-			Log.i("fanjishuo_____onUpLoadClick", sdCardDir);
 			String targetFile = sdCardDir +File.separator+ array[1];
 			new DownloadTask(getActivity(), targetFile,this).execute(mBean);
 		} else {
@@ -387,7 +385,6 @@ public class UploadFileDialog extends DialogFragment implements
 		}
 		accessoryList.get(position).fileState = 1;
 		accessoryList.get(position).netId = fileId;
-		Log.i("fanjishuo____onUpLoadFinish", accessoryList.get(position).taskLocalId+"");
 		TaskAccessoryAdapter mAdapter = (TaskAccessoryAdapter)mListView.getAdapter();
 		mAdapter.notifyDataSetChanged();
 		OMUserDatabaseManager.getInstance(getActivity()).updateUploadAccessoryBean(accessoryList.get(position));
@@ -567,7 +564,6 @@ public class UploadFileDialog extends DialogFragment implements
 
 	private boolean dichotomyCheck(int[] accessoryId, int netId) {
 		int start,end,middle;
-		Log.i("fanjishuo____dichotomyCheck", "netId" + netId);
 		start = 0;
 		end = accessoryId.length - 1;
 		while (start <= end) {
@@ -637,7 +633,6 @@ public class UploadFileDialog extends DialogFragment implements
 		public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 			TaskAccessoryCursor cursor = (TaskAccessoryCursor) data;
 			if(cursor != null && cursor.moveToFirst()){
-				Log.i("fanjishuo____onLoadFinished", cursor.getCount()+"");
 				if (accessoryList == null) {
 					accessoryList = new ArrayList<AffiliatedFileBean>();
 				} else {

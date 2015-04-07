@@ -11,14 +11,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
-import android.util.Log;
-
 
 import com.htyd.fan.om.R;
 import com.htyd.fan.om.model.CommonDataBean;
 import com.htyd.fan.om.util.db.OMDatabaseHelper.CityCursor;
+import com.htyd.fan.om.util.db.OMDatabaseHelper.DistrictCursor;
 import com.htyd.fan.om.util.db.OMDatabaseHelper.ProvinceCursor;
-import com.htyd.fan.om.util.db.OMDatabaseHelper.DistrictCursor;;
 
 public class OMDatabaseManager {
 
@@ -83,7 +81,6 @@ public class OMDatabaseManager {
 	
 	private void openCItyDataBase() {
 		File file = new File(cityDbPath);
-		Log.i("fanjishuo_____openCItyDataBase", cityDbPath+file.exists()+file.length());
 		try {
 			if (!file.exists()) {
 				InputStream is = mAppContext.getResources().openRawResource(
@@ -106,7 +103,6 @@ public class OMDatabaseManager {
 			e.printStackTrace();
 		}
 		cityDb = SQLiteDatabase.openOrCreateDatabase(cityDbPath, null);
-		Log.i("fanjishuo_____openCItyDataBase", ""+(cityDb.isOpen()));
 	}
 	
 	public void clearFeedTable(String tableName) {
