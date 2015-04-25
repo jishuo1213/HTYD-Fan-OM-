@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -82,6 +83,18 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener,
 	private Handler handler;
 	protected int editPosition;
 
+	
+	@Override
+	public void onAttach(Activity activity) {
+		Log.i("fanjishuo____TaskListFragmentonAttach", "onAttach"+(activity));
+		super.onAttach(activity);
+	}
+	
+	@Override
+	public void onDetach() {
+		Log.i("fanjishuo_____TaskListFragmentonDetach", "detach");
+		super.onDetach();
+	}
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -104,7 +117,17 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener,
 		initView(v);
 		return v;
 	}
-
+	
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+	}
+	
+	@Override
+	public void onDestroy() {
+		mLoadManager.destroyLoader(1);
+		super.onDestroy();
+	}
 	private void initView(View v) {
 		mPullRefreshListView = (PullToRefreshListView) v.findViewById(R.id.list_my_task);
 		mPullRefreshListView.setOnRefreshListener(new OnRefreshListener <ListView>(){
@@ -129,6 +152,7 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener,
 	public void onItemChooser(int position) {
 		switch (position) {
 		case 0:
+			Log.i("fanjishuo____onItemChooser",( mListView == null) +""+(inProcessTaskAdapter == null));
 			mListView.setAdapter(inProcessTaskAdapter);
 			break;
 		case 1:
@@ -137,6 +161,9 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener,
 			break;
 		case 2:
 			try {
+				if(!isAdded()){
+					return;
+				}
 				Intent i = new Intent(getActivity(), TaskManageActivity.class);
 				i.putExtra(TASKTYPE, -1);
 				startActivityForResult(i, CREATETASK);

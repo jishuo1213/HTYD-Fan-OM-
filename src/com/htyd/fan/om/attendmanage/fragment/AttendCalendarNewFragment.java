@@ -22,6 +22,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -102,7 +103,11 @@ SelectLocationListener, ChooseAddressListener, InputDoneListener,SelectAttendDat
 		getMonth(c);
 		isCurrentMonth = true;
 		queryAttendLocal();
-		isLocation = false;
+		if(savedInstanceState == null){
+			isLocation = false;
+		}else{
+			isLocation = savedInstanceState.getBoolean("islocation");
+		}
 	}
 
 	@Override
@@ -111,6 +116,12 @@ SelectLocationListener, ChooseAddressListener, InputDoneListener,SelectAttendDat
 				.inflate(R.layout.fragment_main_page, container, false);
 		intiView(v);
 		return v;
+	}
+	
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putBoolean("islocation", isLocation);
 	}
 	
 	@Override
@@ -190,6 +201,7 @@ SelectLocationListener, ChooseAddressListener, InputDoneListener,SelectAttendDat
 				}
 				signButton.setText("正在签到...");
 				signButton.setEnabled(false);
+				Log.i("fanjishuo____onClick", "startLocation");
 				OMLocationManager.get(getActivity()).setLocCilentOption(null);
 				OMLocationManager.get(getActivity()).startLocationUpdate();
 				break;
@@ -334,6 +346,7 @@ SelectLocationListener, ChooseAddressListener, InputDoneListener,SelectAttendDat
 		@Override
 		protected void onNetWorkLocationReceived(Context context,
 				OMLocationBean loc) {
+			Log.i("fanjishuo_____onNetWorkLocationReceived", "isenable"+(signButton.isEnabled() == true));
 			if(MainActivity.currentPos != 0){
 				return;
 			}

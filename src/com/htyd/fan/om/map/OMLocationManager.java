@@ -3,6 +3,7 @@ package com.htyd.fan.om.map;
 import android.content.Context;
 import android.content.Intent;
 import android.location.LocationManager;
+import android.util.Log;
 
 import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
@@ -61,6 +62,7 @@ public class OMLocationManager {
 
 		@Override
 		public void onReceiveLocation(BDLocation arg0) {
+			Log.i("fanjishuo____onReceiveLocation", "receive");
 			OMLocationBean mBean = new OMLocationBean();
 			mBean.setValue(arg0);
 			Intent broadcast = new Intent(ACTION_LOCATION);

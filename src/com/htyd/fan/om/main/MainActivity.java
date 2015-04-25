@@ -59,8 +59,10 @@ public class MainActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		forceShowOverflowMenu();
 		setContentView(R.layout.activity_main);
+		Log.i("fanjishuo_____onCreate",""+this);
 		if(savedInstanceState != null){
 			currentPos = savedInstanceState.getInt("pagepos");
+			Log.i("fanjishuo_____onCreate", "savedInstancestate != null"+this);
 		}
 		/*firstProvider = new AttendOverflowMenu(this);
 		thirdProvider = new TaskOvewflowMenu(this);*/
