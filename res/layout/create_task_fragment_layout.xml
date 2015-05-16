@@ -12,26 +12,6 @@
         android:orientation="vertical"
         tools:ignore="HardcodedText" >
 
-        <!--
-        <TextView
-            android:id="@+id/create_title"
-            style="?android:listSeparatorTextViewStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="任务标题"
-            android:textSize="18sp" />
-
-        <EditText
-            android:id="@+id/edit_task_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:hint="请输入任务标题"
-            android:textSize="18sp" />
-        -->
-
         <TextView
             android:id="@+id/description"
             style="?android:listSeparatorTextViewStyle"

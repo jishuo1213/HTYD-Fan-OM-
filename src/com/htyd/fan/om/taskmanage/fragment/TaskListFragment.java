@@ -41,6 +41,7 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.htyd.fan.om.R;
+import com.htyd.fan.om.main.MainActivity;
 import com.htyd.fan.om.main.MainActivity.OnItemChooserListener;
 import com.htyd.fan.om.model.TaskDetailBean;
 import com.htyd.fan.om.model.TaskListBean;
@@ -60,6 +61,8 @@ import com.htyd.fan.om.util.ui.UItoolKit;
 
 public class TaskListFragment extends Fragment implements OnItemChooserListener,DoneTaskListener {
 
+	private static final String TAG = "TaskListFragment____fanjishuo";
+	
 	public static final String TASKTYPE = "tasktype";
 	public static final String TASKLOCALID = "taskid";
 	public static final int CREATETASK = 0x08;//新建任务
@@ -82,23 +85,26 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener,
 	boolean isLoaderFinish;
 	private Handler handler;
 	protected int editPosition;
+	private MainActivity context;
 
 	
 	@Override
 	public void onAttach(Activity activity) {
-		Log.i("fanjishuo____TaskListFragmentonAttach", "onAttach"+(activity));
+		Log.i(TAG, "onAttach"+(activity));
+		Log.i(TAG, "onAttach"+this+"");
 		super.onAttach(activity);
+		context = (MainActivity) activity;
+		context.setListener(this);
 	}
 	
 	@Override
 	public void onDetach() {
-		Log.i("fanjishuo_____TaskListFragmentonDetach", "detach");
+		Log.i(TAG, "detach");
 		super.onDetach();
 	}
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setRetainInstance(true);
 		taskMap = new HashMap<String, List<TaskListBean>>();
 		taskMap.put(COMPLETED, new ArrayList<TaskListBean>());
 		taskMap.put(INPROCESSINGTASK, new ArrayList<TaskListBean>());
@@ -152,7 +158,6 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener,
 	public void onItemChooser(int position) {
 		switch (position) {
 		case 0:
-			Log.i("fanjishuo____onItemChooser",( mListView == null) +""+(inProcessTaskAdapter == null));
 			mListView.setAdapter(inProcessTaskAdapter);
 			break;
 		case 1:
@@ -160,20 +165,15 @@ public class TaskListFragment extends Fragment implements OnItemChooserListener,
 				mListView.setAdapter(completedAdapter);
 			break;
 		case 2:
-			try {
-				if(!isAdded()){
+/*				if(!isAdded()){
+					Log.i(TAG, this+"");
 					return;
-				}
-				Intent i = new Intent(getActivity(), TaskManageActivity.class);
+					//getFragmentManager().beginTransaction().add(this,null).commit();
+				}*/
+			Log.i(TAG, this+"");
+				Intent i = new Intent(context, TaskManageActivity.class);
 				i.putExtra(TASKTYPE, -1);
 				startActivityForResult(i, CREATETASK);
-			} catch (Exception e) {
-				e.printStackTrace();
-				Intent i = new Intent("om.fan.task");
-				i.putExtra(TASKTYPE, -1);
-				startActivity(i);
-				break;
-			}
 			break;
 		case 3:
 			Intent intent = new Intent(getActivity(), TaskManageActivity.class);

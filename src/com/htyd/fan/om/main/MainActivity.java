@@ -39,8 +39,10 @@ import com.htyd.fan.om.util.ui.UItoolKit;
 
 public class MainActivity extends FragmentActivity {
 
+	private static final String TAG = "MainActivity____fanjishuo";
+	
 	private ViewPager mainViewPager;
-	private List<Fragment> fragmentList = new ArrayList<Fragment>();
+	private List<Fragment> fragmentList;
 	private Drawable[] tabDrawable;
 	private FragmentPagerAdapter pageAdapter;
 	private TabPanel tabPanel;
@@ -59,14 +61,13 @@ public class MainActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		forceShowOverflowMenu();
 		setContentView(R.layout.activity_main);
-		Log.i("fanjishuo_____onCreate",""+this);
+		Log.i(TAG, "onCreate");
 		if(savedInstanceState != null){
 			currentPos = savedInstanceState.getInt("pagepos");
-			Log.i("fanjishuo_____onCreate", "savedInstancestate != null"+this);
+			Log.i(TAG, "savedInstancestate != null"+this);
+		}else{
+			currentPos = 0;
 		}
-		/*firstProvider = new AttendOverflowMenu(this);
-		thirdProvider = new TaskOvewflowMenu(this);*/
-		currentPos = 0;
 		loadData();
 		init();
 		initActionBar();
@@ -86,7 +87,7 @@ public class MainActivity extends FragmentActivity {
 	protected void onDestroy() {
 		fragmentList.clear();
 		tabDrawable = null;
-		Log.i("fanjishuo____mainActivity", "onDestory");
+		Log.i(TAG, "onDestory");
 		super.onDestroy();
 	}
 
@@ -156,12 +157,14 @@ public class MainActivity extends FragmentActivity {
 
 	private void loadData() {
 		Resources r = getResources();
+		fragmentList = new ArrayList<Fragment>();
 		tabDrawable = new Drawable[8];
 		TypedArray imgs = r.obtainTypedArray(R.array.tab_drawable_id);
 		AttendCalendarNewFragment tab1 = new AttendCalendarNewFragment();
 		TaskListFragment tab3 = new TaskListFragment();
 		SettingFragment tab4 = new SettingFragment();
-		listener = tab3;
+	//	listener = tab3;
+		Log.i(TAG, tab3+"");
 		fragmentList.add(tab1);
 		fragmentList.add(tab3);
 		fragmentList.add(tab4);
@@ -395,4 +398,8 @@ public class MainActivity extends FragmentActivity {
 		menu.findItem(R.id.menu_attend_two).setVisible(false);
 	}
 
+	public void setListener(OnItemChooserListener listener){
+		this.listener = listener;
+	}
+	
 }

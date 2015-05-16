@@ -30,6 +30,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
+        android:layout_below="@id/tv_task_descrption"
         android:layout_alignParentBottom="true"
         android:layout_toRightOf="@id/img_task_state_icon"
         android:text="111111111111111111111" />
